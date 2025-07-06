@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Completa la registrazione</title>
+</head>
+<body>
+    <h1>Scegli il tuo username</h1>
+
+    <form th:action="@{/choose-username}" method="post">
+        <label>Username:</label>
+        <input type="text" name="username" required /><br/>
+
+        <div th:if="${error}" th:text="${error}" style="color:red;"></div>
+
+        <button type="submit">Conferma</button>
+    </form>
+</body>
+</html>

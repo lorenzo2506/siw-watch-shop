@@ -1,0 +1,21 @@
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<title >Watch</title>
+		<link rel="stylesheet" href="/style.css?version=2">
+		
+	</head>
+	<body>
+		<div><a th:href="@{'/'}">torna al menu</a></div>
+		<div th:if="${watch}">
+			<div>
+				<span th:text="${watch.name}"></span>
+				<span th:text="${watch.brand}"></span>
+				<span th:text="${watch.year}"></span>
+				
+			</div>
+		</div>
+		<div th:unless=${watch}>non esiste</div>
+	</body>
+	
+	
+</html>

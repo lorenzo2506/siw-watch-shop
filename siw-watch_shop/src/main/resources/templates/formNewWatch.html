@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+	    <title>form new movie</title>
+	    <link rel="stylesheet" href="/style.css?version=2">
+	</head>
+	<body>
+	    <form th:action="@{/watch}" method="POST" th:object="${watch}" >
+	    
+    		<div th:if="${#fields.hasGlobalErrors()}">
+               <p th:each="err : ${#fields.globalErrors()}" th:text="${err}">...</p>
+           </div>
+           
+           
+	    	<div>nome: 
+	    		<span><input required type="text" th:field="*{name}"></span>
+	    		<span th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
+	    	</div>
+	    	<div>brand: 
+	    		<span><input required type="text" th:field="*{brand}"></span>
+	    		<span th:if="${#fields.hasErrors('brand')}" th:errors="*{brand}"></span>
+	    	</div>
+	    	<div>year: 
+	    		<span><input required type="text" th:field="*{year}"></span>
+	    		<span th:if="${#fields.hasErrors('year')}" th:errors="*{year}"></span>
+	    	</div>
+	    	<div><span><button type="submit">Conferma</button></span></div>
+	    </form>
+	</body>
+</html>
