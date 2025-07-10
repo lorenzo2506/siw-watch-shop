@@ -34,7 +34,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String email = userInfo.getEmail();
         String name = userInfo.getName();
 
-        Credentials credentials = credentialsService.getCredentialsByEmail(email);
+        Credentials credentials = credentialsService.getByEmail(email);
 
         if (credentials == null) {
             // Nuovo utente OAuth2

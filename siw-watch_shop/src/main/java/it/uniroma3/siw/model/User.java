@@ -22,5 +22,7 @@ public class User {
 	
 	@NotNull
 	private String surname;
+	
+	public User() {}
 
 }

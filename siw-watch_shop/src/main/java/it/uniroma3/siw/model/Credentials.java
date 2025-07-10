@@ -1,5 +1,11 @@
 package it.uniroma3.siw.model;
 
+import java.util.Collection;
+import java.util.List;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -13,7 +19,7 @@ import jakarta.persistence.EnumType;
 
 @Data
 @Entity
-public class Credentials {
+public class Credentials implements UserDetails{
 	
 	
     public static final Role DEFAULT_ROLE = Role.USER;
@@ -33,5 +39,26 @@ public class Credentials {
 	
 	@OneToOne(cascade = CascadeType.ALL)
 	private User user;
+	
+	
+	public Credentials() {}
+	
+	
+	@Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(() -> "ROLE_" + this.role);
+    }
+
+    @Override
+    public boolean isAccountNonExpired() { return true; }
+
+    @Override
+    public boolean isAccountNonLocked() { return true; }
+
+    @Override
+    public boolean isCredentialsNonExpired() { return true; }
+
+    @Override
+    public boolean isEnabled() { return true; }
 
 }
