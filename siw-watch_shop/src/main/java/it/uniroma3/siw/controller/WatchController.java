@@ -33,13 +33,13 @@ public class WatchController {
 		return "watches.html";
 	}
 	
-	@GetMapping("/formNewWatch")
+	@GetMapping("formNewWatch")
 	public String showFormNewWatch(Model model) {
 		model.addAttribute("watch", new Watch());
 		return "formNewWatch.html";
 	}
 	
-	@PostMapping("/watch")
+	@PostMapping("watch")
 	public String addWatch(@Valid @ModelAttribute("watch") Watch watch, BindingResult bindingResult, Model model) {
 		
 		watchValidate.validate(watch, bindingResult);
@@ -52,7 +52,7 @@ public class WatchController {
 		return "watch.html";
 	}
 	
-	@PostMapping("/watch/redirect")
+	@PostMapping("watch/redirect")
 	public String addWatch(@Valid @ModelAttribute("watch") Watch watch, BindingResult bindingResult) {
 		
 		watchValidate.validate(watch, bindingResult);
@@ -60,7 +60,7 @@ public class WatchController {
 		if(bindingResult.hasErrors())
 			return "formNewWatch.html";
 		watchService.save(watch);
-		return "redirect:watch/" + watch.getId();
+		return "redirect:/watch/" + watch.getId();
 	}
 	
 	

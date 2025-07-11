@@ -10,11 +10,16 @@
 			<div>
 				<span th:text="${watch.name}"></span>
 				<span th:text="${watch.brand}"></span>
-				<span th:text="${watch.year}"></span>
-				
+				<span th:text="${watch.year}"></span>				
 			</div>
 		</div>
 		<div th:unless=${watch}>non esiste</div>
+
+		<form th:action="@{/currentOrder/add/{id}(id=${watch.id})}" method="post">
+			<!-- Thymeleaf aggiunge automaticamente il CSRF token -->
+			<button type="submit">Aggiungi al Carrello</button>
+		</form>
+
 	</body>
 	
 	

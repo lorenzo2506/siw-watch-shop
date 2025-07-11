@@ -10,8 +10,8 @@
 		<div><a th:href="@{/}">torna al menu</a></div>
 		<div th:if="${#lists.isEmpty(watches)}">Non ci sono orologi nel sistema</div>
 		
-		<div th:if=${!#lists.isEmpty(watches)}>
-			<ul th:if=${!#lists.isEmpty(watches)}>
+		<div th:if="${!#lists.isEmpty(watches)}">
+			<ul th:if="${!#lists.isEmpty(watches)}">
 				<li th:each="watch : ${watches}">
 					<a th:href="@{'/watch/'+ ${watch.id}}" th:text="${watch.name}">titolo</a>
 				</li>
