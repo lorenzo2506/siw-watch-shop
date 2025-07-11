@@ -1,5 +1,7 @@
 package it.uniroma3.siw.model;
 
+import java.util.Objects;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -34,5 +36,23 @@ public class OrderLine {
 	public Float calculateTotal() {
 		return unitPrice*quantity;
 	}
+	
+	
+	@Override
+	public boolean equals(Object o) {
+	    if (this == o) return true;
+	    if (o == null || getClass() != o.getClass()) return false;
+
+	    OrderLine that = (OrderLine) o;
+
+	    // Confronta per Watch (non id, se l'entità è transitoria)
+	    return this.watch != null && this.watch.equals(that.watch);
+	}
+
+	@Override
+	public int hashCode() {
+	    return watch != null ? watch.hashCode() : 0;
+	}
+
 	
 }

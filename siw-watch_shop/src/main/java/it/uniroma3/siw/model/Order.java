@@ -34,7 +34,7 @@ public class Order {
 	
 	
 	// Usa @Fetch o query personalizzate
-	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
 	@JoinColumn(name="order_id")
 	private List<OrderLine> orderLines;
 	
