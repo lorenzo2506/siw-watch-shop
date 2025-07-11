@@ -35,11 +35,11 @@ public class Order {
 	
 	// Usa @Fetch o query personalizzate
 	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-	@JoinColumn(name="orders_id")
-	private List<OrderLine> orderLines = new ArrayList<>();
+	@JoinColumn(name="order_id")
+	private List<OrderLine> orderLines;
 	
 	@OneToMany(cascade=CascadeType.ALL)
-	private List <Watch> watches = new ArrayList<>();
+	private List <Watch> watches;
 	
 	private LocalDateTime creationTime;
 	
@@ -61,5 +61,12 @@ public class Order {
         return this.orderLines.stream()
             .map(OrderLine::calculateTotal)
             .reduce(0f, Float::sum);
+    }
+    
+    public Order() {
+    	
+    	watches = new ArrayList<>();
+    	
+    	orderLines = new ArrayList<>();
     }
 }

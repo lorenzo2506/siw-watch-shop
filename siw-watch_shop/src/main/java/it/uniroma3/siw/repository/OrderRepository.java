@@ -22,4 +22,7 @@ public interface OrderRepository extends JpaRepository<Order,Long>{
 	
 	@Query("SELECT o FROM Order o WHERE o.user = :user")
 	public Iterable<Order> findByUser(@Param("user") User user);
+	
+	@Query("SELECT o FROM Order o WHERE o.user = :user AND o.status = :status")
+	public Iterable<Order> findByUserAndStatus(@Param("user") User user, @Param("status") OrderStatus status);
 }

@@ -15,6 +15,7 @@ import it.uniroma3.siw.model.OrderStatus;
 import it.uniroma3.siw.model.User;
 import it.uniroma3.siw.model.Watch;
 import it.uniroma3.siw.repository.OrderRepository;
+import it.uniroma3.siw.repository.UserRepository;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -25,6 +26,8 @@ public class OrderService {
 	@Autowired private AuthenticationService authService;
 	
 	@Autowired private WatchService watchService;
+	
+	@Autowired private UserRepository userService;
 	
 	public Order getById(Long id) {
 		return orderRepository.findById(id).get();
@@ -45,23 +48,22 @@ public class OrderService {
 		if(this.getById(id)==null)
             throw new IllegalStateException("##Nessun ordine relativo all'id nel parametro.");
 
-		List<OrderLine> orderLines = this.getById(id).getOrderLines();
-		if(orderLines==null) {
-			orderLines = new ArrayList<>();
-			this.getById(id).setOrderLines(orderLines);
-		}
 			
-		return orderLines;
+		return this.getById(id).getOrderLines();
 	}
 	
 	@Transactional
 	private Order createNewCurrentOrder(User user) {
-        Order newOrder = new Order();
-        newOrder.setStatus(OrderStatus.IN_CREAZIONE);
-        newOrder.setUser(user);
-        user.setCurrentOrder(newOrder);
-        return orderRepository.save(newOrder);
-    }
+	    Order newOrder = new Order();
+	    newOrder.setStatus(OrderStatus.IN_CREAZIONE);
+	    newOrder.setUser(user);
+	    user.setCurrentOrder(newOrder);
+	    
+	    Order savedOrder = orderRepository.save(newOrder);
+	    userService.save(user);
+	    
+	    return savedOrder;
+	}
 	
 	@Transactional
 	public Order getCurrentOrder() {
@@ -72,6 +74,8 @@ public class OrderService {
             
         if(currentUser.getCurrentOrder()==null)
         	return createNewCurrentOrder(currentUser);
+        
+        System.out.println("Righe presenti: " +currentUser.getCurrentOrder().getOrderLines().size());
         return currentUser.getCurrentOrder();
     }
 	
@@ -93,8 +97,28 @@ public class OrderService {
 	public Iterable<Order> getAllPlacedOrders() {
 		
 		User currentUser = authService.getCurrentUser();
-		return this.orderRepository.findByUser(currentUser);
+		return this.orderRepository.findByUserAndStatus(currentUser, OrderStatus.EFFETTUATO);
 	}
+	
+	
+	
+	
+	public OrderLine existingOrderLineInOrder(Order order, Watch watch) {
+	    for (OrderLine ol : order.getOrderLines()) {
+	        Watch w = ol.getWatch();
+	        System.out.println("→ Confronto:");
+	        System.out.println("   OL: brand=" + w.getBrand() + ", name=" + w.getName() + ", year=" + w.getYear());
+	        System.out.println("   CW: brand=" + watch.getBrand() + ", name=" + watch.getName() + ", year=" + watch.getYear());
+	        System.out.println("   equals? " + watch.equals(w));
+	    }
+
+	    return order.getOrderLines().stream()
+	        .filter(ol -> ol.getWatch() != null && watch != null && watch.equals(ol.getWatch()))
+	        .findFirst()
+	        .orElse(null);
+	}
+
+	
 	
 	
 	@Transactional
@@ -102,15 +126,21 @@ public class OrderService {
 	    Order currentOrder = this.getCurrentOrder();
 	    Watch currentWatch = watchService.getWatch(id);
 	    
-	    // ✅ Controllo diretto sulla collezione che conta
-	    OrderLine existingOrderLine = currentOrder.getOrderLines().stream()
-	        .filter(ol -> ol.getWatch().getId().equals(currentWatch.getId()))
-	        .findFirst()
-	        .orElse(null);
+	    
+	    OrderLine existingOrderLine = this.existingOrderLineInOrder(currentOrder, currentWatch);
 	    
 	    if (existingOrderLine != null) {
-	        existingOrderLine.increaseQuantity();
-	    } else {
+	        existingOrderLine.increaseQuantityByOne();
+	        System.out.println("################################################################");
+	        System.out.println("################################################################");
+	        System.out.println("################################################################");
+	        System.out.println("ESISTE GIA NELL ORDINE");
+	        System.out.println("################################################################");
+	        System.out.println("################################################################");
+	        System.out.println("################################################################");
+
+	    }
+	    else {
 	        OrderLine newOrderLine = new OrderLine();
 	        newOrderLine.setWatch(currentWatch);
 	        newOrderLine.setQuantity(1);
@@ -119,6 +149,13 @@ public class OrderService {
 	    }
 	    
 	    this.save(currentOrder);
+	    
+	    System.out.println("==== STATO FINALE DELL’ORDINE ====");
+	    for (OrderLine ol : currentOrder.getOrderLines()) {
+	        Watch w = ol.getWatch();
+	        System.out.println("→ OL: brand=" + w.getBrand() + ", name=" + w.getName() + ", year=" + w.getYear() + ", quantity=" + ol.getQuantity());
+	    }
+
 	}
 	
 	

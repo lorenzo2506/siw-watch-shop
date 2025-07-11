@@ -38,6 +38,8 @@ public class User {
 ;
 
 	
-	public User() {}
+	public User() {
+		this.placedOrders = new ArrayList<>();
+	}
 
 }

@@ -4,6 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import lombok.Data;
 
@@ -20,12 +22,13 @@ public class OrderLine {
 	
 	private Float unitPrice;
 	
-	@OneToOne
+	@ManyToOne  // Più sicuro e flessibile
+    @JoinColumn(name = "watch_id")
 	private Watch watch;
 	
 	
-	public void increaseQuantity() {
-		this.setQuantity( this.getQuantity()+1);
+	public void increaseQuantityByOne() {
+		this.quantity+=1;
 	}
 	
 	public Float calculateTotal() {

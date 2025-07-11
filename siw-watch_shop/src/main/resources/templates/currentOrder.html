@@ -8,13 +8,15 @@
 	<body>
 	
 		<div><a th:href="@{/}">torna al menu</a></div>
-		<div th:if="${#lists.isEmpty(orderLines)}">Non ci sono orologi nel tuo ordine</div>
-		
+		<div th:if="${#lists.isEmpty(orderLines)}">
+			carrello vuoto
+		</div>
+
 		<div th:if="${!#lists.isEmpty(orderLines)}">
 			<ul>
-				<li th:each="orderLine : ${orderLines}">
-					<p><a th:href="@{'/watch/' + ${orderLine.watch.id}}" th:text="${orderLine.watch.name}"></a></p>
-					<p>quantità: <span th:text="${orderLine.quantity}"></span></p>
+				<li th:each="orderLine : ${orderLines}" class="order-line">
+					<a th:href="@{'/watch/' + ${orderLine.watch.id}}" th:text="${orderLine.watch.name}"></a>
+					<span>quantità: <span th:text="${orderLine.quantity}"></span></span>
 				</li>
 			</ul>
 		</div>

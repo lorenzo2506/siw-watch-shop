@@ -8,11 +8,11 @@
 		<div><a th:href="@{'/'}">torna al menu</a></div>
 		<div th:if="${#lists.isEmpty(orders)}">Non hai effettuato nessun ordine</div>
 		
-		<div th:if="${!#lists.isEmpty(ordess)}">
-			<ul th:if="${!#lists.isEmpty(orders)}">
+		<div th:if="${!#lists.isEmpty(orders)}">
+			<ul>
 				<li th:each="order : ${orders}">
-					<p><a th:href="@{'/watch/'+ ${orderLine.watch.id}}" th:text="${orderLine.watch.name}"></a></p>
-                    <p>quantità: <span th:text="${orderLine.quantity}"></span></p>
+					<span>order code: </span>
+					<a th:href="@{'/placedOrder/'+ ${order.id}}" th:text="${order.code}"></a>
 				</li>
 			</ul>
 		</div>

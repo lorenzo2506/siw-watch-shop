@@ -6,17 +6,19 @@
 		
 	</head>
 	<body>
-	
 		<div><a th:href="@{/}">torna al menu</a></div>
 
-        <div><a th:href="@{/}">torna al menu</a></div>
-		<div th:if="${#lists.isEmpty(orderLines)}">Non ci sono orologi nel sistema</div>
-		
+		<h1 th:text=${order.code}>: codice ordine</h1>
+
+		<div th:if="${#lists.isEmpty(orderLines)}">
+			Non ci sono righe nel sistema
+		</div>
+
 		<div th:if="${!#lists.isEmpty(orderLines)}">
-			<ul th:if="${!#lists.isEmpty(orderLines)}">
-				<li th:each="orderLine : ${orderLines}">
-					<p><a th:href="@{'/watch/' + ${orderLine.watch.id}}" th:text="${orderLine.watch.name}"></a></p>
-                    <p>quantità: <span th:text="${orderLine.quantity}"></span></p>
+			<ul>
+				<li th:each="orderLine : ${orderLines}" class="order-line">
+					<a th:href="@{'/watch/' + ${orderLine.watch.id}}" th:text="${orderLine.watch.name}"></a>
+					<span>quantità: <span th:text="${orderLine.quantity}"></span></span>
 				</li>
 			</ul>
 		</div>
