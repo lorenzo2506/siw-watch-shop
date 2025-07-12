@@ -24,6 +24,11 @@
 	    		<span><input required type="text" th:field="*{year}"></span>
 	    		<span th:if="${#fields.hasErrors('year')}" th:errors="*{year}"></span>
 	    	</div>
+
+			<div>price: 
+				<span><input required type="text" th:field="*{price}"></span>
+				<span th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></span>
+			</div>
 	    	<div><span><button type="submit">Conferma</button></span></div>
 	    </form>
 	</body>

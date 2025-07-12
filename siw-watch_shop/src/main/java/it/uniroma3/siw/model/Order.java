@@ -1,5 +1,6 @@
 package it.uniroma3.siw.model;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,17 +57,34 @@ public class Order {
 
     
  // Assicurati che la sessione sia aperta o usa @Transactional
-    @Transactional
-    public Float calculateTotal() {
-        return this.orderLines.stream()
-            .map(OrderLine::calculateTotal)
-            .reduce(0f, Float::sum);
+ // In Order.java - Sostituisci il metodo calculateTotalPrice:
+
+    public Float calculateTotalPrice() {
+        // 🔥 CONTROLLO NULL SAFETY
+        if (orderLines == null || orderLines.isEmpty()) {
+            this.totalPrice = 0.0f;
+            return this.totalPrice;
+        }
+        
+        float total = 0.0f;
+        
+        for (OrderLine orderLine : orderLines) {
+            // 🔥 CONTROLLO NULL per ogni orderLine
+            if (orderLine != null && orderLine.getTotalPrice() != null) {
+                total += orderLine.getTotalPrice();
+            }
+        }
+        
+        this.totalPrice = total;
+        return this.totalPrice;
     }
+    
     
     public Order() {
     	
     	watches = new ArrayList<>();
     	
     	orderLines = new ArrayList<>();
+    	
     }
 }

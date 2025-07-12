@@ -1,5 +1,6 @@
 package it.uniroma3.siw.model;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 
 import jakarta.persistence.Entity;
@@ -33,9 +34,15 @@ public class OrderLine {
 		this.quantity+=1;
 	}
 	
-	public Float calculateTotal() {
-		return unitPrice*quantity;
-	}
+	
+	 public Float getTotalPrice() {
+	        // 🔥 CONTROLLO NULL SAFETY
+	        if (unitPrice == null || quantity == null) {
+	            return 0.0f;
+	        }
+	        return unitPrice * quantity;
+	    }     
+
 	
 	
 	@Override

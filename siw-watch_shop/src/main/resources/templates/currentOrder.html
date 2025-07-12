@@ -21,6 +21,9 @@
 			</ul>
 		</div>
 
+		<div th:if="${currentOrder.totalPrice != null and currentOrder.totalPrice > 0}">
+			<span>prezzo totale: <span th:text="${currentOrder.totalPrice}"></span> $</span>
+		</div>
 
         <form th:action="@{/currentOrder}" method="post">
 			<button type="submit">Conferma Ordine</button>

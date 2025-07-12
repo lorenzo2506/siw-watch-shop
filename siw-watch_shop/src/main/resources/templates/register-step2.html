@@ -1,43 +1,43 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Registrazione - Step 2</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-</head>
-<body>
-    <div class="container">
-        <div class="registration-header">
-            <h2>Registrazione</h2>
-            <div class="progress-bar">
-                <div class="step completed">✓</div>
-                <div class="step active">2</div>
-            </div>
-            <p class="step-description">Scegli il tuo username</p>
-        </div>
-        
-        <div class="registration-info">
-            <div class="alert alert-info">
-                <strong>Email confermata:</strong> <span th:text="${credentials.email}"></span>
-            </div>
-            <p>Ora scegli un username univoco per completare la registrazione:</p>
-        </div>
-        
-        <form th:action="@{/register/step2}" method="post" th:object="${credentials}">
-            <div class="form-group">
-                <label for="username">Username:</label>
-                <input type="text" th:field="*{username}" id="username" class="form-control" 
-                       placeholder="es. mario_rossi" required>
-                <div th:if="${usernameExists}" class="alert alert-danger mt-2" th:text="${usernameExists}"></div>
-                <small class="form-text text-muted">
-                    L'username deve essere univoco e può contenere lettere, numeri e underscore
-                </small>
+    <head>
+        <title>Registrazione - Step 2</title>
+        <link rel="stylesheet" th:href="@{/css/style.css}">
+    </head>
+    <body>
+        <div class="container">
+            <div class="registration-header">
+                <h2>Registrazione</h2>
+                <div class="progress-bar">
+                    <div class="step completed">✓</div>
+                    <div class="step active">2</div>
+                </div>
+                <p class="step-description">Scegli il tuo username</p>
             </div>
             
-            <div class="form-actions">
-                <button type="submit" class="btn btn-success">Completa Registrazione</button>
-                <a th:href="@{/register/cancel}" class="btn btn-secondary">Annulla</a>
+            <div class="registration-info">
+                <div class="alert alert-info">
+                    <strong>Email confermata:</strong> <span th:text="${credentials.email}"></span>
+                </div>
+                <p>Ora scegli un username univoco per completare la registrazione:</p>
             </div>
-        </form>
-    </div>
-</body>
+            
+            <form th:action="@{/register/step2}" method="post" th:object="${credentials}">
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input type="text" th:field="*{username}" id="username" class="form-control" 
+                        placeholder="es. mario_rossi" required>
+                    <div th:if="${usernameExists}" class="alert alert-danger mt-2" th:text="${usernameExists}"></div>
+                    <small class="form-text text-muted">
+                        L'username deve essere univoco e può contenere lettere, numeri e underscore
+                    </small>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-success">Completa Registrazione</button>
+                    <a th:href="@{/register/cancel}" class="btn btn-secondary">Annulla</a>
+                </div>
+            </form>
+        </div>
+    </body>
 </html>

@@ -2,6 +2,7 @@ package it.uniroma3.siw.model;
 
 
 
+import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.Random;
 
@@ -10,6 +11,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -27,7 +29,8 @@ public class Watch {
 	@NotBlank
 	private String name;
 	
-	
+	@NotNull
+	@Min(0)
 	private Float price;
 	
 	@NotBlank
@@ -39,8 +42,6 @@ public class Watch {
 	
 	private Integer stock;
 	
-	@Column(unique = true, nullable = false)
-	private String code;
 	
 	@NotNull
 	@Min(1800)
@@ -48,7 +49,6 @@ public class Watch {
 	private Integer year;
 	
 	public Watch() {
-		this.code = generateWatchCode();
 	}
 	
 	

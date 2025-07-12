@@ -128,7 +128,8 @@ public class OrderService {
             newOrderLine.setUnitPrice(currentWatch.getPrice());
             currentOrder.getOrderLines().add(newOrderLine);
         }
-
+        
+        currentOrder.setTotalPrice( currentOrder.calculateTotalPrice() );
         this.save(currentOrder);
     }
     
