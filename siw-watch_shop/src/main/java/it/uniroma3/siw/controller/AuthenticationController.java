@@ -16,7 +16,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import it.uniroma3.siw.model.Credentials;
 import it.uniroma3.siw.model.Role;
 import it.uniroma3.siw.model.User;
+import it.uniroma3.siw.service.AuthenticationService;
 import it.uniroma3.siw.service.CredentialsService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
@@ -29,6 +31,10 @@ public class AuthenticationController {
     
     @Autowired
     private PasswordEncoder passwordEncoder;
+    
+    // 🔥 NUOVO: Servizio per auto-login
+    @Autowired
+    private AuthenticationService authenticationService;
 
     // Step 1: Mostra form per email e password
     @GetMapping("/register")
@@ -76,7 +82,7 @@ public class AuthenticationController {
         return "redirect:/register/step2";
     }
 
-    // Step 2: Mostra form per username
+    // Step 2: Mostra form per username (comune per registrazione normale e OAuth2)
     @GetMapping("/register/step2")
     public String showUsernameForm(@ModelAttribute("credentials") Credentials credentials, Model model) {
         
@@ -102,28 +108,46 @@ public class AuthenticationController {
             System.out.println("User surname from session: " + credentials.getUser().getSurname());
         }
         
+        // Determina se è una registrazione OAuth2 o normale
+        boolean isOAuth2Registration = credentials.getPassword() == null;
+        model.addAttribute("isOAuth2", isOAuth2Registration);
+        
+        if (isOAuth2Registration) {
+            model.addAttribute("pageTitle", "Completa la registrazione");
+            model.addAttribute("welcomeMessage", "Benvenuto " + credentials.getUser().getName() + "!");
+            model.addAttribute("instructions", "Per completare la registrazione con Google, scegli un username:");
+        } else {
+            model.addAttribute("pageTitle", "Scegli Username");
+            model.addAttribute("instructions", "Scegli un username per completare la registrazione:");
+        }
+        
         return "register-step2";
     }
 
-    // Step 2: Processa username e completa registrazione
+    // Step 2: Processa username e completa registrazione (comune per entrambi i flussi)
     @PostMapping("/register/step2")
     public String processUsername(@ModelAttribute("credentials") Credentials credentials,
                                 Model model, SessionStatus sessionStatus,
-                                RedirectAttributes redirectAttributes) {
+                                RedirectAttributes redirectAttributes,
+                                HttpServletRequest request) { // 🔥 NUOVO: per auto-login
         
         System.out.println("=== STEP 2 POST DEBUG ===");
         System.out.println("Credentials: " + credentials);
         
         // Verifica che abbiamo tutti i dati necessari
-        if (credentials == null || credentials.getEmail() == null || 
-            credentials.getPassword() == null || credentials.getUser() == null) {
+        if (credentials == null || credentials.getEmail() == null || credentials.getUser() == null) {
             System.out.println("Missing required data - redirecting to register");
             return "redirect:/register";
         }
         
+        // Per registrazione normale, la password deve essere presente
+        // Per OAuth2, la password è null
+        boolean isOAuth2Registration = credentials.getPassword() == null;
+        
         System.out.println("Email: " + credentials.getEmail());
         System.out.println("Username: " + credentials.getUsername());
-        System.out.println("Password (encoded): " + credentials.getPassword());
+        System.out.println("Is OAuth2: " + isOAuth2Registration);
+        System.out.println("Password present: " + (credentials.getPassword() != null));
         System.out.println("Role: " + credentials.getRole());
         System.out.println("User: " + credentials.getUser());
         if (credentials.getUser() != null) {
@@ -134,14 +158,22 @@ public class AuthenticationController {
         // Controlla se username esiste già
         if (credentialsService.existsByUsername(credentials.getUsername())) {
             model.addAttribute("usernameExists", "Username già in uso");
+            model.addAttribute("isOAuth2", isOAuth2Registration);
             return "register-step2";
         }
         
-        // Controlla username vuoto (usa isBlank() invece di == "")
+        // Controlla username vuoto
         if (credentials.getUsername() == null || credentials.getUsername().trim().isEmpty()) {
             System.out.println("USERNAME NULLO O VUOTO");
             model.addAttribute("usernameExists", "Username non può essere vuoto");
+            model.addAttribute("isOAuth2", isOAuth2Registration);
             return "register-step2";
+        }
+        
+        // Per OAuth2, imposta password null e assicurati che il ruolo sia corretto
+        if (isOAuth2Registration) {
+            credentials.setPassword(null); // Mantieni password null per OAuth2
+            credentials.setRole(Role.USER);
         }
         
         try {
@@ -161,19 +193,26 @@ public class AuthenticationController {
                 System.out.println("ERROR: User NOT found by username after save!");
             }
             
+            // 🔥 NUOVO: AUTO-LOGIN DOPO REGISTRAZIONE
+            System.out.println("=== PERFORMING AUTO-LOGIN ===");
+            authenticationService.loginUserAutomatically(savedCredentials, request);
+            
+            // Pulisci la sessione
+            sessionStatus.setComplete();
+            
+            // 🔥 NUOVO: Redirect diretto alla home (l'utente è ora loggato)
+            String redirectUrl = isOAuth2Registration ? "/?oauth_registered=true" : "/?registered=true";
+            System.out.println("Redirecting to: " + redirectUrl);
+            
+            return "redirect:" + redirectUrl;
+            
         } catch (Exception e) {
             System.out.println("ERROR saving credentials: " + e.getMessage());
             e.printStackTrace();
             model.addAttribute("errorMessage", "Errore durante il salvataggio");
+            model.addAttribute("isOAuth2", isOAuth2Registration);
             return "register-step2";
         }
-        
-        // Pulisci la sessione
-        sessionStatus.setComplete();
-        
-        // Reindirizza al login con messaggio di successo
-        redirectAttributes.addFlashAttribute("registrationSuccess", "Registrazione completata con successo!");
-        return "redirect:/login";
     }
 
     // Metodo per annullare la registrazione
@@ -190,8 +229,12 @@ public class AuthenticationController {
                                Model model) {
         
         if (error != null) {
-            model.addAttribute("errorMessage", "Username o password non validi");
-            System.out.println("Login error occurred");
+            if ("oauth".equals(error)) {
+                model.addAttribute("errorMessage", "Errore durante l'autenticazione con Google");
+            } else {
+                model.addAttribute("errorMessage", "Username o password non validi");
+            }
+            System.out.println("Login error occurred: " + error);
         }
         
         if (logout != null) {

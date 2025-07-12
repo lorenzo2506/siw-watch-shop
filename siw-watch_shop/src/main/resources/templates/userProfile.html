@@ -11,7 +11,7 @@
     </div>
 
     <div>
-        Username: <span th:text="${userDetails.username}">[username]</span>
+        Username: <span th:text="${userDetails != null ? userDetails.username : 'OAuth2 User'}">username</span>
     </div>
     <div>
         Email: <span th:text="${userDetails.email}">[email]</span>

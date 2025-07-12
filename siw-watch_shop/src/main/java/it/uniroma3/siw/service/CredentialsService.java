@@ -29,6 +29,7 @@ public class CredentialsService implements UserDetailsService {
         System.out.println("Before save - Email: " + credentials.getEmail());
         System.out.println("Before save - Username: " + credentials.getUsername());
         System.out.println("Before save - Role: " + credentials.getRole());
+        System.out.println("Before save - Password is null: " + (credentials.getPassword() == null));
         System.out.println("Before save - User: " + credentials.getUser());
         
         // Salva prima l'utente
@@ -72,21 +73,53 @@ public class CredentialsService implements UserDetailsService {
     }
     
     public Credentials getByEmail(String email) {
-    	return credentialsRepository.findByEmail(email).get();
+        System.out.println("Looking for user with email: " + email);
+        Optional<Credentials> optional = credentialsRepository.findByEmail(email);
+        if (optional.isPresent()) {
+            System.out.println("User found by email!");
+            return optional.get();
+        } else {
+            System.out.println("User NOT found by email!");
+            return null;
+        }
     }
     
     public Credentials getByUsernameOrEmail(String value) {
-        return credentialsRepository.findByUsernameOrEmail(value).get();
+        return credentialsRepository.findByUsernameOrEmail(value).orElse(null);
     }
     
-    
-    //METODO PER GESTIRE IL LOGIN AUTOMATICO TRAMITE SPRING SECURITY
+    // METODO PER GESTIRE IL LOGIN AUTOMATICO TRAMITE SPRING SECURITY
     @Override
     public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
-        return credentialsRepository.findByUsernameOrEmail(usernameOrEmail)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + usernameOrEmail));
+        System.out.println("=== LOADING USER BY USERNAME (Spring Security) ===");
+        System.out.println("Looking for: " + usernameOrEmail);
+        
+        try {
+            Optional<Credentials> credentialsOpt = credentialsRepository.findByUsernameOrEmail(usernameOrEmail);
+            
+            if (credentialsOpt.isPresent()) {
+                Credentials credentials = credentialsOpt.get();
+                System.out.println("User found: " + credentials.getUsername());
+                System.out.println("Email: " + credentials.getEmail());
+                System.out.println("Role: " + credentials.getRole());
+                System.out.println("Password is null: " + (credentials.getPassword() == null));
+                System.out.println("User object: " + credentials.getUser());
+                
+                // IMPORTANTE: Verifica che la password non sia null per login tradizionale
+                if (credentials.getPassword() == null) {
+                    System.out.println("ERROR: Password is null - this might be an OAuth2 user trying traditional login");
+                    throw new UsernameNotFoundException("Account OAuth2 non può usare login tradizionale: " + usernameOrEmail);
+                }
+                
+                return credentials;
+            } else {
+                System.out.println("User not found: " + usernameOrEmail);
+                throw new UsernameNotFoundException("User not found: " + usernameOrEmail);
+            }
+        } catch (Exception e) {
+            System.out.println("Exception in loadUserByUsername: " + e.getMessage());
+            e.printStackTrace();
+            throw new UsernameNotFoundException("Error loading user: " + usernameOrEmail, e);
+        }
     }
-
-    
-    
 }
