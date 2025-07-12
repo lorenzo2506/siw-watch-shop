@@ -1,23 +1,231 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-	<head>
-		<title>Watches</title>
-		<link rel="stylesheet" href="/style.css?version=2">
-		
-	</head>
-	<body>
-	
-		<div><a th:href="@{/}">torna al menu</a></div>
-		<div th:if="${#lists.isEmpty(watches)}">Non ci sono orologi nel sistema</div>
-		
-		<div th:if="${!#lists.isEmpty(watches)}">
-			<ul th:if="${!#lists.isEmpty(watches)}">
-				<li th:each="watch : ${watches}">
-					<a th:href="@{'/watch/'+ ${watch.id}}" th:text="${watch.name}">titolo</a>
-				</li>
-			</ul>
-		</div>
-	</body>
-	
-	
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⌚ Orologi - WatchLux</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <!-- CSS Esterno -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <!-- Header identico alla homepage -->
+    <header class="header">
+        <div class="nav-container">
+            
+            <!-- Sezione Sinistra -->
+            <div class="left-section">
+                <a th:href="@{/}" class="logo">
+                    <span class="logo-icon">⌚</span>
+                    <span>WatchLux</span>
+                </a>
+                
+                <a th:href="@{/}" class="home-icon-container">
+                    <img th:src="@{/images/icons/home-icon.png}" 
+                         alt="Home" 
+                         class="home-icon">
+                </a>
+            </div>
+            
+            <!-- Search Bar -->
+            <div class="search-container">
+                <form th:action="@{/watches}" method="GET" class="search-bar">
+                    <input type="text" 
+                           name="search" 
+                           class="search-input" 
+                           placeholder="Cerca orologi, marche, modelli..."
+                           th:value="${searchQuery}">
+                    <button type="submit" class="search-btn">
+                        <i class="material-icons">search</i>
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Menu Icone -->
+            <div class="right-section">
+                <div class="icon-item dropdown">
+                    <img th:src="@{/images/flags/} + ${currentLanguage ?: 'it'} + '.png'" 
+                         alt="Lingua" 
+                         class="flag-current">
+                    <div class="dropdown-content">
+                        <a th:href="@{/lang/it}" class="language-option">
+                            <img th:src="@{/images/flags/it.png}" alt="IT" class="flag-option">
+                            <span>Italiano</span>
+                        </a>
+                        <a th:href="@{/lang/en}" class="language-option">
+                            <img th:src="@{/images/flags/en.png}" alt="EN" class="flag-option">
+                            <span>English</span>
+                        </a>
+                        <a th:href="@{/lang/fr}" class="language-option">
+                            <img th:src="@{/images/flags/fr.png}" alt="FR" class="flag-option">
+                            <span>Français</span>
+                        </a>
+                        <a th:href="@{/lang/de}" class="language-option">
+                            <img th:src="@{/images/flags/de.png}" alt="DE" class="flag-option">
+                            <span>Deutsch</span>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="icon-item dropdown">
+                    <img th:src="@{/images/icons/profile-icon.png}" 
+                         alt="Profilo" 
+                         class="profile-icon">
+                    <div class="dropdown-content">
+                        <div th:if="${#authentication?.authenticated}">
+                            <a th:href="@{/profile}" class="profile-option">
+                                <i class="material-icons">person</i>
+                                <span>Il mio Account</span>
+                            </a>
+                            <a th:href="@{/orders/placed}" class="profile-option">
+                                <i class="material-icons">history</i>
+                                <span>I miei Ordini</span>
+                            </a>
+                            <a th:href="@{/favorites}" class="profile-option">
+                                <i class="material-icons">favorite</i>
+                                <span>Preferiti</span>
+                            </a>
+                            <hr style="margin: 0.8rem 0; border: 1px solid rgba(255,255,255,0.2);">
+                            <a th:href="@{/logout}" class="profile-option">
+                                <i class="material-icons">logout</i>
+                                <span>Logout</span>
+                            </a>
+                        </div>
+                        <div th:unless="${#authentication?.authenticated}">
+                            <a th:href="@{/login}" class="profile-option">
+                                <i class="material-icons">login</i>
+                                <span>Accedi</span>
+                            </a>
+                            <a th:href="@{/register}" class="profile-option">
+                                <i class="material-icons">person_add</i>
+                                <span>Registrati</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <a th:href="@{/currentOrder}" class="icon-item cart-container">
+                    <img th:src="@{/images/icons/cart-icon.png}" 
+                         alt="Carrello" 
+                         class="cart-icon">
+                    <span class="cart-badge" th:text="${cartItemCount ?: 0}">0</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Title -->
+    <section style="text-align: center; padding: 3rem 3rem 2rem; max-width: 1400px; margin: 0 auto;">
+        <h1 style="font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 600; margin-bottom: 1rem; background: linear-gradient(45deg, #ffffff, #ffd700); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+            Collezione Orologi
+        </h1>
+        <p style="font-size: 1.2rem; opacity: 0.8; max-width: 600px; margin: 0 auto;" th:if="${searchQuery}">
+            Risultati per: "<span style="color: #ffd700;" th:text="${searchQuery}"></span>"
+        </p>
+        <p style="font-size: 1.2rem; opacity: 0.8; max-width: 600px; margin: 0 auto;" th:unless="${searchQuery}">
+            Esplora la nostra esclusiva selezione di orologi di lusso
+        </p>
+    </section>
+
+    <!-- Watches Grid -->
+    <section class="watches-grid">
+        <!-- Loop orologi con Thymeleaf -->
+        <div class="watch-card" th:each="watch : ${watches}">
+            <!-- Immagine orologio -->
+            <div class="watch-image" th:if="${watch.urlImage}">
+                <img th:src="${watch.urlImage}" 
+                     th:alt="${watch.name}" 
+                     style="width: 100%; height: 100%; object-fit: cover; border-radius: 20px;">
+            </div>
+            <div class="watch-image" th:unless="${watch.urlImage}"></div>
+            
+            <!-- Info orologio -->
+            <div class="watch-info">
+                <h3 th:text="${watch.name}">Nome Orologio</h3>
+                <p class="watch-brand" th:text="${watch.brand}">Brand</p>
+                <div class="watch-price" th:text="'€' + ${#numbers.formatDecimal(watch.price, 0, 'COMMA', 0, 'POINT')}">€0</div>
+                
+                <!-- Dettagli aggiuntivi -->
+                <div style="margin-bottom: 1.5rem;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem; opacity: 0.8;">
+                        <span>Anno:</span>
+                        <span th:text="${watch.year}">2023</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem; opacity: 0.8;" th:if="${watch.stock}">
+                        <span>Disponibilità:</span>
+                        <span th:if="${watch.stock > 0}" style="color: #4ade80;">In Stock</span>
+                        <span th:if="${watch.stock <= 0}" style="color: #f87171;">Esaurito</span>
+                    </div>
+                </div>
+                
+                <!-- Actions -->
+                <div style="display: flex; gap: 1rem;">
+                    <!-- Aggiungi al carrello -->
+                    <form th:action="@{'/currentOrder/add/' + ${watch.id}}" method="POST" style="flex: 1;">
+                        <button type="submit" 
+                                class="btn-add-cart" 
+                                th:disabled="${watch.stock <= 0}"
+                                th:classappend="${watch.stock <= 0} ? 'disabled' : ''">
+                            <i class="material-icons">add_shopping_cart</i>
+                            <span th:if="${watch.stock > 0}">Aggiungi al Carrello</span>
+                            <span th:if="${watch.stock <= 0}">Non Disponibile</span>
+                        </button>
+                    </form>
+                    
+                    <!-- Favoriti (checkbox hack) -->
+                    <label style="width: 50px; height: 50px; border: 2px solid rgba(255, 255, 255, 0.3); background: transparent; border-radius: 50%; color: #ffffff; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center;">
+                        <input type="checkbox" style="display: none;">
+                        <i class="material-icons" style="transition: all 0.3s ease;">favorite_border</i>
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Messaggio se nessun orologio trovato -->
+        <div th:if="${watches == null or #lists.isEmpty(watches)}" class="empty-message">
+            <h2>🔍 Nessun orologio trovato</h2>
+            <p th:if="${searchQuery}">
+                Non abbiamo trovato orologi corrispondenti a "<span style="color: #ffd700;" th:text="${searchQuery}"></span>"
+            </p>
+            <p th:unless="${searchQuery}">
+                Al momento non ci sono orologi disponibili nella collezione.
+            </p>
+            <a th:href="@{/}" style="display: inline-flex; align-items: center; gap: 0.5rem; background: linear-gradient(45deg, #ffd700, #ffed4e); color: #0f0f23; padding: 1rem 2rem; border-radius: 25px; text-decoration: none; font-weight: 600; margin-top: 2rem; transition: all 0.3s ease;">
+                <i class="material-icons">home</i>
+                <span>Torna alla Home</span>
+            </a>
+        </div>
+    </section>
+
+    <!-- Paginazione (se necessaria) -->
+    <section th:if="${totalPages > 1}" style="text-align: center; padding: 3rem;">
+        <div style="display: inline-flex; gap: 1rem; align-items: center;">
+            <!-- Pagina precedente -->
+            <a th:if="${currentPage > 0}" 
+               th:href="@{/watches(page=${currentPage - 1}, search=${searchQuery})}"
+               style="padding: 0.8rem 1.5rem; background: rgba(255, 255, 255, 0.1); color: #fff; text-decoration: none; border-radius: 25px; transition: all 0.3s ease;">
+                <i class="material-icons">chevron_left</i>
+            </a>
+            
+            <!-- Numero pagine -->
+            <span style="padding: 0.8rem 1.5rem; background: linear-gradient(45deg, #ffd700, #ffed4e); color: #0f0f23; border-radius: 25px; font-weight: 600;">
+                <span th:text="${currentPage + 1}">1</span> di <span th:text="${totalPages}">1</span>
+            </span>
+            
+            <!-- Pagina successiva -->
+            <a th:if="${currentPage < totalPages - 1}" 
+               th:href="@{/watches(page=${currentPage + 1}, search=${searchQuery})}"
+               style="padding: 0.8rem 1.5rem; background: rgba(255, 255, 255, 0.1); color: #fff; text-decoration: none; border-radius: 25px; transition: all 0.3s ease;">
+                <i class="material-icons">chevron_right</i>
+            </a>
+        </div>
+    </section>
+
+</body>
 </html>

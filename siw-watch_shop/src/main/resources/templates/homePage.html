@@ -1,16 +1,198 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-	<head>
-	    <title>homePage</title>
-	    <link rel="stylesheet" href="/style.css?version=2">
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⌚ WatchLux - Luxury Watch Collection</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <!-- CSS Esterno -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 	</head>
-	<body>
-		<div><a th:href="@{/login}">accedi</a></div>
-	    <div><a th:href="@{/watches}">lista orologi</a></div>
-	    <div><a th:href="@{/formNewWatch}">aggiungi orologio</a></div>
-		<div><a th:href="@{/profile}">vedi profilo utente</a></div>
-		<div><a th:href="@{/currentOrder}">visualizza carrello</a></div>
-		<div><a th:href="@{/orders}">visualizza ordini effettuati</a></div>
-		<div><a href=""></a></div>
-	</body>
+<body>
+    <!-- Desktop Header -->
+    <header class="header">
+        <div class="nav-container">
+            
+            <!-- Sezione Sinistra (Logo + Home) -->
+            <div class="left-section">
+                <!-- Logo -->
+                <a th:href="@{/}" class="logo">
+                    <span class="logo-icon">⌚</span>
+                    <span>WatchLux</span>
+                </a>
+                
+                <!-- Home Icon -->
+                <a th:href="@{/}" class="home-icon-container">
+                    <!-- Opzione 1: Usa la tua icona casa -->
+                    <img th:src="@{/images/icons/home-icon.png}" 
+                         alt="Home" 
+                         class="home-icon">
+                    
+                    <!-- Opzione 2: Material Icon (se non hai l'immagine) -->
+                    <!--
+                    <i class="material-icons home-icon">home</i>
+                    -->
+                </a>
+            </div>
+            
+            <!-- Search Bar (Centro) -->
+            <div class="search-container">
+                <form th:action="@{/watches}" method="GET" class="search-bar">
+                    <input type="text" 
+                           name="search" 
+                           class="search-input" 
+                           placeholder="Cerca orologi, marche, modelli..."
+                           th:value="${searchQuery}">
+                    <button type="submit" class="search-btn">
+                        <i class="material-icons">search</i>
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Sezione Destra (Menu Icone) -->
+            <div class="right-section">
+                
+                <!-- Lingua (Bandiera) -->
+                <div class="icon-item dropdown">
+                    <img th:src="@{/images/flags/} + ${currentLanguage ?: 'it'} + '.png'" 
+                         alt="Lingua" 
+                         class="flag-current">
+                    
+                    <div class="dropdown-content">
+                        <a th:href="@{/lang/it}" class="language-option">
+                            <img th:src="@{/images/flags/it.png}" alt="IT" class="flag-option">
+                            <span>Italiano</span>
+                        </a>
+                        <a th:href="@{/lang/en}" class="language-option">
+                            <img th:src="@{/images/flags/en.png}" alt="EN" class="flag-option">
+                            <span>English</span>
+                        </a>
+                        <a th:href="@{/lang/fr}" class="language-option">
+                            <img th:src="@{/images/flags/fr.png}" alt="FR" class="flag-option">
+                            <span>Français</span>
+                        </a>
+                        <a th:href="@{/lang/de}" class="language-option">
+                            <img th:src="@{/images/flags/de.png}" alt="DE" class="flag-option">
+                            <span>Deutsch</span>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Profilo -->
+                <div class="icon-item dropdown">
+                    <img th:src="@{/images/icons/profile-icon.png}" 
+                         alt="Profilo" 
+                         class="profile-icon">
+                    
+                    <div class="dropdown-content">
+                        <div th:if="${#authentication?.authenticated}">
+                            <a th:href="@{/profile}" class="profile-option">
+                                <i class="material-icons">person</i>
+                                <span>Il mio Account</span>
+                            </a>
+                            <a th:href="@{/orders/placed}" class="profile-option">
+                                <i class="material-icons">history</i>
+                                <span>I miei Ordini</span>
+                            </a>
+                            <a th:href="@{/favorites}" class="profile-option">
+                                <i class="material-icons">favorite</i>
+                                <span>Preferiti</span>
+                            </a>
+                            <hr style="margin: 0.8rem 0; border: 1px solid rgba(255,255,255,0.2);">
+                            <a th:href="@{/logout}" class="profile-option">
+                                <i class="material-icons">logout</i>
+                                <span>Logout</span>
+                            </a>
+                        </div>
+                        <div th:unless="${#authentication?.authenticated}">
+                            <a th:href="@{/login}" class="profile-option">
+                                <i class="material-icons">login</i>
+                                <span>Accedi</span>
+                            </a>
+                            <a th:href="@{/register}" class="profile-option">
+                                <i class="material-icons">person_add</i>
+                                <span>Registrati</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Carrello -->
+                <a th:href="@{/currentOrder}" class="icon-item cart-container">
+                    <img th:src="@{/images/icons/cart-icon.png}" 
+                         alt="Carrello" 
+                         class="cart-icon">
+                    <span class="cart-badge" th:text="${cartItemCount ?: 0}">0</span>
+                </a>
+                
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section (Homepage) -->
+    <section class="hero">
+        <h1>Collezione Luxury</h1>
+        <p>
+            Scopri la nostra esclusiva selezione di orologi di lusso. 
+            Ogni pezzo racconta una storia di precisione, eleganza e tradizione artigianale. 
+            Dal classico Submariner alle innovative creazioni di Patek Philippe, 
+            trova l'orologio perfetto che rispecchia il tuo stile unico.
+        </p>
+        
+        <!-- CTA per andare agli orologi -->
+        <a th:href="@{/watches}" class="hero-cta">
+            <i class="material-icons">explore</i>
+            <span>Esplora la Collezione</span>
+        </a>
+    </section>
+
+    <!-- Sezioni aggiuntive per homepage -->
+    <section style="padding: 4rem 3rem; max-width: 1400px; margin: 0 auto;">
+        
+        <!-- Features Grid -->
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 3rem; margin-bottom: 4rem;">
+            
+            <div style="text-align: center; padding: 2rem;">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🛡️</div>
+                <h3 style="color: #ffd700; margin-bottom: 1rem; font-family: 'Playfair Display', serif;">Garanzia Originale</h3>
+                <p style="opacity: 0.8; line-height: 1.6;">Tutti i nostri orologi sono autentici al 100% e vengono forniti con garanzia ufficiale del produttore.</p>
+            </div>
+            
+            <div style="text-align: center; padding: 2rem;">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🚚</div>
+                <h3 style="color: #ffd700; margin-bottom: 1rem; font-family: 'Playfair Display', serif;">Spedizione Sicura</h3>
+                <p style="opacity: 0.8; line-height: 1.6;">Spedizione assicurata gratuita in tutta Europa. Imballaggio discreto e tracking completo.</p>
+            </div>
+            
+            <div style="text-align: center; padding: 2rem;">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">💎</div>
+                <h3 style="color: #ffd700; margin-bottom: 1rem; font-family: 'Playfair Display', serif;">Expertise Certificata</h3>
+                <p style="opacity: 0.8; line-height: 1.6;">I nostri esperti orologiai certificati garantiscono la qualità e l'autenticità di ogni pezzo.</p>
+            </div>
+            
+        </div>
+        
+        <!-- Brands Section -->
+        <div style="text-align: center; margin-bottom: 4rem;">
+            <h2 style="font-family: 'Playfair Display', serif; font-size: 2.5rem; margin-bottom: 2rem; color: #ffd700;">
+                Marchi Prestigiosi
+            </h2>
+            <div style="display: flex; justify-content: center; gap: 4rem; opacity: 0.7;">
+                <span style="font-size: 1.5rem; font-weight: 600;">ROLEX</span>
+                <span style="font-size: 1.5rem; font-weight: 600;">OMEGA</span>
+                <span style="font-size: 1.5rem; font-weight: 600;">PATEK PHILIPPE</span>
+                <span style="font-size: 1.5rem; font-weight: 600;">AUDEMARS PIGUET</span>
+                <span style="font-size: 1.5rem; font-weight: 600;">CARTIER</span>
+            </div>
+        </div>
+        
+    </section>
+
+</body>
 </html>

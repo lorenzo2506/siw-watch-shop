@@ -1,0 +1,513 @@
+/* ===== RESET E BASE ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+    color: #ffffff;
+    min-height: 100vh;
+}
+
+/* ===== DESKTOP HEADER (LAYOUT LARGO) ===== */
+.header {
+    background: rgba(15, 15, 35, 0.95);
+    backdrop-filter: blur(20px);
+    border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+    padding: 1.2rem 3rem; /* Più padding per desktop */
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+}
+
+.nav-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1600px; /* Più largo per desktop */
+    margin: 0 auto;
+    gap: 3rem; /* Più spazio tra elementi */
+}
+
+/* ===== SEZIONE SINISTRA (Logo + Home) ===== */
+.left-section {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    flex-shrink: 0;
+}
+
+.logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem; /* Più grande per desktop */
+    font-weight: 600;
+    background: linear-gradient(45deg, #ffd700, #ffed4e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-decoration: none;
+    transition: transform 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.logo:hover {
+    transform: scale(1.05);
+}
+
+.logo-icon {
+    font-size: 2.5rem;
+    color: #ffd700;
+}
+
+/* HOME ICON */
+.home-icon-container {
+    padding: 0.8rem;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+}
+
+.home-icon-container:hover {
+    background: rgba(255, 215, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.home-icon {
+    width: 30px;
+    height: 30px;
+    color: #ffd700;
+    fill: #ffd700;
+    transition: all 0.3s ease;
+}
+
+.home-icon-container:hover .home-icon {
+    color: #ffed4e;
+    fill: #ffed4e;
+    transform: scale(1.1);
+}
+
+/* ===== SEARCH BAR (CENTRO ESPANSO) ===== */
+.search-container {
+    flex: 1;
+    max-width: 800px; /* Più largo per desktop */
+    margin: 0 2rem;
+}
+
+.search-bar {
+    width: 100%;
+    display: flex;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 30px; /* Più arrotondato */
+    overflow: hidden;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    height: 50px; /* Altezza fissa per desktop */
+}
+
+.search-bar:focus-within {
+    box-shadow: 0 6px 30px rgba(255, 215, 0, 0.4);
+    transform: translateY(-2px);
+}
+
+.search-input {
+    flex: 1;
+    padding: 0 1.5rem;
+    border: none;
+    background: transparent;
+    font-size: 1.1rem;
+    color: #333;
+    outline: none;
+}
+
+.search-input::placeholder {
+    color: #666;
+    font-style: italic;
+}
+
+.search-btn {
+    background: linear-gradient(45deg, #ffd700, #ffed4e);
+    border: none;
+    padding: 0 2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.search-btn:hover {
+    background: linear-gradient(45deg, #ffed4e, #ffd700);
+    transform: scale(1.05);
+}
+
+.search-btn .material-icons {
+    color: #0f0f23;
+    font-size: 1.5rem;
+}
+
+/* ===== SEZIONE DESTRA (Icone Menu) ===== */
+.right-section {
+    display: flex;
+    align-items: center;
+    gap: 2.5rem; /* Più spazio per desktop */
+    flex-shrink: 0;
+}
+
+.icon-item {
+    position: relative;
+    cursor: pointer;
+    padding: 0.8rem;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px; /* Più grandi per desktop */
+    height: 50px;
+}
+
+.icon-item:hover {
+    background: rgba(255, 215, 0, 0.15);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(255, 215, 0, 0.2);
+}
+
+/* ===== ICONE PERSONALIZZATE ===== */
+.cart-icon,
+.profile-icon {
+    width: 32px; /* Più grandi per desktop */
+    height: 32px;
+    color: #ffd700;
+    fill: #ffd700;
+    transition: all 0.3s ease;
+}
+
+.icon-item:hover .cart-icon,
+.icon-item:hover .profile-icon {
+    color: #ffed4e;
+    fill: #ffed4e;
+    transform: scale(1.15);
+}
+
+/* BANDIERA */
+.flag-current {
+    width: 36px; /* Più grande per desktop */
+    height: 27px;
+    border-radius: 4px;
+    object-fit: cover;
+    border: 2px solid rgba(255, 215, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.flag-current:hover {
+    border-color: #ffd700;
+    transform: scale(1.1);
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+}
+
+/* ===== DROPDOWNS (DESKTOP) ===== */
+.dropdown {
+    position: relative;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+    animation: slideDown 0.3s ease-out;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    top: 120%;
+    right: 0;
+    background: rgba(15, 15, 35, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    border-radius: 15px;
+    padding: 1.5rem;
+    min-width: 220px; /* Più largo per desktop */
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+    z-index: 1001;
+}
+
+/* LANGUAGE DROPDOWN */
+.language-option {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.8rem;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: #fff;
+    font-size: 1rem;
+}
+
+.language-option:hover {
+    background: rgba(255, 215, 0, 0.15);
+    color: #ffd700;
+    transform: translateX(5px);
+}
+
+.flag-option {
+    width: 28px;
+    height: 21px;
+    border-radius: 3px;
+    object-fit: cover;
+}
+
+/* PROFILE DROPDOWN */
+.profile-option {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.8rem;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+
+.profile-option:hover {
+    background: rgba(255, 215, 0, 0.15);
+    color: #ffd700;
+    transform: translateX(5px);
+}
+
+.profile-option .material-icons {
+    font-size: 1.3rem;
+    color: #ffd700;
+}
+
+/* ===== CART BADGE ===== */
+.cart-container {
+    position: relative;
+}
+
+.cart-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ff4444;
+    color: white;
+    border-radius: 50%;
+    width: 22px; /* Più grande per desktop */
+    height: 22px;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    animation: pulse 2s ease-in-out infinite;
+    box-shadow: 0 2px 8px rgba(255, 68, 68, 0.3);
+}
+
+/* ===== HERO SECTION (DESKTOP) ===== */
+.hero {
+    text-align: center;
+    padding: 6rem 3rem; /* Più padding per desktop */
+    max-width: 1400px;
+    margin: 0 auto;
+    animation: fadeInUp 1s ease-out 0.3s both;
+}
+
+.hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 5rem; /* Più grande per desktop */
+    font-weight: 600;
+    margin-bottom: 2rem;
+    background: linear-gradient(45deg, #ffffff, #ffd700);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+}
+
+.hero p {
+    font-size: 1.4rem; /* Più grande per desktop */
+    opacity: 0.9;
+    margin-bottom: 3rem;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+}
+
+.hero-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    background: linear-gradient(45deg, #ffd700, #ffed4e);
+    color: #0f0f23;
+    padding: 1.2rem 2.5rem;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+}
+
+.hero-cta:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(255, 215, 0, 0.5);
+}
+
+/* ===== WATCHES GRID (DESKTOP) ===== */
+.watches-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 colonne per desktop */
+    gap: 3rem; /* Più spazio per desktop */
+    padding: 4rem 3rem;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+.watch-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 25px;
+    padding: 2rem;
+    transition: all 0.4s ease;
+    animation: fadeInUp 0.8s ease-out both;
+}
+
+.watch-card:hover {
+    transform: translateY(-15px) scale(1.02);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+    border-color: rgba(255, 215, 0, 0.4);
+}
+
+.watch-image {
+    width: 100%;
+    height: 250px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+    transition: transform 0.3s ease;
+}
+
+.watch-image:hover {
+    transform: scale(1.05);
+}
+
+.watch-image::after {
+    content: '⌚';
+    animation: float 3s ease-in-out infinite;
+}
+
+.watch-info h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    margin-bottom: 0.8rem;
+    color: #ffd700;
+}
+
+.watch-brand {
+    color: #ffffff;
+    opacity: 0.7;
+    margin-bottom: 0.8rem;
+    font-weight: 500;
+    font-size: 1rem;
+}
+
+.watch-price {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #ffd700;
+    margin-bottom: 1.5rem;
+}
+
+.btn-add-cart {
+    width: 100%;
+    background: linear-gradient(45deg, #ffd700, #ffed4e);
+    color: #0f0f23;
+    border: none;
+    padding: 1rem;
+    border-radius: 30px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    font-size: 1rem;
+}
+
+.btn-add-cart:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(255, 215, 0, 0.5);
+}
+
+/* ===== ANIMAZIONI ===== */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        transform: translateY(60px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-15px); }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-message {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 4rem;
+    opacity: 0.7;
+}
+
+.empty-message h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: #ffd700;
+}
+
+.empty-message p {
+    font-size: 1.2rem;
+}
