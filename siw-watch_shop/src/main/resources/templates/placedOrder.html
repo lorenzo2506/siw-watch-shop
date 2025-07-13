@@ -1,33 +1,197 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-	<head>
-		<title>Placed Order</title>
-		<link rel="stylesheet" href="/style.css?version=2">
-		
-	</head>
-	<body>
-		<div><a th:href="@{/}">torna al menu</a></div>
-
-		<h1 th:text=${order.code}>: codice ordine</h1>
-
-		<div th:if="${#lists.isEmpty(orderLines)}">
-			Non ci sono righe nel sistema
-		</div>
-
-		<div th:if="${!#lists.isEmpty(orderLines)}">
-			<ul>
-				<li th:each="orderLine : ${orderLines}" class="order-line">
-					<a th:href="@{'/watch/' + ${orderLine.watch.id}}" th:text="${orderLine.watch.name}"></a>
-					<span>quantità: <span th:text="${orderLine.quantity}"></span></span>
-				</li>
-			</ul>
-		</div>
-
-		<div>
-			<span>prezzo totale: <span th:text="${order.totalPrice}"></span></span>
-		</div>
-
-	</body>
-	
-	
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout.html :: base('Dettaglio Ordine - WatchLux', ~{::contenuto})}">
+<head>
+    <title>Dettaglio Ordine - WatchLux</title>
+</head>
+<body>
+    <!-- Contenuto specifico del dettaglio ordine -->
+    <div th:fragment="contenuto">
+        <section class="order-detail-container">
+            
+            <!-- Header dell'ordine -->
+            <div class="order-header">
+                <div class="header-content">
+                    <div class="header-info">
+                        <h1 class="order-title">
+                            <i class="material-icons">receipt</i>
+                            Ordine <span th:text="${order.code}">ORD-001</span>
+                        </h1>
+                        <div class="order-meta">
+                            <span class="order-date" th:if="${order.createdAt}">
+                                <i class="material-icons">schedule</i>
+                                <span th:text="${#temporals.format(order.createdAt, 'dd MMMM yyyy, HH:mm')}">1 gennaio 2024, 10:30</span>
+                            </span>
+                            <span class="order-status">
+                                <span class="status-badge status-completed">
+                                    <i class="material-icons">check_circle</i>
+                                    Completato
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="header-actions">
+                        <a th:href="@{/orders}" class="btn-secondary">
+                            <i class="material-icons">arrow_back</i>
+                            Tutti gli Ordini
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Dettagli ordine -->
+            <div class="order-details">
+                
+                <!-- Riepilogo ordine -->
+                <div class="order-summary-card">
+                    <h2 class="section-title">
+                        <i class="material-icons">summarize</i>
+                        Riepilogo Ordine
+                    </h2>
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <span class="item-label">Codice Ordine:</span>
+                            <span class="item-value" th:text="${order.code}">ORD-001</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="item-label">Totale:</span>
+                            <span class="item-value price">
+                                €<span th:text="${order.totalPrice}">0.00</span>
+                            </span>
+                        </div>
+                        <div class="summary-item" th:if="${order.createdAt}">
+                            <span class="item-label">Data Ordine:</span>
+                            <span class="item-value" th:text="${#temporals.format(order.createdAt, 'dd/MM/yyyy HH:mm')}">01/01/2024 10:30</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="item-label">Stato:</span>
+                            <span class="item-value">
+                                <span class="status-badge status-completed">
+                                    <i class="material-icons">check_circle</i>
+                                    Completato
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Articoli ordinati -->
+                <div class="order-items-card">
+                    <h2 class="section-title">
+                        <i class="material-icons">shopping_cart</i>
+                        Articoli Ordinati
+                    </h2>
+                    
+                    <!-- Nessun articolo -->
+                    <div th:if="${#lists.isEmpty(orderLines)}" class="empty-items">
+                        <div class="empty-content">
+                            <i class="material-icons">inbox</i>
+                            <p>Non ci sono articoli in questo ordine</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Lista articoli -->
+                    <div th:if="${!#lists.isEmpty(orderLines)}" class="items-list">
+                        <div th:each="orderLine : ${orderLines}" class="order-item">
+                            <div class="item-image">
+                                <div class="image-placeholder">
+                                    <i class="material-icons">watch</i>
+                                </div>
+                            </div>
+                            
+                            <div class="item-details">
+                                <h3 class="item-name">
+                                    <a th:href="@{'/watch/' + ${orderLine.watch.id}}" 
+                                       th:text="${orderLine.watch.name}"
+                                       class="item-link">
+                                        Nome Orologio
+                                    </a>
+                                </h3>
+                                <p class="item-description" th:if="${orderLine.watch.description}">
+                                    <span th:text="${orderLine.watch.description}">Descrizione orologio</span>
+                                </p>
+                                <div class="item-meta">
+                                    <span class="item-brand" th:if="${orderLine.watch.brand}">
+                                        <i class="material-icons">business</i>
+                                        <span th:text="${orderLine.watch.brand}">Marca</span>
+                                    </span>
+                                    <span class="item-quantity">
+                                        <i class="material-icons">numbers</i>
+                                        Quantità: <strong th:text="${orderLine.quantity}">1</strong>
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="item-price">
+                                <div class="price-info">
+                                    <span class="unit-price" th:if="${orderLine.watch.price}">
+                                        €<span th:text="${orderLine.watch.price}">0.00</span> cad.
+                                    </span>
+                                    <span class="total-price">
+                                        €<span th:text="${orderLine.watch.price * orderLine.quantity}">0.00</span>
+                                    </span>
+                                </div>
+                                <div class="item-actions">
+                                    <a th:href="@{'/watch/' + ${orderLine.watch.id}}" class="btn-view-item">
+                                        <i class="material-icons">visibility</i>
+                                        Vedi Prodotto
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Totali -->
+                <div class="order-totals-card">
+                    <h2 class="section-title">
+                        <i class="material-icons">calculate</i>
+                        Totali
+                    </h2>
+                    <div class="totals-breakdown">
+                        <div class="total-line">
+                            <span class="total-label">Subtotale:</span>
+                            <span class="total-value">€<span th:text="${order.totalPrice}">0.00</span></span>
+                        </div>
+                        <div class="total-line">
+                            <span class="total-label">Spedizione:</span>
+                            <span class="total-value free">Gratuita</span>
+                        </div>
+                        <div class="total-line">
+                            <span class="total-label">IVA (22%):</span>
+                            <span class="total-value">Inclusa</span>
+                        </div>
+                        <div class="total-line final-total">
+                            <span class="total-label">Totale:</span>
+                            <span class="total-value">€<span th:text="${order.totalPrice}">0.00</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Azioni -->
+            <div class="order-actions">
+                <div class="actions-grid">
+                    <button class="btn-reorder" onclick="showReorderModal()">
+                        <i class="material-icons">replay</i>
+                        Riordina Questi Articoli
+                    </button>
+                    <button class="btn-print" onclick="window.print()">
+                        <i class="material-icons">print</i>
+                        Stampa Ordine
+                    </button>
+                    <a th:href="@{/orders}" class="btn-secondary">
+                        <i class="material-icons">list</i>
+                        Tutti gli Ordini
+                    </a>
+                    <a th:href="@{/}" class="btn-secondary">
+                        <i class="material-icons">home</i>
+                        Home
+                    </a>
+                </div>
+            </div>
+            
+        </section>
+    </div>
+</body>
 </html>

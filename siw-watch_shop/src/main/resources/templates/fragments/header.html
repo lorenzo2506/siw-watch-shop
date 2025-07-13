@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <!-- Header Fragment seguendo sintassi PDF -->
+    <header class="header" th:fragment="intestazione">
+        <div class="nav-container">
+            
+            <!-- Sezione Sinistra (Logo + Home) -->
+            <div class="left-section">
+                <!-- Logo -->
+                <a th:href="@{/}" class="logo">
+                    <span class="logo-icon">⌚</span>
+                    <span>WatchLux</span>
+                </a>
+                
+                <!-- Home Icon -->
+                <a th:href="@{/}" class="home-icon-container">
+                    <i class="material-icons home-icon">home</i>
+                </a>
+            </div>
+            
+            <!-- Search Bar (Centro) -->
+            <div class="search-container">
+                <form th:action="@{/watches}" method="GET" class="search-bar">
+                    <input type="text" 
+                           name="search" 
+                           class="search-input" 
+                           placeholder="Cerca orologi, marche, modelli..."
+                           th:value="${searchQuery}">
+                    <button type="submit" class="search-btn">
+                        <i class="material-icons">search</i>
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Sezione Destra (Menu Icone) -->
+            <div class="right-section">
+                
+                <!-- Lingua (Bandiera) -->
+                <div class="icon-item dropdown">
+                    <span style="font-size: 1.5rem;">🇮🇹</span>
+                    
+                    <div class="dropdown-content">
+                        <a th:href="@{/lang/it}" class="language-option">
+                            <span>🇮🇹</span>
+                            <span>Italiano</span>
+                        </a>
+                        <a th:href="@{/lang/en}" class="language-option">
+                            <span>🇬🇧</span>
+                            <span>English</span>
+                        </a>
+                        <a th:href="@{/lang/fr}" class="language-option">
+                            <span>🇫🇷</span>
+                            <span>Français</span>
+                        </a>
+                        <a th:href="@{/lang/de}" class="language-option">
+                            <span>🇩🇪</span>
+                            <span>Deutsch</span>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Profilo - Click diretto per andare al profilo/login -->
+                <a th:href="${isAuthenticated} ? '/profile' : '/login'" class="icon-item profile-container">
+                    <i class="material-icons profile-icon">person</i>
+                    <!-- Badge opzionale per mostrare se loggato -->
+                    <span th:if="${isAuthenticated}" class="profile-badge" title="Loggato">●</span>
+                </a>
+                
+                <!-- Carrello -->
+                <a th:href="@{/currentOrder}" class="icon-item cart-container">
+                    <i class="material-icons cart-icon">shopping_cart</i>
+                    <span class="cart-badge" th:text="${cartItemCount ?: 0}">0</span>
+                </a>
+                
+            </div>
+        </div>
+    </header>
+</body>
+</html>

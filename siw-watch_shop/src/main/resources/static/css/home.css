@@ -1,0 +1,385 @@
+/* ===== HOME PAGE CSS ===== */
+
+/* ===== HERO SECTION ===== */
+.hero {
+    text-align: center;
+    padding: 6rem 3rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    animation: fadeInUp 1s ease-out 0.3s both;
+}
+
+.hero h1 {
+    font-family: var(--font-luxury);
+    font-size: 5rem;
+    font-weight: 600;
+    margin-bottom: 2rem;
+    background: linear-gradient(45deg, #ffffff, var(--primary-gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+}
+
+.hero p {
+    font-size: 1.4rem;
+    opacity: 0.9;
+    margin-bottom: 3rem;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+    color: var(--text-secondary);
+}
+
+.hero-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    background: var(--gold-gradient);
+    color: var(--primary-bg);
+    padding: 1.2rem 2.5rem;
+    border-radius: var(--border-radius-xl);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: var(--transition-normal);
+    box-shadow: var(--shadow-gold);
+}
+
+.hero-cta:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-gold-hover);
+    color: var(--primary-bg);
+}
+
+.hero-cta .material-icons {
+    font-size: 1.3rem;
+}
+
+/* ===== FEATURES SECTION ===== */
+.features-section {
+    padding: 4rem 3rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 3rem;
+    margin-bottom: 4rem;
+}
+
+.feature-item {
+    text-align: center;
+    padding: 2rem;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius-lg);
+    transition: var(--transition-slow);
+    backdrop-filter: blur(20px);
+}
+
+.feature-item:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--gold-transparent);
+}
+
+.feature-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.feature-title {
+    color: var(--primary-gold);
+    margin-bottom: 1rem;
+    font-family: var(--font-luxury);
+    font-size: 1.5rem;
+}
+
+.feature-description {
+    opacity: 0.8;
+    line-height: 1.6;
+    color: var(--text-secondary);
+}
+
+/* ===== BRANDS SECTION ===== */
+.brands-section {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.brands-title {
+    font-family: var(--font-luxury);
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    color: var(--primary-gold);
+}
+
+.brands-list {
+    display: flex;
+    justify-content: center;
+    gap: 4rem;
+    opacity: 0.7;
+    flex-wrap: wrap;
+}
+
+.brand-name {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    transition: var(--transition-normal);
+    padding: 1rem 1.5rem;
+    border-radius: var(--border-radius-sm);
+}
+
+.brand-name:hover {
+    color: var(--primary-gold);
+    opacity: 1;
+    background: rgba(255, 215, 0, 0.1);
+    transform: translateY(-3px);
+}
+
+/* ===== WATCHES PREVIEW ===== */
+.watches-preview {
+    padding: 4rem 3rem;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+.preview-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.preview-title {
+    font-family: var(--font-luxury);
+    font-size: 2.5rem;
+    color: var(--primary-gold);
+    margin-bottom: 1rem;
+}
+
+.preview-subtitle {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.watches-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 3rem;
+    margin-bottom: 3rem;
+}
+
+.watch-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius-lg);
+    padding: 2rem;
+    transition: var(--transition-slow);
+    animation: fadeInUp 0.8s ease-out both;
+}
+
+.watch-card:hover {
+    transform: translateY(-15px) scale(1.02);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--gold-transparent);
+}
+
+.watch-image {
+    width: 100%;
+    height: 250px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: var(--border-radius-md);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+    transition: var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+}
+
+.watch-image:hover {
+    transform: scale(1.05);
+}
+
+.watch-image::after {
+    content: '⌚';
+    animation: float 3s ease-in-out infinite;
+}
+
+.watch-info h3 {
+    font-family: var(--font-luxury);
+    font-size: 1.5rem;
+    margin-bottom: 0.8rem;
+    color: var(--primary-gold);
+}
+
+.watch-brand {
+    color: var(--text-primary);
+    opacity: 0.7;
+    margin-bottom: 0.8rem;
+    font-weight: 500;
+    font-size: 1rem;
+}
+
+.watch-price {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--primary-gold);
+    margin-bottom: 1.5rem;
+}
+
+.btn-add-cart {
+    width: 100%;
+    background: var(--gold-gradient);
+    color: var(--primary-bg);
+    border: none;
+    padding: 1rem;
+    border-radius: 30px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-normal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    font-size: 1rem;
+    font-family: var(--font-primary);
+}
+
+.btn-add-cart:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-gold-hover);
+}
+
+.btn-add-cart .material-icons {
+    font-size: 1.2rem;
+}
+
+.view-all-btn {
+    text-align: center;
+}
+
+.btn-view-all {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+    border: 2px solid var(--gold-transparent);
+    padding: 1.2rem 2.5rem;
+    border-radius: var(--border-radius-xl);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: var(--transition-normal);
+}
+
+.btn-view-all:hover {
+    background: rgba(255, 215, 0, 0.1);
+    border-color: var(--primary-gold);
+    color: var(--primary-gold);
+    transform: translateY(-3px);
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeInUp {
+    from {
+        transform: translateY(60px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes float {
+    0%, 100% { 
+        transform: translateY(0px) rotate(0deg); 
+    }
+    33% { 
+        transform: translateY(-10px) rotate(2deg); 
+    }
+    66% { 
+        transform: translateY(-5px) rotate(-1deg); 
+    }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
+    .hero {
+        padding: 4rem 2rem;
+    }
+    
+    .hero h1 {
+        font-size: 3.5rem;
+    }
+    
+    .features-grid {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+    }
+    
+    .brands-list {
+        gap: 2rem;
+    }
+    
+    .watches-grid {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero {
+        padding: 3rem 1.5rem;
+    }
+    
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+    
+    .hero p {
+        font-size: 1.2rem;
+    }
+    
+    .features-section,
+    .watches-preview {
+        padding: 3rem 1.5rem;
+    }
+    
+    .brands-list {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .brand-name {
+        font-size: 1.2rem;
+    }
+    
+    .watch-image {
+        height: 200px;
+        font-size: 3rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero h1 {
+        font-size: 2rem;
+    }
+    
+    .features-grid,
+    .watches-grid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,36 +1,244 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-	<head>
-		<title>Shopping Cart</title>
-		<link rel="stylesheet" href="/style.css?version=2">
-		
-	</head>
-	<body>
-	
-		<div><a th:href="@{/}">torna al menu</a></div>
-		<div th:if="${#lists.isEmpty(orderLines)}">
-			carrello vuoto
-		</div>
-
-		<div th:if="${!#lists.isEmpty(orderLines)}">
-			<ul>
-				<li th:each="orderLine : ${orderLines}" class="order-line">
-					<a th:href="@{'/watch/' + ${orderLine.watch.id}}" th:text="${orderLine.watch.name}"></a>
-					<span>quantità: <span th:text="${orderLine.quantity}"></span></span>
-				</li>
-			</ul>
-		</div>
-
-		<div th:if="${currentOrder.totalPrice != null and currentOrder.totalPrice > 0}">
-			<span>prezzo totale: <span th:text="${currentOrder.totalPrice}"></span> $</span>
-		</div>
-
-        <form th:action="@{/currentOrder}" method="post">
-			<button type="submit">Conferma Ordine</button>
-		</form>
-
-        
-	</body>
-	
-	
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout.html :: base('Carrello - WatchLux', ~{::contenuto})}">
+<head>
+    <title>Carrello - WatchLux</title>
+</head>
+<body>
+    <!-- Contenuto specifico del carrello -->
+    <div th:fragment="contenuto">
+        <section class="cart-container">
+            
+            <!-- Header del carrello -->
+            <div class="cart-header">
+                <div class="header-content">
+                    <h1 class="cart-title">
+                        <i class="material-icons">shopping_cart</i>
+                        Il mio Carrello
+                    </h1>
+                    <div class="cart-summary" th:if="${!#lists.isEmpty(orderLines)}">
+                        <span class="items-count">
+                            <i class="material-icons">inventory</i>
+                            <span th:text="${#lists.size(orderLines)}">0</span> articoli
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Carrello vuoto -->
+            <div th:if="${#lists.isEmpty(orderLines)}" class="empty-cart">
+                <div class="empty-content">
+                    <div class="empty-icon">
+                        <i class="material-icons">shopping_cart</i>
+                    </div>
+                    <h2 class="empty-title">Il tuo carrello è vuoto</h2>
+                    <p class="empty-description">
+                        Sembra che tu non abbia ancora aggiunto nessun orologio al carrello. 
+                        Esplora la nostra collezione e trova l'orologio perfetto per te!
+                    </p>
+                    <div class="empty-actions">
+                        <a th:href="@{/watches}" class="btn-primary">
+                            <i class="material-icons">watch</i>
+                            Esplora Orologi
+                        </a>
+                        <a th:href="@{/}" class="btn-secondary">
+                            <i class="material-icons">home</i>
+                            Torna alla Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Articoli nel carrello -->
+            <div th:if="${!#lists.isEmpty(orderLines)}" class="cart-content">
+                
+                <!-- Lista articoli -->
+                <div class="cart-items">
+                    <h2 class="section-title">
+                        <i class="material-icons">list</i>
+                        Articoli nel Carrello
+                    </h2>
+                    
+                    <div class="items-list">
+                        <div th:each="orderLine : ${orderLines}" class="cart-item">
+                            <div class="item-image">
+                                <div class="image-placeholder">
+                                    <i class="material-icons">watch</i>
+                                </div>
+                            </div>
+                            
+                            <div class="item-details">
+                                <h3 class="item-name">
+                                    <a th:href="@{'/watch/' + ${orderLine.watch.id}}" 
+                                       th:text="${orderLine.watch.name}"
+                                       class="item-link">
+                                        Nome Orologio
+                                    </a>
+                                </h3>
+                                
+                                <div class="item-info">
+                                    <div class="item-brand" th:if="${orderLine.watch.brand}">
+                                        <i class="material-icons">business</i>
+                                        <span th:text="${orderLine.watch.brand}">Marca</span>
+                                    </div>
+                                    
+                                    <div class="item-description" th:if="${orderLine.watch.description}">
+                                        <p th:text="${#strings.length(orderLine.watch.description) > 80 ? #strings.substring(orderLine.watch.description, 0, 80) + '...' : orderLine.watch.description}">
+                                            Descrizione dell'orologio...
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <div class="item-quantity">
+                                    <label class="quantity-label">
+                                        <i class="material-icons">numbers</i>
+                                        Quantità:
+                                    </label>
+                                    <span class="quantity-value" th:text="${orderLine.quantity}">1</span>
+                                </div>
+                            </div>
+                            
+                            <div class="item-pricing">
+                                <div class="price-details">
+                                    <div class="unit-price" th:if="${orderLine.watch.price}">
+                                        <span class="price-label">Prezzo unitario:</span>
+                                        <span class="price-value">
+                                            €<span th:text="${#numbers.formatDecimal(orderLine.watch.price, 0, 'COMMA', 2, 'POINT')}">0,00</span>
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="total-price" th:if="${orderLine.watch.price}">
+                                        <span class="price-label">Totale articolo:</span>
+                                        <span class="price-value total">
+                                            €<span th:text="${#numbers.formatDecimal(orderLine.watch.price * orderLine.quantity, 0, 'COMMA', 2, 'POINT')}">0,00</span>
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <div class="item-actions">
+                                    <a th:href="@{'/watch/' + ${orderLine.watch.id}}" class="btn-view-item">
+                                        <i class="material-icons">visibility</i>
+                                        Vedi Dettagli
+                                    </a>
+                                    <!-- Qui potresti aggiungere un bottone per rimuovere l'articolo -->
+                                    <!--
+                                    <form th:action="@{'/currentOrder/remove/' + ${orderLine.id}}" method="post" style="display: inline;">
+                                        <button type="submit" class="btn-remove-item">
+                                            <i class="material-icons">delete</i>
+                                            Rimuovi
+                                        </button>
+                                    </form>
+                                    -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Riepilogo ordine -->
+                <div class="order-summary">
+                    <h2 class="section-title">
+                        <i class="material-icons">receipt</i>
+                        Riepilogo Ordine
+                    </h2>
+                    
+                    <div class="summary-details">
+                        <div class="summary-line">
+                            <span class="summary-label">Numero articoli:</span>
+                            <span class="summary-value" th:text="${#lists.size(orderLines)}">0</span>
+                        </div>
+                        
+                        <div class="summary-line">
+                            <span class="summary-label">Subtotale:</span>
+                            <span class="summary-value" th:if="${currentOrder.totalPrice != null and currentOrder.totalPrice > 0}">
+                                €<span th:text="${#numbers.formatDecimal(currentOrder.totalPrice, 0, 'COMMA', 2, 'POINT')}">0,00</span>
+                            </span>
+                            <span class="summary-value" th:unless="${currentOrder.totalPrice != null and currentOrder.totalPrice > 0}">
+                                €0,00
+                            </span>
+                        </div>
+                        
+                        <div class="summary-line">
+                            <span class="summary-label">Spedizione:</span>
+                            <span class="summary-value free">Gratuita</span>
+                        </div>
+                        
+                        <div class="summary-line">
+                            <span class="summary-label">IVA (22%):</span>
+                            <span class="summary-value">Inclusa</span>
+                        </div>
+                        
+                        <div class="summary-line total-line">
+                            <span class="summary-label">Totale:</span>
+                            <span class="summary-value total" th:if="${currentOrder.totalPrice != null and currentOrder.totalPrice > 0}">
+                                €<span th:text="${#numbers.formatDecimal(currentOrder.totalPrice, 0, 'COMMA', 2, 'POINT')}">0,00</span>
+                            </span>
+                            <span class="summary-value total" th:unless="${currentOrder.totalPrice != null and currentOrder.totalPrice > 0}">
+                                €0,00
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Azioni carrello -->
+                <div class="cart-actions">
+                    <div class="actions-grid">
+                        <form th:action="@{/currentOrder}" method="post" class="confirm-form">
+                            <button type="submit" class="btn-confirm-order" th:disabled="${#lists.isEmpty(orderLines)}">
+                                <i class="material-icons">check_circle</i>
+                                Conferma Ordine
+                            </button>
+                        </form>
+                        
+                        <a th:href="@{/watches}" class="btn-continue-shopping">
+                            <i class="material-icons">add_shopping_cart</i>
+                            Continua Shopping
+                        </a>
+                        
+                        <a th:href="@{/}" class="btn-secondary">
+                            <i class="material-icons">home</i>
+                            Torna alla Home
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Info aggiuntive -->
+                <div class="cart-info">
+                    <div class="info-cards">
+                        <div class="info-card">
+                            <div class="info-icon">
+                                <i class="material-icons">local_shipping</i>
+                            </div>
+                            <div class="info-content">
+                                <h4>Spedizione Gratuita</h4>
+                                <p>Su tutti gli ordini senza minimum</p>
+                            </div>
+                        </div>
+                        
+                        <div class="info-card">
+                            <div class="info-icon">
+                                <i class="material-icons">verified_user</i>
+                            </div>
+                            <div class="info-content">
+                                <h4>Garanzia Ufficiale</h4>
+                                <p>Tutti gli orologi sono garantiti</p>
+                            </div>
+                        </div>
+                        
+                        <div class="info-card">
+                            <div class="info-icon">
+                                <i class="material-icons">support_agent</i>
+                            </div>
+                            <div class="info-content">
+                                <h4>Supporto Clienti</h4>
+                                <p>Assistenza 24/7 per i tuoi acquisti</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </section>
+    </div>
+</body>
 </html>

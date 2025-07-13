@@ -1,0 +1,26 @@
+/* ===== MAIN CSS - IMPORTS ALL MODULES ===== */
+
+/* Base styles (must be imported first) */
+@import url('variables.css');
+@import url('base.css');
+
+/* Component styles */
+@import url('header.css');
+@import url('forms.css');
+/* @import url('buttons.css'); */  /* TODO: Create when needed */
+/* @import url('cards.css'); */    /* TODO: Create when needed */
+
+/* Page-specific styles */
+@import url('home.css');
+@import url('product-detail.css');
+/* @import url('watches-list.css'); */ /* TODO: Create for /watches page */
+/* @import url('auth.css'); */          /* TODO: Create for login/register */
+
+/* 
+Note: L'ordine di import è importante:
+1. Variables e base sempre per primi
+2. Components dopo
+3. Page-specific per ultimi
+
+Uncomment imports as you create the corresponding CSS files
+*/

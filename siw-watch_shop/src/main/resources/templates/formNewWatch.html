@@ -1,35 +1,102 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-	<head>
-	    <title>form new movie</title>
-	    <link rel="stylesheet" href="/style.css?version=2">
-	</head>
-	<body>
-	    <form th:action="@{/watch}" method="POST" th:object="${watch}" >
-	    
-    		<div th:if="${#fields.hasGlobalErrors()}">
-               <p th:each="err : ${#fields.globalErrors()}" th:text="${err}">...</p>
-           </div>
-           
-           
-	    	<div>nome: 
-	    		<span><input required type="text" th:field="*{name}"></span>
-	    		<span th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
-	    	</div>
-	    	<div>brand: 
-	    		<span><input required type="text" th:field="*{brand}"></span>
-	    		<span th:if="${#fields.hasErrors('brand')}" th:errors="*{brand}"></span>
-	    	</div>
-	    	<div>year: 
-	    		<span><input required type="text" th:field="*{year}"></span>
-	    		<span th:if="${#fields.hasErrors('year')}" th:errors="*{year}"></span>
-	    	</div>
-
-			<div>price: 
-				<span><input required type="text" th:field="*{price}"></span>
-				<span th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></span>
-			</div>
-	    	<div><span><button type="submit">Conferma</button></span></div>
-	    </form>
-	</body>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="fragments/layout.html :: base(#{Nuovo Orologio - WatchLux}, ~{::contenuto})">
+<head>
+    <title>⌚ Nuovo Orologio - WatchLux</title>
+</head>
+<body>
+    <!-- Contenuto specifico del form -->
+    <div th:fragment="contenuto">
+        <section class="form-container">
+            <div class="form-wrapper">
+                <h1 class="form-title">
+                    <i class="material-icons">watch</i>
+                    Aggiungi Nuovo Orologio
+                </h1>
+                
+                <!-- Errori globali - Rimosso per ora per evitare errori di binding -->
+                <!-- Gli errori verranno mostrati comunque accanto ai campi individuali -->
+                
+                <form th:action="@{/watch}" method="POST" th:object="${watch}" class="luxury-form">
+                    
+                    <!-- Nome -->
+                    <div class="form-group">
+                        <label for="name" class="form-label">
+                            <i class="material-icons">title</i>
+                            Nome Orologio
+                        </label>
+                        <input type="text" 
+                               id="name"
+                               th:field="*{name}" 
+                               class="form-input"
+                               placeholder="es. Submariner Date"
+                               required>
+                        <span class="error-text" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
+                    </div>
+                    
+                    <!-- Brand -->
+                    <div class="form-group">
+                        <label for="brand" class="form-label">
+                            <i class="material-icons">business</i>
+                            Marca
+                        </label>
+                        <input type="text" 
+                               id="brand"
+                               th:field="*{brand}" 
+                               class="form-input"
+                               placeholder="es. Rolex"
+                               required>
+                        <span class="error-text" th:if="${#fields.hasErrors('brand')}" th:errors="*{brand}"></span>
+                    </div>
+                    
+                    <!-- Anno -->
+                    <div class="form-group">
+                        <label for="year" class="form-label">
+                            <i class="material-icons">calendar_today</i>
+                            Anno di Produzione
+                        </label>
+                        <input type="number" 
+                               id="year"
+                               th:field="*{year}" 
+                               class="form-input"
+                               placeholder="es. 2023"
+                               min="1800"
+                               max="2030"
+                               required>
+                        <span class="error-text" th:if="${#fields.hasErrors('year')}" th:errors="*{year}"></span>
+                    </div>
+                    
+                    <!-- Prezzo -->
+                    <div class="form-group">
+                        <label for="price" class="form-label">
+                            <i class="material-icons">euro</i>
+                            Prezzo (€)
+                        </label>
+                        <input type="number" 
+                               id="price"
+                               th:field="*{price}" 
+                               class="form-input"
+                               placeholder="es. 8500.00"
+                               min="0"
+                               step="0.01"
+                               required>
+                        <span class="error-text" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></span>
+                    </div>
+                    
+                    <!-- Bottoni -->
+                    <div class="form-actions">
+                        <a th:href="@{/}" class="btn-secondary">
+                            <i class="material-icons">arrow_back</i>
+                            Annulla
+                        </a>
+                        <button type="submit" class="btn-primary">
+                            <i class="material-icons">add</i>
+                            Aggiungi Orologio
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </div>
+</body>
 </html>

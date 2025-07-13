@@ -1,27 +1,128 @@
-<html xmlns:th="http://www.thymeleaf.org">
-	<head>
-		<title >Watch</title>
-		<link rel="stylesheet" href="/style.css?version=2">
-		
-	</head>
-	<body>
-		<div><a th:href="@{'/'}">torna al menu</a></div>
-		<div th:if="${watch}">
-			<div>
-				<span th:text="${watch.name}"></span>
-				<span th:text="${watch.brand}"></span>
-				<span th:text="${watch.year}"></span>
-				<span th:text="${watch.price}"></span>				
-			</div>
-		</div>
-		<div th:unless=${watch}>non esiste</div>
-
-		<form th:action="@{/currentOrder/add/{id}(id=${watch.id})}" method="post">
-			<!-- Thymeleaf aggiunge automaticamente il CSRF token -->
-			<button type="submit">Aggiungi al Carrello</button>
-		</form>
-
-	</body>
-	
-	
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="fragments/layout.html :: base(${watch?.name + ' - WatchLux' ?: 'Orologio - WatchLux'}, ~{::contenuto})">
+<head>
+    <title th:text="${watch?.name + ' - WatchLux' ?: 'Orologio - WatchLux'}">Orologio - WatchLux</title>
+</head>
+<body>
+    <!-- Contenuto specifico del dettaglio orologio -->
+    <div th:fragment="contenuto">
+        
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb">
+            <a th:href="@{/}" class="breadcrumb-link">
+                <i class="material-icons">home</i>
+                Home
+            </a>
+            <span class="breadcrumb-separator">></span>
+            <a th:href="@{/watches}" class="breadcrumb-link">Orologi</a>
+            <span class="breadcrumb-separator">></span>
+            <span class="breadcrumb-current" th:text="${watch?.name ?: 'Orologio'}">Orologio</span>
+        </nav>
+        
+        <!-- Contenuto principale -->
+        <div th:if="${watch}" class="product-container">
+            <div class="product-detail">
+                
+                <!-- Immagine Prodotto -->
+                <div class="product-image">
+                    <div class="image-placeholder">
+                        <span class="watch-emoji">⌚</span>
+                    </div>
+                </div>
+                
+                <!-- Informazioni Prodotto -->
+                <div class="product-info">
+                    <div class="product-header">
+                        <h1 class="product-title" th:text="${watch.name}">Nome Orologio</h1>
+                        <p class="product-brand" th:text="${watch.brand}">Marca</p>
+                    </div>
+                    
+                    <div class="product-details">
+                        <div class="detail-item">
+                            <span class="detail-label">
+                                <i class="material-icons">calendar_today</i>
+                                Anno di Produzione:
+                            </span>
+                            <span class="detail-value" th:text="${watch.year}">Anno</span>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <span class="detail-label">
+                                <i class="material-icons">verified</i>
+                                Condizione:
+                            </span>
+                            <span class="detail-value">Nuovo</span>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <span class="detail-label">
+                                <i class="material-icons">local_shipping</i>
+                                Spedizione:
+                            </span>
+                            <span class="detail-value">Gratuita</span>
+                        </div>
+                    </div>
+                    
+                    <div class="product-price">
+                        <span class="price-currency">€</span>
+                        <span class="price-amount" th:text="${#numbers.formatDecimal(watch.price, 1, 2)}">0.00</span>
+                    </div>
+                    
+                    <!-- Azioni -->
+                    <div class="product-actions">
+                        <form th:action="@{/currentOrder/add/{id}(id=${watch.id})}" method="post" class="add-to-cart-form">
+                            <button type="submit" class="btn-add-cart">
+                                <i class="material-icons">shopping_cart</i>
+                                Aggiungi al Carrello
+                            </button>
+                        </form>
+                        
+                        <button class="btn-wishlist">
+                            <i class="material-icons">favorite_border</i>
+                            Aggiungi ai Preferiti
+                        </button>
+                    </div>
+                    
+                    <!-- Caratteristiche -->
+                    <div class="product-features">
+                        <h3>Garanzie Incluse</h3>
+                        <ul class="features-list">
+                            <li>
+                                <i class="material-icons">shield</i>
+                                Garanzia ufficiale 2 anni
+                            </li>
+                            <li>
+                                <i class="material-icons">verified</i>
+                                Certificato di autenticità
+                            </li>
+                            <li>
+                                <i class="material-icons">local_shipping</i>
+                                Spedizione assicurata gratuita
+                            </li>
+                            <li>
+                                <i class="material-icons">assignment_return</i>
+                                Reso gratuito entro 30 giorni
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Messaggio se l'orologio non esiste -->
+        <div th:unless="${watch}" class="not-found-container">
+            <div class="not-found-content">
+                <div class="not-found-icon">⌚</div>
+                <h2>Orologio non trovato</h2>
+                <p>L'orologio che stai cercando non esiste o non è più disponibile.</p>
+                <a th:href="@{/watches}" class="btn-back">
+                    <i class="material-icons">arrow_back</i>
+                    Torna agli Orologi
+                </a>
+            </div>
+        </div>
+        
+    </div>
+</body>
 </html>

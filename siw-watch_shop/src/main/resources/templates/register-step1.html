@@ -1,52 +1,119 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="fragments/layout.html :: base(#{Registrazione Step 1 - WatchLux}, ~{::contenuto})">
 <head>
-    <title>Registrazione - Step 1</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <title>Registrazione Step 1 - WatchLux</title>
 </head>
 <body>
-    <div class="container">
-        <div class="registration-header">
-            <h2>Registrazione</h2>
-            <div class="progress-bar">
-                <div class="step active">1</div>
-                <div class="step">2</div>
-            </div>
-            <p class="step-description">Inserisci email e password</p>
-        </div>
-        
-        <form th:action="@{/register/step1}" method="post" th:object="${credentials}">
-            
-            <div class="form-group">
-                <label for="name">Nome:</label>
-                <input type="text" th:field="*{user.name}" id="name" class="form-control" required>
-            </div>
+    <!-- Contenuto specifico della registrazione step 1 -->
+    <div th:fragment="contenuto">
+        <section class="form-container">
+            <div class="form-wrapper">
+                <!-- Header con progress -->
+                <div class="registration-header">
+                    <h1 class="form-title">
+                        <i class="material-icons">person_add</i>
+                        Registrazione
+                    </h1>
+                    
+                    <div class="progress-bar">
+                        <div class="step active">
+                            <span class="step-number">1</span>
+                            <span class="step-label">Dati Personali</span>
+                        </div>
+                        <div class="step-connector"></div>
+                        <div class="step">
+                            <span class="step-number">2</span>
+                            <span class="step-label">Username</span>
+                        </div>
+                    </div>
+                    
+                    <p class="step-description">Inserisci i tuoi dati personali e crea una password sicura</p>
+                </div>
+                
+                <!-- Form Step 1 -->
+                <form th:action="@{/register/step1}" method="post" th:object="${credentials}" class="luxury-form">
+                    
+                    <!-- Nome -->
+                    <div class="form-group">
+                        <label for="name" class="form-label">
+                            <i class="material-icons">person</i>
+                            Nome
+                        </label>
+                        <input type="text" 
+                               th:field="*{user.name}" 
+                               id="name" 
+                               class="form-input"
+                               placeholder="Il tuo nome"
+                               required>
+                    </div>
 
-            <div class="form-group">
-                <label for="surname">Cognome:</label>
-                <input type="text" th:field="*{user.surname}" id="surname" class="form-control" required>
+                    <!-- Cognome -->
+                    <div class="form-group">
+                        <label for="surname" class="form-label">
+                            <i class="material-icons">person</i>
+                            Cognome
+                        </label>
+                        <input type="text" 
+                               th:field="*{user.surname}" 
+                               id="surname" 
+                               class="form-input"
+                               placeholder="Il tuo cognome"
+                               required>
+                    </div>
+                    
+                    <!-- Email -->
+                    <div class="form-group">
+                        <label for="email" class="form-label">
+                            <i class="material-icons">email</i>
+                            Email
+                        </label>
+                        <input type="email" 
+                               th:field="*{email}" 
+                               id="email" 
+                               class="form-input"
+                               placeholder="la.tua.email@esempio.com"
+                               required>
+                        
+                        <!-- Errore email esistente -->
+                        <div th:if="${emailExists}" class="error-text">
+                            <i class="material-icons">error</i>
+                            <span th:text="${emailExists}">Questa email è già registrata</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Password -->
+                    <div class="form-group">
+                        <label for="password" class="form-label">
+                            <i class="material-icons">lock</i>
+                            Password
+                        </label>
+                        <input type="password" 
+                               th:field="*{password}" 
+                               id="password" 
+                               class="form-input"
+                               placeholder="Crea una password sicura"
+                               required>
+                        <small class="form-hint">
+                            <i class="material-icons">info</i>
+                            La password deve contenere almeno 8 caratteri
+                        </small>
+                    </div>
+                    
+                    <!-- Azioni -->
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">
+                            <i class="material-icons">arrow_forward</i>
+                            Continua
+                        </button>
+                        <a th:href="@{/login}" class="btn-secondary">
+                            <i class="material-icons">close</i>
+                            Annulla
+                        </a>
+                    </div>
+                </form>
             </div>
-
-            
-            <div class="form-group">
-                <label for="email">Email:</label>
-                <input type="email" th:field="*{email}" id="email" class="form-control" required>
-                <div th:if="${emailExists}" class="alert alert-danger mt-2" th:text="${emailExists}"></div>
-            </div>
-            
-            <div class="form-group">
-                <label for="password">Password:</label>
-                <input type="password" th:field="*{password}" id="password" class="form-control" required>
-                <small class="form-text text-muted">
-                    La password deve contenere almeno 8 caratteri
-                </small>
-            </div>
-            
-            <div class="form-actions">
-                <button type="submit" class="btn btn-primary">Continua</button>
-                <a th:href="@{/login}" class="btn btn-secondary">Annulla</a>
-            </div>
-        </form>
+        </section>
     </div>
 </body>
 </html>

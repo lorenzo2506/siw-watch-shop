@@ -1,43 +1,91 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <title>Registrazione - Step 2</title>
-        <link rel="stylesheet" th:href="@{/css/style.css}">
-    </head>
-    <body>
-        <div class="container">
-            <div class="registration-header">
-                <h2>Registrazione</h2>
-                <div class="progress-bar">
-                    <div class="step completed">✓</div>
-                    <div class="step active">2</div>
-                </div>
-                <p class="step-description">Scegli il tuo username</p>
-            </div>
-            
-            <div class="registration-info">
-                <div class="alert alert-info">
-                    <strong>Email confermata:</strong> <span th:text="${credentials.email}"></span>
-                </div>
-                <p>Ora scegli un username univoco per completare la registrazione:</p>
-            </div>
-            
-            <form th:action="@{/register/step2}" method="post" th:object="${credentials}">
-                <div class="form-group">
-                    <label for="username">Username:</label>
-                    <input type="text" th:field="*{username}" id="username" class="form-control" 
-                        placeholder="es. mario_rossi" required>
-                    <div th:if="${usernameExists}" class="alert alert-danger mt-2" th:text="${usernameExists}"></div>
-                    <small class="form-text text-muted">
-                        L'username deve essere univoco e può contenere lettere, numeri e underscore
-                    </small>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="fragments/layout.html :: base(#{Registrazione Step 2 - WatchLux}, ~{::contenuto})">
+<head>
+    <title>Registrazione Step 2 - WatchLux</title>
+</head>
+<body>
+    <!-- Contenuto specifico della registrazione step 2 -->
+    <div th:fragment="contenuto">
+        <section class="form-container">
+            <div class="form-wrapper">
+                <!-- Header con progress -->
+                <div class="registration-header">
+                    <h1 class="form-title">
+                        <i class="material-icons">person_add</i>
+                        Registrazione
+                    </h1>
+                    
+                    <div class="progress-bar">
+                        <div class="step completed">
+                            <span class="step-number">
+                                <i class="material-icons">check</i>
+                            </span>
+                            <span class="step-label">Dati Personali</span>
+                        </div>
+                        <div class="step-connector completed"></div>
+                        <div class="step active">
+                            <span class="step-number">2</span>
+                            <span class="step-label">Username</span>
+                        </div>
+                    </div>
+                    
+                    <p class="step-description">Ultimo passaggio: scegli il tuo username univoco</p>
                 </div>
                 
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-success">Completa Registrazione</button>
-                    <a th:href="@{/register/cancel}" class="btn btn-secondary">Annulla</a>
+                <!-- Info email confermata -->
+                <div class="info-box">
+                    <div class="info-content">
+                        <i class="material-icons">check_circle</i>
+                        <div>
+                            <strong>Email confermata:</strong>
+                            <span th:text="${credentials.email}">email@esempio.com</span>
+                        </div>
+                    </div>
                 </div>
-            </form>
-        </div>
-    </body>
+                
+                <!-- Form Step 2 -->
+                <form th:action="@{/register/step2}" method="post" th:object="${credentials}" class="luxury-form">
+                    
+                    <!-- Username -->
+                    <div class="form-group">
+                        <label for="username" class="form-label">
+                            <i class="material-icons">alternate_email</i>
+                            Username
+                        </label>
+                        <input type="text" 
+                               th:field="*{username}" 
+                               id="username" 
+                               class="form-input" 
+                               placeholder="es. mario_rossi"
+                               required>
+                        
+                        <!-- Errore username esistente -->
+                        <div th:if="${usernameExists}" class="error-text">
+                            <i class="material-icons">error</i>
+                            <span th:text="${usernameExists}">Questo username è già in uso</span>
+                        </div>
+                        
+                        <small class="form-hint">
+                            <i class="material-icons">info</i>
+                            L'username deve essere univoco e può contenere lettere, numeri e underscore
+                        </small>
+                    </div>
+                    
+                    <!-- Azioni -->
+                    <div class="form-actions">
+                        <button type="submit" class="btn-success">
+                            <i class="material-icons">check</i>
+                            Completa Registrazione
+                        </button>
+                        <a th:href="@{/register/cancel}" class="btn-secondary">
+                            <i class="material-icons">close</i>
+                            Annulla
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </div>
+</body>
 </html>

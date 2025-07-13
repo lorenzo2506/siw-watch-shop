@@ -1,146 +1,100 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="fragments/layout.html :: base('Login - WatchLux', ~{::contenuto})">
 <head>
-    <title>Login</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-    <style>
-        .oauth-section {
-            margin: 20px 0;
-            text-align: center;
-        }
-        
-        .oauth-divider {
-            margin: 20px 0;
-            text-align: center;
-            position: relative;
-        }
-        
-        .oauth-divider::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: #ddd;
-        }
-        
-        .oauth-divider span {
-            background: white;
-            padding: 0 15px;
-            color: #666;
-            font-size: 14px;
-        }
-        
-        .btn-google {
-            background-color: #4285f4;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 6px;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 500;
-            transition: background-color 0.3s;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        
-        .btn-google:hover {
-            background-color: #357ae8;
-            color: white;
-            text-decoration: none;
-        }
-        
-        .btn-google::before {
-            content: "🔗";
-            font-size: 18px;
-        }
-        
-        .form-container {
-            max-width: 400px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        .alert {
-            padding: 10px;
-            margin-bottom: 15px;
-            border-radius: 4px;
-        }
-        
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        
-        .alert-danger {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        
-        .alert-info {
-            background-color: #d1ecf1;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
-        }
-    </style>
+    <title>Login - WatchLux</title>
 </head>
 <body>
-    <div class="container">
-        <div class="form-container">
-            <h2>Accedi</h2>
-            
-            <!-- Messaggio di successo registrazione -->
-            <div th:if="${registrationSuccess}" class="alert alert-success" th:text="${registrationSuccess}"></div>
-            
-            <!-- Messaggio di errore login -->
-            <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
-            
-            <!-- Messaggio di logout -->
-            <div th:if="${logoutMessage}" class="alert alert-info" th:text="${logoutMessage}"></div>
-            
-            <!-- OAuth2 Login Section - Messa prima per dare priorità -->
-            <div class="oauth-section">
-                <a th:href="@{/oauth2/authorization/google}" class="btn-google">
-                    Continua con Google
-                </a>
-            </div>
-            
-            <!-- Divider -->
-            <div class="oauth-divider">
-                <span>oppure</span>
-            </div>
-            
-            <!-- Traditional Login Form -->
-            <form th:action="@{/login}" method="post">
-                <div class="form-group">
-                    <label for="username">Username o Email:</label>
-                    <input type="text" name="username" id="username" class="form-control" required>
+    <!-- Contenuto specifico del login -->
+    <div th:fragment="contenuto">
+        <section class="form-container">
+            <div class="form-wrapper">
+                <h1 class="form-title">
+                    <i class="material-icons">person</i>
+                    Accedi a WatchLux
+                </h1>
+                
+                <!-- Messaggi di stato -->
+                <div th:if="${registrationSuccess}" class="success-message">
+                    <i class="material-icons">check_circle</i>
+                    <span th:text="${registrationSuccess}">Registrazione completata!</span>
                 </div>
                 
-                <div class="form-group">
-                    <label for="password">Password:</label>
-                    <input type="password" name="password" id="password" class="form-control" required>
+                <div th:if="${errorMessage}" class="error-message">
+                    <i class="material-icons">error</i>
+                    <span th:text="${errorMessage}">Errore di login</span>
                 </div>
                 
-                <button type="submit" class="btn btn-primary">Accedi</button>
-            </form>
-            
-            <!-- Register Link -->
-            <div class="register-section" style="margin-top: 20px; text-align: center;">
-                <p>Non hai un account? <a th:href="@{/register}">Registrati qui</a></p>
+                <div th:if="${logoutMessage}" class="info-message">
+                    <i class="material-icons">info</i>
+                    <span th:text="${logoutMessage}">Logout effettuato</span>
+                </div>
+                
+                <!-- OAuth2 Login Section -->
+                <div class="oauth-section">
+                    <a th:href="@{/oauth2/authorization/google}" class="btn-google">
+                        <i class="material-icons">account_circle</i>
+                        <span>Continua con Google</span>
+                    </a>
+                </div>
+                
+                <!-- Divider -->
+                <div class="divider">
+                    <span>oppure</span>
+                </div>
+                
+                <!-- Traditional Login Form -->
+                <form th:action="@{/login}" method="post" class="luxury-form">
+                    <div class="form-group">
+                        <label for="username" class="form-label">
+                            <i class="material-icons">person</i>
+                            Username o Email
+                        </label>
+                        <input type="text" 
+                               name="username" 
+                               id="username" 
+                               class="form-input" 
+                               placeholder="Il tuo username o email"
+                               required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password" class="form-label">
+                            <i class="material-icons">lock</i>
+                            Password
+                        </label>
+                        <input type="password" 
+                               name="password" 
+                               id="password" 
+                               class="form-input" 
+                               placeholder="La tua password"
+                               required>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary">
+                        <i class="material-icons">login</i>
+                        Accedi
+                    </button>
+                </form>
+                
+                <!-- Register Link -->
+                <div class="form-footer">
+                    <p>Non hai un account?</p>
+                    <a th:href="@{/register}" class="link-primary">
+                        <i class="material-icons">person_add</i>
+                        Registrati qui
+                    </a>
+                </div>
+                
+                <!-- Back to Home -->
+                <div class="form-actions">
+                    <a th:href="@{/}" class="btn-secondary">
+                        <i class="material-icons">arrow_back</i>
+                        Torna alla Home
+                    </a>
+                </div>
             </div>
-        </div>
+        </section>
     </div>
-
-    <div style="text-align: center; margin-top: 30px;">
-        <a th:href="@{'/'}">← Torna al menu</a>
-    </div>
-
 </body>
 </html>

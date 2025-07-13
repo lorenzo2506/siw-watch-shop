@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org" th:fragment="base(title, content)">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">WatchLux</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <!-- CSS Main -->
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+<body>
+    <!-- Header Fragment -->
+    <header th:replace="fragments/header.html :: intestazione"></header>
+    
+    <!-- Main Content -->
+    <main th:replace="${content}">
+        <!-- Il contenuto della pagina verrà inserito qui -->
+    </main>
+    
+    <!-- Footer (opzionale per il futuro) -->
+    <!-- <footer th:replace="fragments/footer.html :: piede"></footer> -->
+</body>
+</html>
