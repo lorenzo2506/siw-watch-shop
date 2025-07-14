@@ -394,3 +394,48 @@
         font-size: 1.5rem;
     }
 }
+
+
+/* Aggiungi queste regole al tuo order-detail.css esistente */
+
+/* Supporto per immagini vere negli order items */
+.order-item-watch-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+.order-item-no-image {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    color: #6b7280;
+    font-size: 0.75rem;
+    text-align: center;
+}
+
+.no-image-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.25rem;
+    opacity: 0.6;
+}
+
+/* Aggiorna la classe esistente .order-item-image per supportare immagini */
+.order-item-image {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    font-size: 2rem;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+    flex-shrink: 0;
+    overflow: hidden; /* Aggiunto per le immagini */
+}

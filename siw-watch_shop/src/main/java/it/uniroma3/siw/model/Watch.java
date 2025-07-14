@@ -1,13 +1,19 @@
 package it.uniroma3.siw.model;
 
 
+import jakarta.persistence.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -41,6 +47,9 @@ public class Watch {
 	private String description;
 	
 	private Integer stock;
+	
+	// Campo per l'immagine
+    private String imagePath;
 	
 	
 	@NotNull

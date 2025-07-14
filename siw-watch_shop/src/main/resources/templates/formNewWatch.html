@@ -14,7 +14,7 @@
                     Aggiungi Nuovo Orologio
                 </h1>
                 
-                <form th:action="@{/watch}" method="POST" th:object="${watch}" class="luxury-form">
+                <form th:action="@{/watch}" method="POST" th:object="${watch}" class="luxury-form" enctype="multipart/form-data">
                     
                     <!-- Errori Globali - DENTRO IL FORM CON CSRF TOKEN -->
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
@@ -76,6 +76,22 @@
                                class="form-input"
                                placeholder="es. 8500.00">
                         <span class="error-text" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></span>
+                    </div>
+                    
+                    <!-- Immagine -->
+                    <div class="form-group">
+                        <label for="imageFile" class="form-label">
+                            <i class="material-icons">image</i>
+                            Immagine Orologio
+                        </label>
+                        <input type="file" 
+                               id="imageFile"
+                               name="imageFile" 
+                               class="form-input"
+                               accept="image/*"
+                               required>
+                        <small class="form-help">Formati supportati: JPEG, PNG, GIF, WebP (max 5MB)</small>
+                        <span class="error-text" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
                     </div>
                     
                     <!-- Bottoni -->
