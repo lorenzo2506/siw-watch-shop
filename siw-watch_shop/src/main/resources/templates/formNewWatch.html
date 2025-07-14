@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      th:replace="fragments/layout.html :: base(#{Nuovo Orologio - WatchLux}, ~{::contenuto})">
+      th:replace="fragments/layout.html :: base('Nuovo Orologio - WatchLux', ~{::contenuto})">
 <head>
     <title>⌚ Nuovo Orologio - WatchLux</title>
 </head>
@@ -14,10 +14,14 @@
                     Aggiungi Nuovo Orologio
                 </h1>
                 
-                <!-- Errori globali - Rimosso per ora per evitare errori di binding -->
-                <!-- Gli errori verranno mostrati comunque accanto ai campi individuali -->
-                
                 <form th:action="@{/watch}" method="POST" th:object="${watch}" class="luxury-form">
+                    
+                    <!-- Errori Globali - DENTRO IL FORM CON CSRF TOKEN -->
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    
+                    <div th:if="${#fields.hasGlobalErrors()}">
+					    <p th:each="err : ${#fields.globalErrors()}" th:text="${err}" style="color: #dc2626; font-weight: 600; margin-bottom: 1rem;">...</p> 
+					</div>
                     
                     <!-- Nome -->
                     <div class="form-group">
@@ -55,14 +59,9 @@
                             <i class="material-icons">calendar_today</i>
                             Anno di Produzione
                         </label>
-                        <input type="number" 
-                               id="year"
+                        <input required type="number" 
                                th:field="*{year}" 
-                               class="form-input"
-                               placeholder="es. 2023"
-                               min="1800"
-                               max="2030"
-                               required>
+                               class="form-input">
                         <span class="error-text" th:if="${#fields.hasErrors('year')}" th:errors="*{year}"></span>
                     </div>
                     
@@ -72,14 +71,10 @@
                             <i class="material-icons">euro</i>
                             Prezzo (€)
                         </label>
-                        <input type="number" 
-                               id="price"
+                        <input required type="number" 
                                th:field="*{price}" 
                                class="form-input"
-                               placeholder="es. 8500.00"
-                               min="0"
-                               step="0.01"
-                               required>
+                               placeholder="es. 8500.00">
                         <span class="error-text" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></span>
                     </div>
                     
