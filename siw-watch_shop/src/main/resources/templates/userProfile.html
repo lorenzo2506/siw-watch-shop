@@ -1,227 +1,66 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{fragments/layout.html :: base('Il mio Profilo - WatchLux', ~{::contenuto})}">>
+      th:replace="~{fragments/layout.html :: base('Il mio Profilo - WatchLux', ~{::contenuto})}">
 <head>
     <title>Il mio Profilo - WatchLux</title>
 </head>
 <body>
-    <!-- Contenuto specifico del profilo utente -->
     <div th:fragment="contenuto">
-        <section class="profile-container">
+        <div style="max-width: 600px; margin: 0 auto; padding: 2rem; background: #fafafa; font-family: Arial, sans-serif; min-height: 60vh;">
             
             <!-- Header del Profilo -->
-            <div class="profile-header">
-                <div class="profile-avatar">
-                    <i class="material-icons">account_circle</i>
+            <div style="text-align: center; margin-bottom: 3rem; padding: 2rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 16px; color: white; box-shadow: 0 8px 32px rgba(0,0,0,0.1);">
+                <!-- Avatar -->
+                <div style="width: 100px; height: 100px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 3rem; backdrop-filter: blur(10px);">
+                    👤
                 </div>
-                <div class="profile-info">
-                    <h1 class="profile-name">
-                        <span th:if="${userDetails != null and userDetails.user != null}" 
-                              th:text="${userDetails.user.name + ' ' + userDetails.user.surname}">Nome Utente</span>
-                        <span th:unless="${userDetails != null and userDetails.user != null}">
-                            Utente OAuth2
-                        </span>
-                    </h1>
-                    <p class="profile-username">
-                        @<span th:text="${userDetails != null ? userDetails.username : 'oauth2_user'}">username</span>
-                    </p>
-                    <p class="profile-email">
-                        <i class="material-icons">email</i>
-                        <span th:text="${userDetails.email}">email@esempio.com</span>
-                    </p>
-                </div>
-                <div class="profile-actions">
-                    <button class="btn-edit-profile">
-                        <i class="material-icons">edit</i>
-                        Modifica Profilo
+                
+                <!-- Nome -->
+                <h1 style="font-size: 2rem; margin: 0 0 0.5rem 0; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+                    <span th:if="${userDetails != null and userDetails.user != null}" 
+                          th:text="${userDetails.user.name + ' ' + userDetails.user.surname}">Lorenzo Alicandro</span>
+                </h1>
+                
+                <!-- Username -->
+                <p style="margin: 0 0 0.5rem 0; font-size: 1.1rem; opacity: 0.9; font-weight: 500;">
+                    USERNAME: <span th:text="${userDetails != null ? userDetails.username : 'oauth2_user'}">username</span>
+                </p>
+                
+                <!-- Email -->
+                <p style="margin: 0; font-size: 1rem; opacity: 0.8; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                    EMAIL📧:  <span th:text="${userDetails.email}">email@esempio.com</span>
+                </p>
+            </div>
+            
+            <!-- Menu Azioni -->
+            <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem;">
+                
+                <!-- I miei Ordini -->
+                <a th:href="@{/orders}" style="display: flex; align-items: center; padding: 1.5rem; background: white; border-radius: 12px; text-decoration: none; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid #e5e7eb; transition: all 0.2s;">
+                    <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #3b82f6, #1d4ed8); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-right: 1rem; font-size: 1.5rem;">
+                        📋
+                    </div>
+                    <div style="flex: 1;">
+                        <h3 style="margin: 0 0 0.25rem 0; color: #1f2937; font-size: 1.1rem; font-weight: 600;">I miei Ordini</h3>
+                        <p style="margin: 0; color: #6b7280; font-size: 0.9rem;">Visualizza la cronologia dei tuoi acquisti</p>
+                    </div>
+                    <div style="color: #9ca3af; font-size: 1.5rem;">
+                        ➡️
+                    </div>
+                </a>
+                
+            </div>
+            
+            <!-- Logout -->
+            <div style="text-align: center;">
+                <form th:action="@{/logout}" method="post" style="display: inline;">
+                    <button type="submit" style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white; padding: 1rem 2rem; border-radius: 10px; border: none; font-weight: 600; cursor: pointer; font-size: 1rem; box-shadow: 0 4px 12px rgba(239,68,68,0.3); transition: all 0.2s;">
+                        🚪 Logout
                     </button>
-                </div>
+                </form>
             </div>
             
-            <!-- Statistiche Utente -->
-            <div class="profile-stats">
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="material-icons">shopping_bag</i>
-                    </div>
-                    <div class="stat-info">
-                        <span class="stat-number">0</span>
-                        <span class="stat-label">Ordini Completati</span>
-                    </div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="material-icons">favorite</i>
-                    </div>
-                    <div class="stat-info">
-                        <span class="stat-number">0</span>
-                        <span class="stat-label">Preferiti</span>
-                    </div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="material-icons">watch</i>
-                    </div>
-                    <div class="stat-info">
-                        <span class="stat-number">Premium</span>
-                        <span class="stat-label">Membro da</span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Menu delle Sezioni -->
-            <div class="profile-menu">
-                <div class="menu-grid">
-                    
-                    <!-- I miei Ordini -->
-                    <a th:href="@{/orders}" class="menu-item">
-                        <div class="menu-icon">
-                            <i class="material-icons">history</i>
-                        </div>
-                        <div class="menu-content">
-                            <h3>I miei Ordini</h3>
-                            <p>Visualizza la cronologia dei tuoi acquisti</p>
-                        </div>
-                        <div class="menu-arrow">
-                            <i class="material-icons">chevron_right</i>
-                        </div>
-                    </a>
-                    
-                    <!-- Lista Preferiti -->
-                    <a th:href="@{/favorites}" class="menu-item">
-                        <div class="menu-icon">
-                            <i class="material-icons">favorite</i>
-                        </div>
-                        <div class="menu-content">
-                            <h3>Lista Preferiti</h3>
-                            <p>I tuoi orologi salvati per dopo</p>
-                        </div>
-                        <div class="menu-arrow">
-                            <i class="material-icons">chevron_right</i>
-                        </div>
-                    </a>
-                    
-                    <!-- Impostazioni Account -->
-                    <a th:href="@{/profile/settings}" class="menu-item">
-                        <div class="menu-icon">
-                            <i class="material-icons">settings</i>
-                        </div>
-                        <div class="menu-content">
-                            <h3>Impostazioni Account</h3>
-                            <p>Modifica password e preferenze</p>
-                        </div>
-                        <div class="menu-arrow">
-                            <i class="material-icons">chevron_right</i>
-                        </div>
-                    </a>
-                    
-                    <!-- Indirizzi di Spedizione -->
-                    <a th:href="@{/profile/addresses}" class="menu-item">
-                        <div class="menu-icon">
-                            <i class="material-icons">location_on</i>
-                        </div>
-                        <div class="menu-content">
-                            <h3>Indirizzi di Spedizione</h3>
-                            <p>Gestisci i tuoi indirizzi</p>
-                        </div>
-                        <div class="menu-arrow">
-                            <i class="material-icons">chevron_right</i>
-                        </div>
-                    </a>
-                    
-                    <!-- Metodi di Pagamento -->
-                    <a th:href="@{/profile/payments}" class="menu-item">
-                        <div class="menu-icon">
-                            <i class="material-icons">payment</i>
-                        </div>
-                        <div class="menu-content">
-                            <h3>Metodi di Pagamento</h3>
-                            <p>Carte e metodi salvati</p>
-                        </div>
-                        <div class="menu-arrow">
-                            <i class="material-icons">chevron_right</i>
-                        </div>
-                    </a>
-                    
-                    <!-- Notifiche -->
-                    <a th:href="@{/profile/notifications}" class="menu-item">
-                        <div class="menu-icon">
-                            <i class="material-icons">notifications</i>
-                        </div>
-                        <div class="menu-content">
-                            <h3>Notifiche</h3>
-                            <p>Gestisci le tue preferenze</p>
-                        </div>
-                        <div class="menu-arrow">
-                            <i class="material-icons">chevron_right</i>
-                        </div>
-                    </a>
-                    
-                </div>
-            </div>
-            
-            <!-- Ordine Corrente -->
-            <div th:if="${userDetails.user?.currentOrder}" class="current-order-section">
-                <h2 class="section-title">
-                    <i class="material-icons">shopping_cart</i>
-                    Carrello Attivo
-                </h2>
-                <div class="current-order-card">
-                    <div class="order-info">
-                        <p>Hai articoli nel carrello</p>
-                        <span class="order-count">
-                            <i class="material-icons">shopping_cart</i>
-                            Articoli in attesa
-                        </span>
-                    </div>
-                    <a th:href="@{/currentOrder}" class="btn-view-cart">
-                        <i class="material-icons">visibility</i>
-                        Visualizza Carrello
-                    </a>
-                </div>
-            </div>
-            
-            <!-- Azioni Account -->
-            <div class="account-actions">
-                <div class="actions-grid">
-                    
-                    <!-- Logout -->
-                    <form th:action="@{/logout}" method="post" class="logout-form">
-                        <button type="submit" class="btn-logout">
-                            <i class="material-icons">logout</i>
-                            <span>Logout</span>
-                        </button>
-                    </form>
-                    
-                    <!-- Torna alla Home -->
-                    <a th:href="@{/}" class="btn-home">
-                        <i class="material-icons">home</i>
-                        <span>Torna alla Home</span>
-                    </a>
-                    
-                </div>
-            </div>
-            
-            <!-- Info Account (per debug, puoi rimuovere in produzione) -->
-            <div class="debug-info" style="margin-top: 2rem; padding: 1rem; background: #f8f9fa; border-radius: 8px; font-size: 0.9rem;">
-                <details>
-                    <summary style="cursor: pointer; font-weight: 500;">Info Account (Debug)</summary>
-                    <div style="margin-top: 0.5rem; color: #666;">
-                        <p><strong>Tipo Autenticazione:</strong> 
-                            <span th:if="${userDetails != null and userDetails.user != null}">Tradizionale</span>
-                            <span th:unless="${userDetails != null and userDetails.user != null}">OAuth2</span>
-                        </p>
-                        <p><strong>Username:</strong> <span th:text="${userDetails?.username}">N/A</span></p>
-                        <p><strong>Email:</strong> <span th:text="${userDetails?.email}">N/A</span></p>
-                        <p><strong>Role:</strong> <span th:text="${userDetails?.role}">N/A</span></p>
-                        <p th:if="${userDetails?.user}"><strong>User ID:</strong> <span th:text="${userDetails.user.id}">N/A</span></p>
-                    </div>
-                </details>
-            </div>
-            
-        </section>
+        </div>
     </div>
 </body>
 </html>

@@ -5,240 +5,103 @@
     <title>Carrello - WatchLux</title>
 </head>
 <body>
-    <!-- Contenuto specifico del carrello -->
     <div th:fragment="contenuto">
-        <section class="cart-container">
+        <div style="max-width: 800px; margin: 0 auto; padding: 2rem; background: #fafafa; font-family: Arial, sans-serif; min-height: 60vh;">
             
-            <!-- Header del carrello -->
-            <div class="cart-header">
-                <div class="header-content">
-                    <h1 class="cart-title">
-                        <i class="material-icons">shopping_cart</i>
-                        Il mio Carrello
-                    </h1>
-                    <div class="cart-summary" th:if="${!#lists.isEmpty(orderLines)}">
-                        <span class="items-count">
-                            <i class="material-icons">inventory</i>
-                            <span th:text="${#lists.size(orderLines)}">0</span> articoli
+            <!-- Header -->
+            <div style="text-align: center; margin-bottom: 3rem; padding: 2rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 16px; color: white; box-shadow: 0 8px 32px rgba(0,0,0,0.1);">
+                <h1 style="font-size: 2.2rem; margin: 0; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+                    🛒 Il mio Carrello
+                </h1>
+            </div>
+
+            <!-- Carrello vuoto -->
+            <div th:if="${#lists.isEmpty(orderLines)}" style="text-align: center; padding: 4rem 2rem; background: white; border-radius: 16px; border: 1px solid #e5e7eb; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+                <div style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.7;">🛒</div>
+                <h2 style="font-size: 1.5rem; color: #374151; margin: 0 0 1rem 0; font-weight: 600;">Il tuo carrello è vuoto</h2>
+                <p style="color: #6b7280; margin: 0 0 2rem 0; line-height: 1.6;">Aggiungi alcuni orologi per iniziare i tuoi acquisti</p>
+                <a th:href="@{/watches}" style="display: inline-block; background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; padding: 1rem 2rem; border-radius: 8px; text-decoration: none; font-weight: 600; box-shadow: 0 4px 12px rgba(59,130,246,0.3); transition: all 0.2s;">
+                    ⌚ Esplora Orologi
+                </a>
+            </div>
+
+            <!-- Carrello con prodotti -->
+            <div th:if="${!#lists.isEmpty(orderLines)}">
+                
+                <!-- Lista prodotti -->
+                <div style="margin-bottom: 2rem;">
+                    <div th:each="orderLine : ${orderLines}" style="display: flex; align-items: center; padding: 1.5rem; margin-bottom: 1rem; background: white; border: 1px solid #e5e7eb; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: all 0.2s;">
+                        
+                        <!-- Immagine prodotto -->
+                        <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #f3f4f6, #e5e7eb); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-right: 1rem; font-size: 2rem; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);">
+                            ⌚
+                        </div>
+                        
+                        <!-- Dettagli prodotto -->
+                        <div style="flex: 1;">
+                            <h3 style="font-size: 1.125rem; font-weight: 600; margin: 0 0 0.5rem 0;">
+                                <a th:href="@{'/watch/' + ${orderLine.watch.id}}" 
+                                   th:text="${orderLine.watch.name}"
+                                   style="color: #1a202c; text-decoration: none;">
+                                    Nome Orologio
+                                </a>
+                            </h3>
+                            
+                            <div th:if="${orderLine.watch.brand}" style="color: #718096; font-size: 0.875rem; margin-bottom: 0.25rem;">
+                                <span th:text="${orderLine.watch.brand}">Marca</span>
+                            </div>
+                            
+                            <div style="color: #718096; font-size: 0.875rem;">
+                                Quantità: <span th:text="${orderLine.quantity}">1</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Prezzo -->
+                        <div style="text-align: right; min-width: 100px;">
+                            <div style="color: #6b7280; font-size: 0.875rem;">
+                                €<span th:text="${#numbers.formatDecimal(orderLine.watch.price, 0, 'COMMA', 2, 'POINT')}">0,00</span>
+                            </div>
+                            <div style="font-size: 1.25rem; font-weight: 700; color: #059669; background: linear-gradient(135deg, #10b981, #059669); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                                €<span th:text="${#numbers.formatDecimal(orderLine.watch.price * orderLine.quantity, 0, 'COMMA', 2, 'POINT')}">0,00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Riepilogo -->
+                <div style="background: linear-gradient(135deg, #f8fafc, #f1f5f9); border: 1px solid #cbd5e1; border-radius: 16px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+                    <h3 style="margin: 0 0 1rem 0; color: #334155; font-size: 1.1rem; font-weight: 600;">📋 Riepilogo Ordine</h3>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; padding: 0.5rem 0; color: #475569;">
+                        <span>Articoli:</span>
+                        <span th:text="${#lists.size(orderLines)}">0</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; padding: 0.5rem 0; color: #475569;">
+                        <span>Spedizione:</span>
+                        <span style="color: #059669; font-weight: 600;">Gratuita</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; border-top: 2px solid #cbd5e1; margin-top: 1rem; padding-top: 1rem; font-weight: 700; font-size: 1.3rem; color: #1e293b;">
+                        <span>Totale:</span>
+                        <span style="color: #059669;">
+                            €<span th:text="${#numbers.formatDecimal(currentOrder.totalPrice, 0, 'COMMA', 2, 'POINT')}">0,00</span>
                         </span>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Carrello vuoto -->
-            <div th:if="${#lists.isEmpty(orderLines)}" class="empty-cart">
-                <div class="empty-content">
-                    <div class="empty-icon">
-                        <i class="material-icons">shopping_cart</i>
-                    </div>
-                    <h2 class="empty-title">Il tuo carrello è vuoto</h2>
-                    <p class="empty-description">
-                        Sembra che tu non abbia ancora aggiunto nessun orologio al carrello. 
-                        Esplora la nostra collezione e trova l'orologio perfetto per te!
-                    </p>
-                    <div class="empty-actions">
-                        <a th:href="@{/watches}" class="btn-primary">
-                            <i class="material-icons">watch</i>
-                            Esplora Orologi
-                        </a>
-                        <a th:href="@{/}" class="btn-secondary">
-                            <i class="material-icons">home</i>
-                            Torna alla Home
-                        </a>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Articoli nel carrello -->
-            <div th:if="${!#lists.isEmpty(orderLines)}" class="cart-content">
                 
-                <!-- Lista articoli -->
-                <div class="cart-items">
-                    <h2 class="section-title">
-                        <i class="material-icons">list</i>
-                        Articoli nel Carrello
-                    </h2>
+                <!-- Azioni -->
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <form th:action="@{/currentOrder}" method="post" style="display: inline;">
+                        <button type="submit" style="background: linear-gradient(135deg, #059669, #047857); color: white; padding: 1rem 2rem; border-radius: 10px; border: none; font-weight: 600; cursor: pointer; font-size: 1rem; box-shadow: 0 4px 12px rgba(5,150,105,0.3); transition: all 0.2s;">
+                            ✅ Conferma Ordine
+                        </button>
+                    </form>
                     
-                    <div class="items-list">
-                        <div th:each="orderLine : ${orderLines}" class="cart-item">
-                            <div class="item-image">
-                                <div class="image-placeholder">
-                                    <i class="material-icons">watch</i>
-                                </div>
-                            </div>
-                            
-                            <div class="item-details">
-                                <h3 class="item-name">
-                                    <a th:href="@{'/watch/' + ${orderLine.watch.id}}" 
-                                       th:text="${orderLine.watch.name}"
-                                       class="item-link">
-                                        Nome Orologio
-                                    </a>
-                                </h3>
-                                
-                                <div class="item-info">
-                                    <div class="item-brand" th:if="${orderLine.watch.brand}">
-                                        <i class="material-icons">business</i>
-                                        <span th:text="${orderLine.watch.brand}">Marca</span>
-                                    </div>
-                                    
-                                    <div class="item-description" th:if="${orderLine.watch.description}">
-                                        <p th:text="${#strings.length(orderLine.watch.description) > 80 ? #strings.substring(orderLine.watch.description, 0, 80) + '...' : orderLine.watch.description}">
-                                            Descrizione dell'orologio...
-                                        </p>
-                                    </div>
-                                </div>
-                                
-                                <div class="item-quantity">
-                                    <label class="quantity-label">
-                                        <i class="material-icons">numbers</i>
-                                        Quantità:
-                                    </label>
-                                    <span class="quantity-value" th:text="${orderLine.quantity}">1</span>
-                                </div>
-                            </div>
-                            
-                            <div class="item-pricing">
-                                <div class="price-details">
-                                    <div class="unit-price" th:if="${orderLine.watch.price}">
-                                        <span class="price-label">Prezzo unitario:</span>
-                                        <span class="price-value">
-                                            €<span th:text="${#numbers.formatDecimal(orderLine.watch.price, 0, 'COMMA', 2, 'POINT')}">0,00</span>
-                                        </span>
-                                    </div>
-                                    
-                                    <div class="total-price" th:if="${orderLine.watch.price}">
-                                        <span class="price-label">Totale articolo:</span>
-                                        <span class="price-value total">
-                                            €<span th:text="${#numbers.formatDecimal(orderLine.watch.price * orderLine.quantity, 0, 'COMMA', 2, 'POINT')}">0,00</span>
-                                        </span>
-                                    </div>
-                                </div>
-                                
-                                <div class="item-actions">
-                                    <a th:href="@{'/watch/' + ${orderLine.watch.id}}" class="btn-view-item">
-                                        <i class="material-icons">visibility</i>
-                                        Vedi Dettagli
-                                    </a>
-                                    <!-- Qui potresti aggiungere un bottone per rimuovere l'articolo -->
-                                    <!--
-                                    <form th:action="@{'/currentOrder/remove/' + ${orderLine.id}}" method="post" style="display: inline;">
-                                        <button type="submit" class="btn-remove-item">
-                                            <i class="material-icons">delete</i>
-                                            Rimuovi
-                                        </button>
-                                    </form>
-                                    -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Riepilogo ordine -->
-                <div class="order-summary">
-                    <h2 class="section-title">
-                        <i class="material-icons">receipt</i>
-                        Riepilogo Ordine
-                    </h2>
-                    
-                    <div class="summary-details">
-                        <div class="summary-line">
-                            <span class="summary-label">Numero articoli:</span>
-                            <span class="summary-value" th:text="${#lists.size(orderLines)}">0</span>
-                        </div>
-                        
-                        <div class="summary-line">
-                            <span class="summary-label">Subtotale:</span>
-                            <span class="summary-value" th:if="${currentOrder.totalPrice != null and currentOrder.totalPrice > 0}">
-                                €<span th:text="${#numbers.formatDecimal(currentOrder.totalPrice, 0, 'COMMA', 2, 'POINT')}">0,00</span>
-                            </span>
-                            <span class="summary-value" th:unless="${currentOrder.totalPrice != null and currentOrder.totalPrice > 0}">
-                                €0,00
-                            </span>
-                        </div>
-                        
-                        <div class="summary-line">
-                            <span class="summary-label">Spedizione:</span>
-                            <span class="summary-value free">Gratuita</span>
-                        </div>
-                        
-                        <div class="summary-line">
-                            <span class="summary-label">IVA (22%):</span>
-                            <span class="summary-value">Inclusa</span>
-                        </div>
-                        
-                        <div class="summary-line total-line">
-                            <span class="summary-label">Totale:</span>
-                            <span class="summary-value total" th:if="${currentOrder.totalPrice != null and currentOrder.totalPrice > 0}">
-                                €<span th:text="${#numbers.formatDecimal(currentOrder.totalPrice, 0, 'COMMA', 2, 'POINT')}">0,00</span>
-                            </span>
-                            <span class="summary-value total" th:unless="${currentOrder.totalPrice != null and currentOrder.totalPrice > 0}">
-                                €0,00
-                            </span>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Azioni carrello -->
-                <div class="cart-actions">
-                    <div class="actions-grid">
-                        <form th:action="@{/currentOrder}" method="post" class="confirm-form">
-                            <button type="submit" class="btn-confirm-order" th:disabled="${#lists.isEmpty(orderLines)}">
-                                <i class="material-icons">check_circle</i>
-                                Conferma Ordine
-                            </button>
-                        </form>
-                        
-                        <a th:href="@{/watches}" class="btn-continue-shopping">
-                            <i class="material-icons">add_shopping_cart</i>
-                            Continua Shopping
-                        </a>
-                        
-                        <a th:href="@{/}" class="btn-secondary">
-                            <i class="material-icons">home</i>
-                            Torna alla Home
-                        </a>
-                    </div>
-                </div>
-                
-                <!-- Info aggiuntive -->
-                <div class="cart-info">
-                    <div class="info-cards">
-                        <div class="info-card">
-                            <div class="info-icon">
-                                <i class="material-icons">local_shipping</i>
-                            </div>
-                            <div class="info-content">
-                                <h4>Spedizione Gratuita</h4>
-                                <p>Su tutti gli ordini senza minimum</p>
-                            </div>
-                        </div>
-                        
-                        <div class="info-card">
-                            <div class="info-icon">
-                                <i class="material-icons">verified_user</i>
-                            </div>
-                            <div class="info-content">
-                                <h4>Garanzia Ufficiale</h4>
-                                <p>Tutti gli orologi sono garantiti</p>
-                            </div>
-                        </div>
-                        
-                        <div class="info-card">
-                            <div class="info-icon">
-                                <i class="material-icons">support_agent</i>
-                            </div>
-                            <div class="info-content">
-                                <h4>Supporto Clienti</h4>
-                                <p>Assistenza 24/7 per i tuoi acquisti</p>
-                            </div>
-                        </div>
-                    </div>
+                    <a th:href="@{/watches}" style="background: white; color: #374151; padding: 1rem 2rem; border-radius: 10px; text-decoration: none; font-weight: 600; border: 2px solid #d1d5db; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: all 0.2s;">
+                        🛍️ Continua Shopping
+                    </a>
                 </div>
             </div>
             
-        </section>
+        </div>
     </div>
 </body>
 </html>

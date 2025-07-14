@@ -5,161 +5,103 @@
     <title>I miei Ordini - WatchLux</title>
 </head>
 <body>
-    <!-- Contenuto specifico degli ordini -->
     <div th:fragment="contenuto">
-        <section class="orders-container">
+        <div class="orders-container">
             
-            <!-- Header della pagina -->
-            <div class="page-header">
-                <div class="header-content">
-                    <div class="header-info">
-                        <h1 class="page-title">
-                            <i class="material-icons">history</i>
-                            I miei Ordini
-                        </h1>
-                        <p class="page-subtitle">Visualizza la cronologia dei tuoi acquisti</p>
-                    </div>
-                    <div class="header-actions">
-                        <a th:href="@{/profile}" class="btn-secondary">
-                            <i class="material-icons">person</i>
-                            Torna al Profilo
-                        </a>
-                    </div>
+            <!-- Header -->
+            <div class="orders-header">
+                <h1>📋 I miei Ordini</h1>
+                <p>Cronologia dei tuoi acquisti</p>
+            </div>
+
+            <!-- Nessun ordine -->
+            <div th:if="${#lists.isEmpty(orders)}" class="orders-empty">
+                <div class="empty-icon">📦</div>
+                <h2>Nessun ordine ancora</h2>
+                <p>Non hai ancora effettuato nessun ordine. Inizia a esplorare i nostri fantastici orologi!</p>
+                <div class="actions">
+                    <a th:href="@{/watches}" class="btn btn-primary">
+                        ⌚ Esplora Orologi
+                    </a>
+                    <a th:href="@{/profile}" class="btn btn-secondary">
+                        👤 Torna al Profilo
+                    </a>
                 </div>
             </div>
-            
-            <!-- Stato vuoto - Nessun ordine -->
-            <div th:if="${#lists.isEmpty(orders)}" class="empty-state">
-                <div class="empty-content">
-                    <div class="empty-icon">
-                        <i class="material-icons">shopping_bag</i>
-                    </div>
-                    <h2 class="empty-title">Nessun ordine ancora</h2>
-                    <p class="empty-description">
-                        Non hai ancora effettuato nessun ordine. Inizia a esplorare i nostri fantastici orologi!
-                    </p>
-                    <div class="empty-actions">
-                        <a th:href="@{/watches}" class="btn-primary">
-                            <i class="material-icons">watch</i>
-                            Esplora Orologi
-                        </a>
-                        <a th:href="@{/}" class="btn-secondary">
-                            <i class="material-icons">home</i>
-                            Torna alla Home
-                        </a>
-                    </div>
-                </div>
-            </div>
-            
+
             <!-- Lista ordini -->
-            <div th:if="${!#lists.isEmpty(orders)}" class="orders-grid">
+            <div th:if="${!#lists.isEmpty(orders)}">
                 
-                <!-- Statistiche ordini -->
+                <!--
                 <div class="orders-stats">
                     <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="material-icons">shopping_bag</i>
-                        </div>
-                        <div class="stat-info">
-                            <span class="stat-number" th:text="${#lists.size(orders)}">0</span>
-                            <span class="stat-label">Ordini Totali</span>
-                        </div>
+                        <div class="stat-number blue" th:text="${#lists.size(orders)}">0</div>
+                        <div class="stat-label">Ordini Totali</div>
                     </div>
-                    
                     <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="material-icons">euro</i>
+                        <div class="stat-number green">
+                            €<span th:text="${#aggregates.sum(orders.![totalPrice])}">0</span>
                         </div>
-                        <div class="stat-info">
-                            <span class="stat-number">
-                                €<span th:text="${#aggregates.sum(orders.![totalPrice])}">0</span>
-                            </span>
-                            <span class="stat-label">Totale Speso</span>
-                        </div>
+                        <div class="stat-label">Totale Speso</div>
                     </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="material-icons">watch</i>
+                </div>  -->
+                
+                <!-- Ordini -->
+                <div class="orders-list">
+                    <div th:each="order : ${orders}" class="order-card">
+                        
+                        <!-- Header ordine -->
+                        <div class="order-header">
+                            <div class="order-info">
+                                <h3>📋 Ordine <span th:text="${order.code}">ORD-001</span></h3>
+                                <div class="order-date" th:if="${order.creationTime}">
+                                    📅 <span th:text="${#temporals.format(order.creationTime, 'dd/MM/yyyy HH:mm')}">01/01/2024 10:30</span>
+                                </div>
+                            </div>
+                            <div class="order-status">
+                                <div class="status-badge">✅ Completato</div>
+                                <div class="order-total">
+                                    €<span th:text="${order.totalPrice}">0.00</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="stat-info">
-                            <span class="stat-number">Premium</span>
-                            <span class="stat-label">Cliente</span>
+                        
+                        <!-- Dettagli ordine -->
+                        <div class="order-details">
+                            <div class="order-meta">
+                                <!--<div class="meta-item">
+                                    <div class="meta-label">Articoli</div>
+                                    <div class="meta-value" th:text="${order.orderLines != null ? #lists.size(order.orderLines) : 0}">0</div>
+                                </div> 
+                                <div class="meta-item">
+                                    <div class="meta-label">Stato</div>
+                                    <div class="meta-value green">Pagato</div>
+                                </div> -->
+                            </div>
+                            
+                            <!-- Azioni -->
+                            <div class="order-actions">
+                                <a th:href="@{'/placedOrder/' + ${order.id}}" class="btn-view-order">
+                                    👁️ Dettagli
+                                </a>
+                            </div>
                         </div>
+                        
                     </div>
                 </div>
                 
-                <!-- Lista ordini -->
-                <div class="orders-list">
-                    <h2 class="section-title">
-                        <i class="material-icons">list</i>
-                        Cronologia Ordini
-                    </h2>
-                    
-                    <div class="orders-cards">
-                        <div th:each="order : ${orders}" class="order-card">
-                            <div class="order-header">
-                                <div class="order-info">
-                                    <h3 class="order-code">
-                                        <i class="material-icons">receipt</i>
-                                        <span th:text="${order.code}">ORD-001</span>
-                                    </h3>
-                                    <span class="order-date" th:if="${order.createdAt}">
-                                        <i class="material-icons">schedule</i>
-                                        <span th:text="${#temporals.format(order.createdAt, 'dd/MM/yyyy HH:mm')}">01/01/2024 10:30</span>
-                                    </span>
-                                </div>
-                                <div class="order-status">
-                                    <span class="status-badge status-completed">
-                                        <i class="material-icons">check_circle</i>
-                                        Completato
-                                    </span>
-                                </div>
-                            </div>
-                            
-                            <div class="order-content">
-                                <div class="order-summary">
-                                    <div class="summary-item">
-                                        <span class="summary-label">Totale:</span>
-                                        <span class="summary-value">
-                                            €<span th:text="${order.totalPrice}">0.00</span>
-                                        </span>
-                                    </div>
-                                    <div class="summary-item" th:if="${order.orderLines}">
-                                        <span class="summary-label">Articoli:</span>
-                                        <span class="summary-value" th:text="${#lists.size(order.orderLines)}">0</span>
-                                    </div>
-                                </div>
-                                
-                                <div class="order-actions">
-                                    <a th:href="@{'/placedOrder/' + ${order.id}}" class="btn-view-order">
-                                        <i class="material-icons">visibility</i>
-                                        Visualizza Dettagli
-                                    </a>
-                                    <button class="btn-reorder" onclick="showReorderModal()">
-                                        <i class="material-icons">replay</i>
-                                        Riordina
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <!-- Azioni -->
+                <div class="page-actions">
+                    <a th:href="@{/}" class="btn btn-primary">
+                        ⌚ Continua Shopping
+                    </a>
+                    <a th:href="@{/profile}" class="btn btn-secondary">
+                        👤 Torna al Profilo
+                    </a>
                 </div>
             </div>
             
-            <!-- Actions -->
-            <div class="page-actions">
-                <a th:href="@{/watches}" class="btn-primary">
-                    <i class="material-icons">watch</i>
-                    Continua Shopping
-                </a>
-                <a th:href="@{/}" class="btn-secondary">
-                    <i class="material-icons">home</i>
-                    Torna alla Home
-                </a>
-            </div>
-            
-        </section>
+        </div>
     </div>
 </body>
 </html>

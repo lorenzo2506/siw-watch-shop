@@ -48,9 +48,7 @@ public class OrderService {
      * Crea un nuovo ordine in stato "IN_CREAZIONE" per l'utente, solo se non ne ha già uno.
      */
     private Order createNewCurrentOrder(User user) {
-        if (user.getCurrentOrder() != null && OrderStatus.IN_CREAZIONE.equals(user.getCurrentOrder().getStatus())) {
-            return user.getCurrentOrder();
-        }
+        
 
         Order newOrder = new Order();
         newOrder.setStatus(OrderStatus.IN_CREAZIONE);

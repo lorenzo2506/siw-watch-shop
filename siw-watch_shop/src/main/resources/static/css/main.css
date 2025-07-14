@@ -16,9 +16,11 @@
 
 /* New page styles */
 @import url('profile.css');      /* Per userProfile.html */
-@import url('orders.css');       /* Per placedOrders.html e placedOrder.html */
+@import url('orders.css');       /* Per placedOrders.html */
 @import url('watches.css');      /* Per watches.html */
 @import url('cart.css');         /* Per currentOrder.html */
+
+@import url('order-detail.css');         /* Per placedorder.html */
 
 /* 
 Uncomment imports as you create the corresponding CSS files:

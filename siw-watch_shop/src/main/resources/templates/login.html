@@ -30,18 +30,23 @@
                     <span th:text="${logoutMessage}">Logout effettuato</span>
                 </div>
                 
-                <!-- OAuth2 Login Section -->
-                <div class="oauth-section">
-                    <a th:href="@{/oauth2/authorization/google}" class="btn-google">
-                        <i class="material-icons">account_circle</i>
-                        <span>Continua con Google</span>
+                
+                
+                
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <a th:href="@{/oauth2/authorization/google}" style="display: inline-flex; align-items: center; gap: 0.75rem; background: linear-gradient(135deg, #4285f4, #3367d6); color: white; padding: 1rem 2rem; border-radius: 50px; text-decoration: none; font-weight: 600; font-size: 1rem; box-shadow: 0 4px 15px rgba(66,133,244,0.3); transition: all 0.2s; width: 100%; justify-content: center; max-width: 280px;">
+                        <span style="font-size: 1.2rem;">🔗</span>
+                        Continua con Google
                     </a>
                 </div>
                 
-                <!-- Divider -->
-                <div class="divider">
-                    <span>oppure</span>
+                <!-- Separatore -->
+                <div style="display: flex; align-items: center; margin: 2rem 0; gap: 1rem;">
+                    <div style="flex: 1; height: 1px; background: #e5e7eb;"></div>
+                    <span style="color: #6b7280; font-size: 0.9rem; font-weight: 500;">oppure</span>
+                    <div style="flex: 1; height: 1px; background: #e5e7eb;"></div>
                 </div>
+                
                 
                 <!-- Traditional Login Form -->
                 <form th:action="@{/login}" method="post" class="luxury-form">
@@ -77,22 +82,22 @@
                     </button>
                 </form>
                 
+                <div style="display: flex; align-items: center; margin: 2rem 0; gap: 1rem;">
+                    <div style="flex: 1; height: 1px; background: #e5e7eb;"></div>
+                    <span style="color: #6b7280; font-size: 0.9rem; font-weight: 500;">oppure</span>
+                    <div style="flex: 1; height: 1px; background: #e5e7eb;"></div>
+                </div>
+                
                 <!-- Register Link -->
                 <div class="form-footer">
-                    <p>Non hai un account?</p>
+                    <span>Non hai un account?</span>
                     <a th:href="@{/register}" class="link-primary">
                         <i class="material-icons">person_add</i>
-                        Registrati qui
+                               Registrati qui
                     </a>
                 </div>
                 
-                <!-- Back to Home -->
-                <div class="form-actions">
-                    <a th:href="@{/}" class="btn-secondary">
-                        <i class="material-icons">arrow_back</i>
-                        Torna alla Home
-                    </a>
-                </div>
+                
             </div>
         </section>
     </div>

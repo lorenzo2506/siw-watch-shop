@@ -68,9 +68,8 @@
                 </a>
                 
                 <!-- Carrello -->
-                <a th:href="@{/currentOrder}" class="icon-item cart-container">
-                    <i class="material-icons cart-icon">shopping_cart</i>
-                    <span class="cart-badge" th:text="${cartItemCount ?: 0}">0</span>
+                <a th:href="@{/currentOrder}">
+                    <img th:src="@{images/icons/cart-icon.png}" alt="Logo">
                 </a>
                 
             </div>
