@@ -1,79 +1,117 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
-    <!-- Header Fragment seguendo sintassi PDF -->
-    <header class="header" th:fragment="intestazione">
-        <div class="nav-container">
+    <!-- Header Fragment -->
+    <header th:fragment="intestazione" style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%); padding: 1rem 0; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+        <div style="max-width: 1400px; margin: 0 auto; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; gap: 2rem;">
             
-            <!-- Sezione Sinistra (Solo Logo) -->
-            <div class="left-section">
-                <!-- Logo -->
-                <a th:href="@{/}" class="logo">
-                    <span class="logo-icon">⌚</span>
+            <!-- Sezione Sinistra (Logo) -->
+            <div style="display: flex; align-items: center;">
+                <a th:href="@{/}" style="display: flex; align-items: center; gap: 0.75rem; text-decoration: none; color: white; font-size: 1.5rem; font-weight: 700;">
+                    <span style="font-size: 2rem;">⌚</span>
                     <span>WatchLux</span>
                 </a>
             </div>
             
-            <!-- Search Bar (Centro-Sinistra) -->
-            <div class="search-container">
-                <form th:action="@{/watches}" method="GET" class="search-bar">
+            <!-- Search Bar (Centro) -->
+            <div style="flex: 1; max-width: 500px; margin: 0 2rem;">
+                <form th:action="@{/watches}" method="GET" style="display: flex; background: white; border-radius: 50px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                     <input type="text" 
                            name="search" 
-                           class="search-input" 
                            placeholder="Cerca orologi, marche, modelli..."
-                           th:value="${searchQuery}">
-                    <button type="submit" class="search-btn">
-                        <i class="material-icons">search</i>
+                           th:value="${searchQuery}"
+                           style="flex: 1; padding: 0.875rem 1.5rem; border: none; outline: none; font-size: 1rem; background: transparent;">
+                    <button type="submit" style="background: #fbbf24; color: #1f2937; border: none; padding: 0.875rem 1.25rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">
+                        🔍
                     </button>
                 </form>
             </div>
             
-            <!-- Sezione Destra (Home + Menu Icone) -->
-            <div class="right-section">
+            <!-- Sezione Destra (Icone) -->
+            <div style="display: flex; align-items: center; gap: 1.5rem;">
                 
-                <!-- Home Icon (Spostato qui) -->
-                <a th:href="@{/}" class="home-icon-container">
-                    <img src="/images/icons/home-icon.png">
+                <!-- Home Icon -->
+                <a th:href="@{/}" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; background: rgba(255,255,255,0.1); border-radius: 8px; transition: all 0.2s; text-decoration: none;">
+                    <img th:src="@{/images/icons/home-icon.png}" alt="Home" style="width: 24px; height: 24px; filter: brightness(0) invert(1);">
                 </a>
                 
                 <!-- Lingua (Bandiera) -->
-                <div class="icon-item dropdown">
-                    <span style="font-size: 1.5rem;">🇮🇹</span>
+                <div style="position: relative; display: inline-block;">
+                    <div style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; background: rgba(255,255,255,0.1); border-radius: 8px; cursor: pointer; transition: all 0.2s;" onclick="toggleDropdown()">
+                        <span style="font-size: 1.5rem;">🇮🇹</span>
+                    </div>
                     
-                    <div class="dropdown-content">
-                        <a th:href="@{/lang/it}" class="language-option">
+                    <div id="languageDropdown" style="position: absolute; top: 100%; right: 0; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); min-width: 150px; z-index: 1000; display: none; margin-top: 0.5rem;">
+                        <a th:href="@{/lang/it}" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; text-decoration: none; color: #374151; transition: all 0.2s; border-bottom: 1px solid #f3f4f6;">
                             <span>🇮🇹</span>
                             <span>Italiano</span>
                         </a>
-                        <a th:href="@{/lang/en}" class="language-option">
+                        <a th:href="@{/lang/en}" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; text-decoration: none; color: #374151; transition: all 0.2s; border-bottom: 1px solid #f3f4f6;">
                             <span>🇬🇧</span>
                             <span>English</span>
                         </a>
-                        <a th:href="@{/lang/fr}" class="language-option">
+                        <a th:href="@{/lang/fr}" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; text-decoration: none; color: #374151; transition: all 0.2s; border-bottom: 1px solid #f3f4f6;">
                             <span>🇫🇷</span>
                             <span>Français</span>
                         </a>
-                        <a th:href="@{/lang/de}" class="language-option">
+                        <a th:href="@{/lang/de}" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; text-decoration: none; color: #374151; transition: all 0.2s;">
                             <span>🇩🇪</span>
                             <span>Deutsch</span>
                         </a>
                     </div>
                 </div>
                 
-                <!-- Profilo - Click diretto per andare al profilo/login -->
-                <a th:href="${isAuthenticated} ? '/profile' : '/login'" class="icon-item profile-container">
-                    <i class="material-icons profile-icon">person</i>
-                    <!-- Badge opzionale per mostrare se loggato -->
-                    <span th:if="${isAuthenticated}" class="profile-badge" title="Loggato">●</span>
+                <!-- Profilo -->
+                <a th:href="${isAuthenticated} ? '/profile' : '/login'" style="position: relative; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; background: rgba(255,255,255,0.1); border-radius: 8px; transition: all 0.2s; text-decoration: none;">
+                    <img th:src="@{/images/icons/profile-icon.png}" alt="Profilo" style="width: 24px; height: 24px; filter: brightness(0) invert(1);">
+                    <!-- Badge per utente loggato -->
+                    <span th:if="${isAuthenticated}" style="position: absolute; top: -2px; right: -2px; width: 12px; height: 12px; background: #10b981; border-radius: 50%; border: 2px solid white;"></span>
                 </a>
                 
                 <!-- Carrello -->
-                <a th:href="@{/currentOrder}">
-                    <img th:src="@{images/icons/cart-icon.png}" alt="Logo">
+                <a th:href="@{/currentOrder}" style="position: relative; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; background: rgba(255,255,255,0.1); border-radius: 8px; transition: all 0.2s; text-decoration: none;">
+                    <img th:src="@{/images/icons/cart-icon.png}" alt="Carrello" style="width: 24px; height: 24px; filter: brightness(0) invert(1);">
+                    <!-- Badge carrello (opzionale - se hai il numero di articoli) -->
+                    <!-- <span style="position: absolute; top: -6px; right: -6px; background: #ef4444; color: white; border-radius: 50%; min-width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600;">3</span> -->
                 </a>
                 
             </div>
         </div>
+
+        <script>
+            function toggleDropdown() {
+                const dropdown = document.getElementById('languageDropdown');
+                dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+            }
+            
+            // Chiudi dropdown quando clicchi fuori
+            document.addEventListener('click', function(event) {
+                const dropdown = document.getElementById('languageDropdown');
+                const languageButton = event.target.closest('[onclick="toggleDropdown()"]');
+                
+                if (!languageButton && !dropdown.contains(event.target)) {
+                    dropdown.style.display = 'none';
+                }
+            });
+        </script>
+
+        <style>
+            /* Hover effects */
+            a[href]:hover {
+                background: rgba(255,255,255,0.2) !important;
+                transform: translateY(-1px) !important;
+            }
+            
+            /* Search button hover */
+            button:hover {
+                background: #f59e0b !important;
+            }
+            
+            /* Dropdown hover */
+            #languageDropdown a:hover {
+                background: #f3f4f6 !important;
+            }
+        </style>
     </header>
 </body>
 </html>
