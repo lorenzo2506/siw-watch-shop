@@ -42,8 +42,6 @@ public class Watch {
 	@NotBlank
 	private String brand;
 	
-	private String url_image;
-	
 	private String description;
 	
 	private Integer stock;

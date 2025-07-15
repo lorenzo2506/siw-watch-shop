@@ -29,6 +29,9 @@ public class SecurityConfig {
 
     @Autowired
     private OAuth2AuthenticationSuccessHandler oAuth2SuccessHandler;
+    
+    @Autowired
+    private CustomAuthenticationSuccessHandler customAuthSuccessHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -49,7 +52,7 @@ public class SecurityConfig {
             )
             .formLogin(form -> form
                 .loginPage("/login")
-                .defaultSuccessUrl("/", true)
+                .successHandler(customAuthSuccessHandler)  // Usa il custom handler invece di defaultSuccessUrl
                 .permitAll()
             )
             .oauth2Login(oauth -> {
