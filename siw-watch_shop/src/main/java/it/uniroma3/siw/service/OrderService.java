@@ -24,6 +24,7 @@ public class OrderService {
     @Autowired private AuthenticationService authService;
     @Autowired private WatchService watchService;
     @Autowired private UserRepository userService;
+    @Autowired private OrderLineService orderLineService;
 
     public Order getById(Long id) {
         return orderRepository.findById(id).orElse(null);
@@ -114,7 +115,7 @@ public class OrderService {
         // Forza il refresh per assicurarti di avere lo stato più aggiornato
        
         
-        Watch currentWatch = watchService.getWatch(id);
+        Watch currentWatch = watchService.getAvailableWatch(id);
         OrderLine existingOrderLine = this.existingOrderLineInOrder(currentOrder, currentWatch);
 
         if (existingOrderLine != null) {
@@ -147,6 +148,31 @@ public class OrderService {
 
         this.save(currentOrder);
         createNewCurrentOrder(currentUser); // nuovo ordine dopo conferma
+    }
+    
+    
+    public void removeOrderLine(Long id) {
+    	Order order = this.getCurrentOrder();
+    	OrderLine orderLine = orderLineService.getById(id);
+    	
+    	if(orderLine==null)
+    		throw new IllegalArgumentException("riga d'ordine nulla");
+    	
+    	if(!(this.orderLineService.getAllLines().contains(orderLine)))
+    		throw new IllegalArgumentException("la riga d'ordine non appartiene all ordine");
+    	
+    	if(orderLine.getQuantity()==1) {
+	    	order.getOrderLines().remove(orderLine);
+	    	orderLineService.delete(orderLine);
+    	} else {
+    		orderLine.decreaseQuantity();
+    		orderLineService.save(orderLine);
+    	}
+    	
+    	
+    	order.calculateTotalPrice();
+    	this.save(order); 
+    	
     }
 
     private String generateOrderCode() {

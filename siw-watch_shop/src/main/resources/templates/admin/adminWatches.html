@@ -51,26 +51,51 @@
                 <div th:each="watch : ${watches}" class="watch-card">
                     
                     <!-- Immagine orologio -->
-                    <!-- Singola immagine -->
-                    <img th:src="@{'/images/' + ${watch.imagePath}}" 
-                        alt="Watch image" 
-                        class="watch-image"
-                        th:if="${watch.imagePath != null}" />
-
-                    <!-- Immagine placeholder se non c'è immagine -->
-                    <div th:unless="${watch.imagePath != null}" class="no-image">
-                        <p>Nessuna immagine disponibile</p>
+                    <div class="watch-image">
+                        <div class="image-placeholder">
+                            <i class="material-icons">watch</i>
+                        </div>
+                        <div class="watch-badges">
+                            <span class="badge luxury" th:if="${watch.price != null and watch.price > 5000}">
+                                <i class="material-icons">diamond</i>
+                                Luxury
+                            </span>
+                        </div>
                     </div>
                     
                     <!-- Dettagli orologio -->
                     <div class="watch-details">
+                        <div class="watch-header">
+                            <h3 class="watch-name">
+                                <a th:href="@{'/watch/' + ${watch.id}}" th:text="${watch.name}">
+                                    Nome Orologio
+                                </a>
+                            </h3>
+                            <div class="watch-brand" th:if="${watch.brand}">
+                                <i class="material-icons">business</i>
+                                <span th:text="${watch.brand}">Marca</span>
+                            </div>
+                        </div>
                         
+                        <div class="watch-description" th:if="${watch.description}">
+                            <p th:text="${#strings.length(watch.description) > 100 ? #strings.substring(watch.description, 0, 100) + '...' : watch.description}">
+                                Descrizione dell'orologio...
+                            </p>
+                        </div>
+                        
+                        <div class="watch-specs">
+                            <span class="spec-item" th:if="${watch.year}">
+                                <i class="material-icons">schedule</i>
+                                <span th:text="${watch.year}">Anno</span>
+                            </span>
+                            <span class="spec-item" th:if="${watch.stock != null and watch.stock > 0}">
+                                <i class="material-icons">inventory</i>
+                                <span th:text="${watch.stock + ' disponibili'}">Stock</span>
+                            </span>
+                        </div>
                         
                         <div class="watch-footer">
                             <div class="watch-price" th:if="${watch.price}">
-                                <span th:text="${watch.name}">name</span>
-                                <span th:text="${watch.brand}">brand</span>
-                                <span th:text="${watch.year}">year</span>
                                 <span class="price-label">Prezzo:</span>
                                 <span class="price-value">
                                     €<span th:text="${#numbers.formatDecimal(watch.price, 0, 'COMMA', 2, 'POINT')}">0,00</span>
@@ -89,7 +114,7 @@
             
             <!-- Azioni generali -->
             <div class="page-actions" th:if="${!#lists.isEmpty(watches)}">
-                <a th:href="@{/}" class="btn-secondary">
+                <a th:href="@{/admin}" class="btn-secondary">
                     <i class="material-icons">home</i>
                     Torna alla Home
                 </a>

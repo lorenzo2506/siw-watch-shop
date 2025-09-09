@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="fragments/layout.html :: base(${watch?.name + ' - Recensioni - WatchLux' ?: 'Recensioni - WatchLux'}, ~{::contenuto})">
+<head>
+    <title th:text="${watch?.name + ' - Recensioni - WatchLux' ?: 'Recensioni - WatchLux'}">Recensioni - WatchLux</title>
+</head>
+<body>
+    <div th:fragment="contenuto">
+        
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb">
+            <a th:href="@{/}" class="breadcrumb-link">
+                <i class="material-icons">home</i>
+                Home
+            </a>
+            <span class="breadcrumb-separator">></span>
+            <a th:href="@{/watches}" class="breadcrumb-link">Orologi</a>
+            <span class="breadcrumb-separator">></span>
+            <a th:href="@{'/watch/' + ${watch?.id}}" class="breadcrumb-link" th:text="${watch?.name ?: 'Orologio'}">Orologio</a>
+            <span class="breadcrumb-separator">></span>
+            <span class="breadcrumb-current">Recensioni</span>
+        </nav>
+
+        <!-- Header della pagina -->
+        <div class="reviews-page-header">
+            <div class="product-summary">
+                <img th:src="@{'/images/' + ${watch.imagePath}}" 
+                     alt="Watch image" 
+                     class="product-thumb"
+                     th:if="${watch.imagePath != null}" />
+                     
+                <div class="watch-footer">
+                    <div class="watch-price">
+                    		<h1 th:text="'       ' + ${watch.brand} + ' ' + ${watch.name} + '  -  ' + ${watch.year}"> </h1>
+                 	</div>
+                 </div>
+            </div>
+            
+            <div class="overall-rating">
+                <div class="rating-display">
+                    <div class="rating-stars-large">
+                        <span class="stars-background">★★★★★</span>
+                        <span class="stars-filled" th:style="'width: ' + ${(watch.averageRating != null) ? (watch.averageRating / 5 * 100) : 0} + '%'">★★★★★</span>
+                    </div>
+                    <span class="rating-number-large" th:text="${(watch.averageRating != null) ? (#numbers.formatDecimal(watch.averageRating, 1, 1)) : '0.0'}">0.0</span>
+                    </div>
+                <p class="total-reviews" th:text="${(reviews != null) ? reviews.size() : 0} + ' recensioni totali'">0 recensioni totali</p>
+            </div>
+        </div>
+
+        <!-- Form Aggiungi Recensione -->
+        <div th:if="${isAuthenticated and userDetails != null and userDetails.role.name() == 'USER'}" class="add-review-section">
+            <h3>Scrivi la tua recensione</h3>
+            
+            <form th:action="@{'/watch/' + ${watch.id} + '/reviews'}" method="post" class="review-form" th:object="${review}">
+                
+                <!-- Messaggio di errore globale (come per watch.duplicate) -->
+                <div th:if="${#fields.hasGlobalErrors()}" class="error-messages">
+                    <div class="alert alert-danger">
+                        <ul>
+                            <li th:each="err : ${#fields.globalErrors()}" th:text="${err}">Errore globale</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Rating -->
+                <div class="form-group">
+                    <label>Valutazione:</label>
+                    <div class="rating-input">
+                        <input type="radio" id="star5" name="star_rating" value="5" />
+                        <label for="star5">★</label>
+                        <input type="radio" id="star4" name="star_rating" value="4" />
+                        <label for="star4">★</label>
+                        <input type="radio" id="star3" name="star_rating" value="3" />
+                        <label for="star3">★</label>
+                        <input type="radio" id="star2" name="star_rating" value="2" />
+                        <label for="star2">★</label>
+                        <input type="radio" id="star1" name="star_rating" value="1" />
+                        <label for="star1">★</label>
+                    </div>
+                </div>
+
+                <!-- Testo recensione -->
+                <div class="form-group">
+                    <label for="reviewText">La tua recensione:</label>
+                    <textarea id="reviewText" name="text" rows="4" placeholder="Condividi la tua esperienza..." required></textarea>
+                </div>
+
+                <!-- Campo nascosto per watch -->
+                <input type="hidden" name="watch.id" th:value="${watch.id}" />
+
+                <button type="submit" class="submit-btn">Pubblica Recensione</button>
+            </form>
+        </div>
+
+
+        <!-- Lista Recensioni -->
+        <div class="reviews-list">
+            <div class="watch-footer">
+                <div class="watch-price">
+                    <h3 style="text-align: center;">Tutte le recensioni</h3>
+                </div>
+            </div>
+            
+            <div th:if="${reviews == null or reviews.empty}" class="no-reviews">
+                <p>Nessuna recensione ancora. Sii il primo a lasciare un feedback!</p>
+            </div>
+
+
+            <div th:if="${userReview != null}" th:object="${userReview}" class="review-item" style="position: relative;">
+                <div class="review-header">
+                    <div class="reviewer-name" th:text="${userReview.user?.name + ' ' + userReview.user?.surname ?: 'Utente Anonimo'}">Nome Utente</div>
+                    <div class="review-rating">
+                        <div class="rating-stars-small">
+                            <span class="stars-background">★★★★★</span>
+                            <span class="stars-filled" th:style="'width: ' + ${(userReview.star_rating ?: 0) / 5 * 100} + '%'">★★★★★</span>
+                        </div>
+                        <span class="rating-value" th:text="${userReview.star_rating ?: 0}">0</span>
+                    </div>
+                    <div class="review-date" th:text="${#temporals.format(userReview.createdAt, 'dd/MM/yyyy')}">Data</div>
+                </div>
+                <div class="review-content">
+                    <p th:text="${userReview.text}">Testo della recensione...</p>
+                </div>
+            </div>
+
+            <div th:each="review : ${reviews}" class="review-item" style="position: relative;">
+                
+                <!-- Pulsante Eliminazione (solo per ADMIN) -->
+                <form th:if="${isAuthenticated and userDetails != null and userDetails.role.name() == 'ADMIN'}"
+                	th:action="@{'/admin/watch/' + ${watch.id} + '/reviews/' + ${review.id} + '/delete'}" 
+                    method="post" 
+                    style="position: absolute; top: 8px; right: 8px; z-index: 10;">
+
+
+                    <button type="submit" 
+                            style="background: linear-gradient(135deg, #ef4444, #dc2626); border: none; border-radius: 6px; color: white; cursor: pointer; padding: 6px 10px; font-size: 12px; font-weight: bold; transition: all 0.2s; box-shadow: 0 2px 8px rgba(239,68,68,0.3);"
+                            onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 4px 12px rgba(239,68,68,0.5)';"
+                            onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 8px rgba(239,68,68,0.3)';"
+                            >
+                        Elimina
+                    </button>
+                </form>
+                
+                <div class="review-header">
+                    <div class="reviewer-name" th:text="${review.user?.name + ' ' + review.user?.surname ?: 'Utente Anonimo'}">Nome Utente</div>
+                    <div class="review-rating">
+                        <div class="rating-stars-small">
+                            <span class="stars-background">★★★★★</span>
+                            <span class="stars-filled" th:style="'width: ' + ${(review.star_rating ?: 0) / 5 * 100} + '%'">★★★★★</span>
+                        </div>
+                        <span class="rating-value" th:text="${review.star_rating ?: 0}">0</span>
+                    </div>
+                    <div class="review-date" th:text="${#temporals.format(review.createdAt, 'dd/MM/yyyy')}">Data</div>
+                </div>
+                <div class="review-content">
+                    <p th:text="${review.text}">Testo della recensione...</p>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Torna al prodotto -->
+        <div class="back-to-product">
+            <a th:href="@{'/watch/' + ${watch.id}}" class="back-btn">
+                <i class="material-icons">arrow_back</i>
+                Torna al prodotto
+            </a>
+        </div>
+    </div>
+</body>
+</html>

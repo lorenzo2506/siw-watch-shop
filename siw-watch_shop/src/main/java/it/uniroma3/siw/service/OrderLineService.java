@@ -21,4 +21,11 @@ public class OrderLineService {
 		orderLineRepository.save(orderLine);
 	}
 	
+	public void delete(OrderLine orderLine) {
+		orderLineRepository.delete(orderLine);
+	}
+	
+	public OrderLine getById(Long id) {
+		return this.orderLineRepository.findById(id).get();
+	}
 }

@@ -39,8 +39,11 @@ public class Order {
 	@JoinColumn(name="order_id")
 	private List<OrderLine> orderLines;
 	
+	
 	@OneToMany(cascade=CascadeType.ALL)
 	private List <Watch> watches;
+	
+	
 	
 	private LocalDateTime creationTime;
 	

@@ -66,6 +66,15 @@ public class OrderController {
 	}
 	
 	
+	@PostMapping("/currentOrder/remove/{id}")
+	public String deletOrderLineToCurrentOrder(@PathVariable("id") Long id) {
+		
+		this.orderService.removeOrderLine(id);
+		Order currentOrder = this.orderService.getCurrentOrder();
+		return "redirect:/currentOrder/" + currentOrder.getId();
+	}
+	
+	
 	@PostMapping("/currentOrder")
 	public String confirmOrder() {
 		this.orderService.confirmOrder();

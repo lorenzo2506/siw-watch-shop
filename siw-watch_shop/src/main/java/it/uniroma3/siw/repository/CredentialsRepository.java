@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import it.uniroma3.siw.model.Credentials;
+import it.uniroma3.siw.model.User;
 
 public interface CredentialsRepository extends JpaRepository<Credentials, Long> {
     
@@ -20,4 +21,6 @@ public interface CredentialsRepository extends JpaRepository<Credentials, Long> 
     boolean existsByUsername(String username);
     
     boolean existsByEmail(String email);
+    
+    Optional<Credentials> findByUser(User user);
 }

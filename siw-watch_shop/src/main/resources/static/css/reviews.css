@@ -1,0 +1,409 @@
+/* CSS per la sezione recensioni in watch.html */
+.reviews-summary-section {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.reviews-summary-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+}
+
+.rating-display {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.rating-stars {
+    position: relative;
+    font-size: 1.2rem;
+}
+
+.stars-background {
+    color: #ddd;
+}
+
+.stars-filled {
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: #ffd700;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.rating-number {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.reviews-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.reviews-count {
+    color: #7f8c8d;
+}
+
+.view-reviews-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #3498db;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.view-reviews-btn:hover {
+    color: #2980b9;
+}
+
+/* CSS per la pagina reviews.html */
+.reviews-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 2rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.product-summary {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.product-thumb {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.product-info h1 {
+    margin: 0 0 0.5rem 0;
+    color: #2c3e50;
+    font-size: 1.5rem;
+}
+
+.product-info p {
+    margin: 0;
+    color: #7f8c8d;
+}
+
+.overall-rating {
+    text-align: center;
+}
+
+.rating-display {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+}
+
+.rating-stars-large {
+    position: relative;
+    font-size: 2rem;
+}
+
+.rating-number-large {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.total-reviews {
+    margin: 0;
+    color: #7f8c8d;
+}
+
+/* Form recensione */
+.add-review-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.add-review-section h3 {
+    margin: 0 0 1.5rem 0;
+    color: #2c3e50;
+}
+
+.review-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-weight: 500;
+    color: #2c3e50;
+}
+
+.rating-input {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    gap: 2px;
+}
+
+.rating-input input {
+    display: none;
+}
+
+.rating-input label {
+    font-size: 2rem;
+    color: #ddd;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.rating-input label:hover,
+.rating-input label:hover ~ label,
+.rating-input input:checked ~ label {
+    color: #ffd700;
+}
+
+.form-group textarea {
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 100px;
+}
+
+.form-group textarea:focus {
+    outline: none;
+    border-color: #3498db;
+}
+
+.submit-btn {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    align-self: flex-start;
+    transition: background 0.3s ease;
+}
+
+.submit-btn:hover {
+    background: #2980b9;
+}
+
+/* Stili per messaggi di errore */
+.error-message {
+    background-color: #fee;
+    border: 1px solid #fcc;
+    color: #c33;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.error-message span {
+    line-height: 1.4;
+}
+
+/* Stili per errori dei singoli campi */
+.field-error {
+    color: #c33;
+    font-size: 14px;
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.field-error:before {
+    content: "⚠️";
+    font-size: 12px;
+}
+
+/* Stili alternativi per errori (mantenuti per compatibilità) */
+.error-messages {
+    margin-bottom: 20px;
+}
+
+.alert {
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+.alert-danger {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+}
+
+.alert ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.alert li {
+    margin: 5px 0;
+    font-weight: 500;
+}
+
+/* Lista recensioni */
+.reviews-list {
+    margin-bottom: 2rem;
+}
+
+.reviews-list h3 {
+    margin: 0 0 1.5rem 0;
+    color: #2c3e50;
+}
+
+.no-reviews {
+    text-align: center;
+    padding: 3rem;
+    color: #7f8c8d;
+    background: white;
+    border-radius: 8px;
+}
+
+.review-item {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    gap: 1rem;
+}
+
+.reviewer-name {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.review-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.rating-stars-small {
+    position: relative;
+    font-size: 1rem;
+}
+
+.rating-value {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+}
+
+.review-date {
+    color: #95a5a6;
+    font-size: 0.9rem;
+}
+
+.review-content p {
+    margin: 0;
+    color: #2c3e50;
+    line-height: 1.6;
+}
+
+/* Torna al prodotto */
+.back-to-product {
+    text-align: center;
+    padding: 2rem 0;
+}
+
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #6c757d;
+    text-decoration: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+    background: #e9ecef;
+    color: #495057;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .reviews-summary-card {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .reviews-page-header {
+        flex-direction: column;
+        gap: 1.5rem;
+        text-align: center;
+    }
+    
+    .product-summary {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .review-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .add-review-section {
+        padding: 1.5rem;
+    }
+    
+    .rating-input label {
+        font-size: 1.5rem;
+    }
+
+    .error-message {
+        padding: 12px;
+        font-size: 14px;
+    }
+    
+    .field-error {
+        font-size: 13px;
+    }
+}

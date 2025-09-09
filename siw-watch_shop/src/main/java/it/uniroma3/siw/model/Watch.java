@@ -48,12 +48,25 @@ public class Watch {
 	
 	// Campo per l'immagine
     private String imagePath;
+    
+    @Column(name = "availability")
+    private boolean availability = true;
 	
+    
+    @OneToMany(mappedBy="watch", cascade=CascadeType.ALL)
+    private List<Review> reviews;
 	
 	@NotNull
 	@Min(1800)
 	@Max(2025)
 	private Integer year;
+	
+	
+	private Integer ratingCount;
+	
+	private Float averageRating;
+	
+	
 	
 	public Watch() {
 	}

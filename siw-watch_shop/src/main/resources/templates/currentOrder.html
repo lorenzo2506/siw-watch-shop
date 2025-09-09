@@ -11,7 +11,7 @@
             <!-- Header -->
             <div style="text-align: center; margin-bottom: 3rem; padding: 2rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 16px; color: white; box-shadow: 0 8px 32px rgba(0,0,0,0.1);">
                 <h1 style="font-size: 2.2rem; margin: 0; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">
-                    🛒 Il mio Carrello
+                     Il mio Carrello
                 </h1>
             </div>
 
@@ -21,7 +21,7 @@
                 <h2 style="font-size: 1.5rem; color: #374151; margin: 0 0 1rem 0; font-weight: 600;">Il tuo carrello è vuoto</h2>
                 <p style="color: #6b7280; margin: 0 0 2rem 0; line-height: 1.6;">Aggiungi alcuni orologi per iniziare i tuoi acquisti</p>
                 <a th:href="@{/watches}" style="display: inline-block; background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; padding: 1rem 2rem; border-radius: 8px; text-decoration: none; font-weight: 600; box-shadow: 0 4px 12px rgba(59,130,246,0.3); transition: all 0.2s;">
-                    ⌚ Esplora Orologi
+                     Esplora Orologi
                 </a>
             </div>
 
@@ -30,7 +30,19 @@
                 
                 <!-- Lista prodotti -->
                 <div style="margin-bottom: 2rem;">
-                    <div th:each="orderLine : ${orderLines}" style="display: flex; align-items: center; padding: 1.5rem; margin-bottom: 1rem; background: white; border: 1px solid #e5e7eb; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: all 0.2s;">
+                    <div th:each="orderLine : ${orderLines}" style="position: relative; display: flex; align-items: center; padding: 1.5rem; margin-bottom: 1rem; background: white; border: 1px solid #e5e7eb; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: all 0.2s;">
+                        
+                        <!-- Pulsante Rimozione (in alto a destra) -->
+                        <form th:action="@{/currentOrder/remove/{id}(id=${orderLine.id})}" 
+                              method="post" 
+                              style="position: absolute; top: 8px; right: 8px; z-index: 10;">
+                            <button type="submit" 
+                                    style="width: 28px; height: 28px; background: linear-gradient(135deg, #ef4444, #dc2626); border: none; border-radius: 6px; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; transition: all 0.2s; box-shadow: 0 2px 8px rgba(239,68,68,0.3);"
+                                    onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 4px 12px rgba(239,68,68,0.5)';"
+                                    onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 8px rgba(239,68,68,0.3)';">
+                                ✕
+                            </button>
+                        </form>
                         
                         <!-- Immagine prodotto -->
                         <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #f3f4f6, #e5e7eb); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-right: 1rem; font-size: 2rem; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);">
@@ -38,7 +50,7 @@
                         </div>
                         
                         <!-- Dettagli prodotto -->
-                        <div style="flex: 1;">
+                        <div style="flex: 1; padding-right: 2rem;">
                             <h3 style="font-size: 1.125rem; font-weight: 600; margin: 0 0 0.5rem 0;">
                                 <a th:href="@{'/watch/' + ${orderLine.watch.id}}" 
                                    th:text="${orderLine.watch.name}"

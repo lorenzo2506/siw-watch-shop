@@ -15,8 +15,18 @@
     <link rel="stylesheet" th:href="@{/css/main.css}">
 </head>
 <body>
-    <!-- Header Fragment -->
-    <header th:replace="fragments/header.html :: intestazione"></header>
+    
+    <!-- Header per ADMIN autenticati -->
+    <div th:if="${isAuthenticated and userDetails != null and userDetails.role.name() == 'ADMIN'}">
+    	<header th:replace="fragments/admin-header.html :: intestazione"></header>
+    </div>
+	
+	<div th:if="${!isAuthenticated or (isAuthenticated and userDetails != null and userDetails.role.name() == 'USER')}">
+    	<header th:replace="fragments/header.html :: intestazione"></header>
+    </div>
+    
+    
+    
     
     <!-- Main Content -->
     <main th:replace="${content}">

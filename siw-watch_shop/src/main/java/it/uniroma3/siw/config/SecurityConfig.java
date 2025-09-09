@@ -7,6 +7,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+
 import it.uniroma3.siw.oauth2.CustomOAuth2UserService;
 import it.uniroma3.siw.oauth2.CustomOidcUserService;
 import it.uniroma3.siw.oauth2.OAuth2AuthenticationSuccessHandler;
@@ -40,39 +43,47 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        System.out.println("=== CONFIGURING SECURITY FILTER CHAIN ===");
-        System.out.println("OAuth2UserService: " + oAuth2UserService);
-        System.out.println("OidcUserService: " + oidcUserService);
-        System.out.println("OAuth2SuccessHandler: " + oAuth2SuccessHandler);
-        
         http
             .authorizeHttpRequests(authz -> authz
-            		.requestMatchers("/", "/index", "/login", "/register", "/register/**", "/css/**", "/images/**", "/watches", "/formNewWatch", "/watch/**", "/watch").permitAll()
+                .requestMatchers("/", "/index", "/login", "/register", "/register/**", 
+                               "/css/**", "/images/**", "/watches", "/formNewWatch", 
+                               "/watch/**", "/watch").permitAll()
+                .requestMatchers("/currentOrder/**").authenticated()
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
                 .loginPage("/login")
-                .successHandler(customAuthSuccessHandler)  // Usa il custom handler invece di defaultSuccessUrl
+                .successHandler(customAuthSuccessHandler)
                 .permitAll()
             )
             .oauth2Login(oauth -> {
-                System.out.println("=== CONFIGURING OAUTH2 LOGIN ===");
                 oauth
                     .loginPage("/login")
                     .userInfoEndpoint(userInfo -> {
-                        System.out.println("=== CONFIGURING USER INFO ENDPOINT ===");
-                        System.out.println("Setting userService to: " + oAuth2UserService);
-                        System.out.println("Setting oidcUserService to: " + oidcUserService);
                         userInfo
-                            .userService(oAuth2UserService)           // Per OAuth2 normale
-                            .oidcUserService(oidcUserService);        // Per OIDC (Google)
+                            .userService(oAuth2UserService)
+                            .oidcUserService(oidcUserService);
                     })
                     .successHandler(oAuth2SuccessHandler);
             })
             .logout(logout -> logout
                 .logoutSuccessUrl("/").permitAll()
-            );
-
+            )
+            // CSRF CONFIGURAZIONE CORRETTA
+            .csrf(csrf -> csrf
+                    .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                    .ignoringRequestMatchers(
+                        "/logout",
+                        "/oauth2/**",
+                        "/login/**",
+                        "/login/oauth2/**",
+                        "/admin/**",
+                        "/register/step2",
+                        "/currentOrder/**",
+                        "/watch/*/reviews"
+                    )
+             );
+        
         return http.build();
     }
     

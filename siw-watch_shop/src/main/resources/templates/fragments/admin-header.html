@@ -33,7 +33,7 @@
                 <div style="display: flex; gap: 1.5rem; align-items: center;">
                     
                     <!-- Home -->
-                    <a th:href="@{/}" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; background: transparent; border-radius: 8px; text-decoration: none;">
+                    <a th:href="@{/admin}" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; background: transparent; border-radius: 8px; text-decoration: none;">
                         <img th:src="@{/images/icons/home-icon.png}" alt="Home" style="width: 40px; height: 40px; filter: invert(1);">
                     </a>
                     
@@ -68,12 +68,6 @@
                         <span th:if="${isAuthenticated}" style="position: absolute; top: -2px; right: -2px; width: 12px; height: 12px; background: #10b981; border-radius: 50%; border: 2px solid white;"></span>
                     </a>
                     
-                    <!-- Carrello -->
-                    
-                    <a th:href="@{/currentOrder}" style="position: relative; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; background: transparent; border-radius: 8px; text-decoration: none;">
-                        <img th:src="@{/images/icons/cart-icon.png}" alt="Carrello" style="width: 40px; height: 40px; filter: invert(1);">
-                        <span th:if="${cartItemCount > 0}" th:text="${cartItemCount}" style="position: absolute; top: -6px; right: -6px; background: #ef4444; color: white; border-radius: 50%; min-width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 600; border: 1px solid white;"></span>
-                    </a>
                     
                 </div>
             </div>

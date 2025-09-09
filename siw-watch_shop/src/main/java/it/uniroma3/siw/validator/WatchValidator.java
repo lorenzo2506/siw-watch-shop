@@ -20,7 +20,7 @@ public class WatchValidator implements Validator{
 		Watch watch = (Watch) o;
 		
 		if(watch.getYear()!=null && watch.getName()!=null && watch.getBrand()!=null 
-			&& watchService.existsByNameAndBrandAndYear(watch.getName(), watch.getBrand(), watch.getYear())) {
+			&& watchService.existsByNameAndBrandAndYearAndAvailability(watch.getName(), watch.getBrand(), watch.getYear())) {
 			
 			errors.reject("watch.duplicate");
 		}

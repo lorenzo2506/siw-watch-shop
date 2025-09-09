@@ -22,6 +22,7 @@
 
 @import url('order-detail.css');         /* Per placedorder.html */
 
+@import url('reviews.css');
 /* 
 Uncomment imports as you create the corresponding CSS files:
 @import url('buttons.css');     TODO: Create when needed

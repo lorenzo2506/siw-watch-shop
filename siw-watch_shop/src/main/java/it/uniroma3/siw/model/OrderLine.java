@@ -34,6 +34,11 @@ public class OrderLine {
 		this.quantity+=1;
 	}
 	
+	public void decreaseQuantity() {
+		if(this.quantity>0)
+			this.quantity-=1;
+	}
+	
 	
 	 public Float getTotalPrice() {
 	        // 🔥 CONTROLLO NULL SAFETY
