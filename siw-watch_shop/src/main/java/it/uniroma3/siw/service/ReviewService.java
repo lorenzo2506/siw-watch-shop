@@ -88,5 +88,21 @@ public class ReviewService {
 		watchService.save(review.getWatch());
 	}
 	
+	
+	public void editReview(Long reviewId, Review formReview) {
+		
+		Review review = this.getReviewById(reviewId);
+
+		review.setText(formReview.getText());
+		review.setStar_rating(formReview.getStar_rating());
+		review.setCreatedAt(LocalDateTime.now());
+		
+		this.save(review);
+		
+	}
+	
+	public void save(Review r) {
+		this.reviewRepo.save(r);
+	}
 
 }

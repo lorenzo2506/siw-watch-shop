@@ -109,11 +109,44 @@ public class ReviewController {
 	
 	
 	@PostMapping("/admin/watch/{watch_id}/reviews/{review_id}/delete")
+	private String adminDeleteReview(@PathVariable("review_id") Long review_id, @PathVariable("watch_id") Long watch_id) {
+		
+		Review review = reviewService.getReviewById(review_id);
+		reviewService.deleteReview(review);
+		return "redirect:/watch/" + watch_id + "/reviews";
+	}
+	
+	
+	
+	@PostMapping("/watch/{watch_id}/reviews/{review_id}/delete")
 	private String deleteReview(@PathVariable("review_id") Long review_id, @PathVariable("watch_id") Long watch_id) {
 		
 		Review review = reviewService.getReviewById(review_id);
 		reviewService.deleteReview(review);
 		return "redirect:/watch/" + watch_id + "/reviews";
+	}
+	
+	
+	
+	@GetMapping("/watch/{watchId}/reviews/{reviewId}/editForm")
+	private String showEditForm(@PathVariable("reviewId") Long reviewId, Model model) {
+		
+		model.addAttribute("review", this.reviewService.getReviewById(reviewId));
+		return "editForm.html";
+	}
+	
+	
+	@PostMapping("/watch/{watchId}/review/{reviewId}/editForm")
+	public String editReview(@PathVariable("watchId") Long watchId, @PathVariable("reviewId") Long reviewId,
+			@Valid @ModelAttribute("review") Review formReview, BindingResult bindingResult, Model model) {
+		
+		if(bindingResult.hasErrors()) {
+			model.addAttribute("review", reviewService.getReviewById(reviewId));
+	        return "editForm.html";
+		}
+		
+		this.reviewService.editReview(reviewId, formReview);
+		return "redirect:/watch/" + watchId + "/reviews";
 	}
 	
 	

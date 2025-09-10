@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="fragments/layout.html :: base('Modifica Recensione - WatchLux', ~{::contenuto})">
+<head>
+    <title>Modifica Recensione - WatchLux</title>
+</head>
+<body>
+    <div th:fragment="contenuto">
+        
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb">
+            <a th:href="@{/}" class="breadcrumb-link">
+                <i class="material-icons">home</i>
+                Home
+            </a>
+            <span class="breadcrumb-separator">></span>
+            <a th:href="@{/watches}" class="breadcrumb-link">Orologi</a>
+            <span class="breadcrumb-separator">></span>
+            <a th:href="@{'/watch/' + ${review.watch?.id}}" class="breadcrumb-link" th:text="${review.watch?.name ?: 'Orologio'}">Orologio</a>
+            <span class="breadcrumb-separator">></span>
+            <a th:href="@{'/watch/' + ${review.watch?.id} + '/reviews'}" class="breadcrumb-link">Recensioni</a>
+            <span class="breadcrumb-separator">></span>
+            <span class="breadcrumb-current">Modifica</span>
+        </nav>
+
+        <!-- Header della pagina -->
+        <div>
+            <h1></h1>
+        </div>
+
+        <!-- Form Modifica Recensione -->
+        <div class="edit-review-section">
+            
+            <form th:action="@{'/watch/' + ${review.watch.id} + '/review/' + ${review.id} + '/editForm'}" 
+                  method="post" 
+                  class="review-form" 
+                  th:object="${review}">
+                
+                <!-- Rating -->
+                <div class="form-group">
+                    <label>Valutazione:</label>
+                    <div class="rating-input">
+                        <input type="radio" id="edit-star5" name="star_rating" value="5" 
+                               th:checked="${review.star_rating == 5}" />
+                        <label for="edit-star5">★</label>
+                        <input type="radio" id="edit-star4" name="star_rating" value="4" 
+                               th:checked="${review.star_rating == 4}" />
+                        <label for="edit-star4">★</label>
+                        <input type="radio" id="edit-star3" name="star_rating" value="3" 
+                               th:checked="${review.star_rating == 3}" />
+                        <label for="edit-star3">★</label>
+                        <input type="radio" id="edit-star2" name="star_rating" value="2" 
+                               th:checked="${review.star_rating == 2}" />
+                        <label for="edit-star2">★</label>
+                        <input type="radio" id="edit-star1" name="star_rating" value="1" 
+                               th:checked="${review.star_rating == 1}" />
+                        <label for="edit-star1">★</label>
+                    </div>
+                </div>
+
+                <!-- Testo recensione -->
+                <div class="form-group">
+                    <label for="editReviewText">La tua recensione:</label>
+                    <textarea id="editReviewText" name="text" rows="4" 
+                              placeholder="Condividi la tua esperienza..." 
+                              required th:text="${review.text}"></textarea>
+                </div>
+
+                <!-- Campi nascosti -->
+                <input type="hidden" th:field="*{id}" />
+                <input type="hidden" th:field="*{watch.id}" />
+                <input type="hidden" th:field="*{user.id}" />
+
+                <!-- Pulsanti -->
+                <div class="form-actions">
+                    <a th:href="@{'/watch/' + ${review.watch.id} + '/reviews'}" class="btn-secondary">
+                        <i class="material-icons">cancel</i>
+                        Annulla
+                    </a>
+                    <button type="submit" class="btn-primary">
+                        <i class="material-icons">save</i>
+                        Salva Modifiche
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

@@ -80,7 +80,8 @@ public class SecurityConfig {
                         "/admin/**",
                         "/register/step2",
                         "/currentOrder/**",
-                        "/watch/*/reviews"
+                        "/watch/*/reviews",
+                        "/watch/*/reviews/**"
                     )
              );
         

@@ -107,22 +107,59 @@
             </div>
 
 
-            <div th:if="${userReview != null}" th:object="${userReview}" class="review-item" style="position: relative;">
-                <div class="review-header">
-                    <div class="reviewer-name" th:text="${userReview.user?.name + ' ' + userReview.user?.surname ?: 'Utente Anonimo'}">Nome Utente</div>
-                    <div class="review-rating">
-                        <div class="rating-stars-small">
-                            <span class="stars-background">★★★★★</span>
-                            <span class="stars-filled" th:style="'width: ' + ${(userReview.star_rating ?: 0) / 5 * 100} + '%'">★★★★★</span>
-                        </div>
-                        <span class="rating-value" th:text="${userReview.star_rating ?: 0}">0</span>
-                    </div>
-                    <div class="review-date" th:text="${#temporals.format(userReview.createdAt, 'dd/MM/yyyy')}">Data</div>
-                </div>
-                <div class="review-content">
-                    <p th:text="${userReview.text}">Testo della recensione...</p>
-                </div>
-            </div>
+
+
+
+            <!-- Sezione userReview corretta -->
+			<div th:if="${userReview != null and isAuthenticated and userDetails != null and userDetails.role.name() == 'USER'}" 
+			th:object="${userReview}" class="review-item" style="position: relative;">
+			    
+			    <!-- Pulsanti azione in alto a destra -->
+			    <div style="position: absolute; top: 8px; right: 8px; z-index: 10; display: flex; gap: 8px;">
+			        
+			        <!-- Pulsante Modifica -->
+			        <a th:href="@{'/watch/' + ${watch.id} + '/reviews/' + ${userReview.id} + '/editForm'}"
+			           style="background: linear-gradient(135deg, #3b82f6, #2563eb); border: none; border-radius: 6px; color: white; cursor: pointer; padding: 6px 10px; font-size: 12px; font-weight: bold; transition: all 0.2s; box-shadow: 0 2px 8px rgba(59,130,246,0.3); text-decoration: none; display: inline-block;"
+			           onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 4px 12px rgba(59,130,246,0.5)';"
+			           onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 8px rgba(59,130,246,0.3)';">
+			            Modifica
+			        </a>
+			        
+			        <!-- Pulsante Elimina -->
+			        <form th:action="@{'/watch/' + ${watch.id} + '/reviews/' + ${userReview.id} + '/delete'}"
+			              method="post" style="margin: 0;">
+			            <button type="submit" 
+			                    style="background: linear-gradient(135deg, #ef4444, #dc2626); border: none; border-radius: 6px; color: white; cursor: pointer; padding: 6px 10px; font-size: 12px; font-weight: bold; transition: all 0.2s; box-shadow: 0 2px 8px rgba(239,68,68,0.3);"
+			                    onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 4px 12px rgba(239,68,68,0.5)';"
+			                    onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 8px rgba(239,68,68,0.3)';">
+			                Elimina
+			            </button>
+			        </form>
+			    </div>
+			    
+			    <div class="review-header">
+			        <div class="reviewer-name" th:text="${'(tu)   ' + userReview.user?.name + ' ' + userReview.user?.surname ?: 'Utente Eliminato'}">Nome Utente</div>
+			        <div class="review-rating">
+			            <div class="rating-stars-small">
+			                <span class="stars-background">★★★★★</span>
+			                <span class="stars-filled" th:style="'width: ' + ${(userReview.star_rating ?: 0) / 5 * 100} + '%'">★★★★★</span>
+			            </div>
+			            <span class="rating-value" th:text="${userReview.star_rating ?: 0}">0</span>
+			        </div>
+			        <div class="review-date" th:text="${#temporals.format(userReview.createdAt, 'dd/MM/yyyy')}">Data</div>
+			    </div>
+			    <div class="review-content">
+			        <p th:text="${userReview.text}">Testo della recensione...</p>
+			    </div>
+			</div>
+	
+	
+	
+	
+
+
+
+
 
             <div th:each="review : ${reviews}" class="review-item" style="position: relative;">
                 
