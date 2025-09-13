@@ -23,30 +23,29 @@ public class CredentialsService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
     
+    
     @Transactional
     public Credentials saveCredentials(Credentials credentials) {
         System.out.println("=== SAVING CREDENTIALS ===");
-        System.out.println("Before save - Email: " + credentials.getEmail());
-        System.out.println("Before save - Username: " + credentials.getUsername());
-        System.out.println("Before save - Role: " + credentials.getRole());
-        System.out.println("Before save - Password is null: " + (credentials.getPassword() == null));
-        System.out.println("Before save - User: " + credentials.getUser());
+        System.out.println("Credentials ID: " + credentials.getId());
         
-        // Salva prima l'utente
+        // Se le credenziali hanno già un ID, significa che esistono già
+        if (credentials.getId() != null) {
+            System.out.println("WARNING: Trying to save existing credentials with ID: " + credentials.getId());
+            // Recupera le credenziali fresche dal database
+            return credentialsRepository.findById(credentials.getId()).orElse(credentials);
+        }
+        
+        // Salva solo se sono credenziali veramente nuove
         if (credentials.getUser() != null) {
-            System.out.println("Saving user first...");
             User savedUser = userRepository.save(credentials.getUser());
-            System.out.println("User saved with ID: " + savedUser.getId());
             credentials.setUser(savedUser);
         }
         
-        // Poi salva le credenziali
-        System.out.println("Saving credentials...");
-        Credentials savedCredentials = credentialsRepository.save(credentials);
-        System.out.println("Credentials saved with ID: " + savedCredentials.getId());
-        
-        return savedCredentials;
+        return credentialsRepository.save(credentials);
     }
+    
+    
     
     public Credentials getByUsername(String username) {
         System.out.println("Looking for user with username: " + username);

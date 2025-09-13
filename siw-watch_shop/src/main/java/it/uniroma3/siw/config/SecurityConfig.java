@@ -47,7 +47,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers("/", "/index", "/login", "/register", "/register/**", 
                                "/css/**", "/images/**", "/watches", "/formNewWatch", 
-                               "/watch/**", "/watch").permitAll()
+                               "/watch/**", "/watch", "/watches/*").permitAll()
                 .requestMatchers("/currentOrder/**").authenticated()
                 .anyRequest().authenticated()
             )

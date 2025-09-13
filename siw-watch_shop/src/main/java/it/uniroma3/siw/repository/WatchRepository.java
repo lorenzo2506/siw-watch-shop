@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 
@@ -43,7 +44,7 @@ public interface WatchRepository extends JpaRepository<Watch, Long>{
 	public void deleteByNameAndBrand(String name,String brand);
 	
 	
-	
-	
+	@Query("SELECT w FROM Watch w WHERE w.availability = true and (LOWER(w.name) LIKE LOWER(CONCAT(:value, '%'))) OR (LOWER(w.brand) LIKE LOWER(CONCAT(:value, '%')))")
+	public List<Watch> findBySearchBar(@Param("value") String value);
 	
 }

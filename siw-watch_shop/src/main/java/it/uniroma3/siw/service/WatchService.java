@@ -29,6 +29,10 @@ public class WatchService {
 		return watchRepo.findByNameAndBrandAndAvailabilityTrue(name, brand);
 	}
 	
+	public List<Watch> getAllAvailableWatchesBySearchBar(String value) {
+		return watchRepo.findBySearchBar(value);
+	}
+	
 	public boolean existsByNameAndBrandAndYearAndAvailability(String name, String brand, Integer year) {
 		return watchRepo.existsByNameAndBrandAndYearAndAvailabilityTrue(name, brand, year);
 	}

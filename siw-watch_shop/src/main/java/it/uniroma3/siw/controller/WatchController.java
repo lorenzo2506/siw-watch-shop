@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -83,6 +84,14 @@ public class WatchController {
 	@GetMapping("/watches")
 	public String showAvailableWatches(Model model) {
 		model.addAttribute("watches", watchService.getAllAvailableWatches());
+		return "watches.html";
+	}
+	
+	@GetMapping("/watches/searchBar")
+	public String showAvailableWatchesBySearchBar(@RequestParam("search") String searchQuery ,Model model) {
+		
+		model.addAttribute("watches", this.watchService.getAllAvailableWatchesBySearchBar(searchQuery));
+		model.addAttribute("searchQuery", searchQuery);
 		return "watches.html";
 	}
 	

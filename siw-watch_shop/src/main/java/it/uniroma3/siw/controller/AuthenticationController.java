@@ -129,91 +129,177 @@ public class AuthenticationController {
     public String processUsername(@ModelAttribute("credentials") Credentials credentials,
                                 Model model, SessionStatus sessionStatus,
                                 RedirectAttributes redirectAttributes,
-                                HttpServletRequest request) { // 🔥 NUOVO: per auto-login
+                                HttpServletRequest request) {
         
-        System.out.println("=== STEP 2 POST DEBUG ===");
-        System.out.println("Credentials: " + credentials);
+        System.out.println("=== STEP 2 POST DEBUG - START ===");
+        System.out.println("Credentials from session: " + credentials);
         
-        // Verifica che abbiamo tutti i dati necessari
+        // ========== VALIDAZIONI INIZIALI ==========
+        
+        // Verifica che abbiamo tutti i dati necessari dalla sessione
         if (credentials == null || credentials.getEmail() == null || credentials.getUser() == null) {
-            System.out.println("Missing required data - redirecting to register");
+            System.out.println("ERROR: Missing required data from session - redirecting to register");
             return "redirect:/register";
         }
         
-        // Per registrazione normale, la password deve essere presente
-        // Per OAuth2, la password è null
+        // Determina il tipo di registrazione
         boolean isOAuth2Registration = credentials.getPassword() == null;
         
+        System.out.println("=== REGISTRATION TYPE ANALYSIS ===");
         System.out.println("Email: " + credentials.getEmail());
-        System.out.println("Username: " + credentials.getUsername());
+        System.out.println("Username from form: " + credentials.getUsername());
         System.out.println("Is OAuth2: " + isOAuth2Registration);
+        System.out.println("Credentials ID: " + credentials.getId());
+        System.out.println("User ID: " + (credentials.getUser() != null ? credentials.getUser().getId() : "null"));
         System.out.println("Password present: " + (credentials.getPassword() != null));
         System.out.println("Role: " + credentials.getRole());
-        System.out.println("User: " + credentials.getUser());
-        if (credentials.getUser() != null) {
-            System.out.println("User name: " + credentials.getUser().getName());
-            System.out.println("User surname: " + credentials.getUser().getSurname());
+        
+        // ========== CONTROLLO CRITICO PER OAUTH2 ==========
+        
+        if (isOAuth2Registration) {
+            System.out.println("=== OAUTH2 DUPLICATE CHECK ===");
+            
+            // Verifica se esiste già un utente con questa email nel database
+            Credentials existingByEmail = credentialsService.getByEmail(credentials.getEmail());
+            
+            if (existingByEmail != null) {
+                System.out.println("CRITICAL ERROR: OAuth2 user " + credentials.getEmail() + " already exists in database!");
+                System.out.println("Existing credentials ID: " + existingByEmail.getId());
+                System.out.println("Existing user ID: " + (existingByEmail.getUser() != null ? existingByEmail.getUser().getId() : "null"));
+                System.out.println("This should NOT happen - OAuth2 flow error!");
+                
+                // Pulisci la sessione
+                sessionStatus.setComplete();
+                
+                // Auto-login con le credenziali esistenti e redirect
+                authenticationService.loginUserAutomatically(existingByEmail, request);
+                System.out.println("Auto-logged in existing OAuth2 user and redirecting to home");
+                return "redirect:/?oauth_existing=true";
+            }
+            
+            // Verifica che le credenziali dalla sessione non abbiano già un ID
+            if (credentials.getId() != null) {
+                System.out.println("WARNING: OAuth2 credentials from session already have ID: " + credentials.getId());
+                System.out.println("This might indicate a session persistence issue");
+            }
         }
         
-        // Controlla se username esiste già
-        if (credentialsService.existsByUsername(credentials.getUsername())) {
-            model.addAttribute("usernameExists", "Username già in uso");
-            model.addAttribute("isOAuth2", isOAuth2Registration);
-            return "register-step2";
-        }
+        // ========== VALIDAZIONI USERNAME ==========
         
-        // Controlla username vuoto
+        // Controlla username vuoto o null
         if (credentials.getUsername() == null || credentials.getUsername().trim().isEmpty()) {
-            System.out.println("USERNAME NULLO O VUOTO");
+            System.out.println("ERROR: Username is null or empty");
             model.addAttribute("usernameExists", "Username non può essere vuoto");
             model.addAttribute("isOAuth2", isOAuth2Registration);
             return "register-step2";
         }
         
-        // Per OAuth2, imposta password null e assicurati che il ruolo sia corretto
+        // Controlla se username esiste già
+        if (credentialsService.existsByUsername(credentials.getUsername())) {
+            System.out.println("ERROR: Username already exists: " + credentials.getUsername());
+            model.addAttribute("usernameExists", "Username già in uso");
+            model.addAttribute("isOAuth2", isOAuth2Registration);
+            return "register-step2";
+        }
+        
+        // ========== PREPARAZIONE PER SALVATAGGIO ==========
+        
+        // Per OAuth2, assicurati che password sia null e ruolo sia corretto
         if (isOAuth2Registration) {
             credentials.setPassword(null); // Mantieni password null per OAuth2
             credentials.setRole(Role.USER);
+            
+            // IMPORTANTE: Assicurati che l'oggetto User non abbia ID (deve essere nuovo)
+            if (credentials.getUser().getId() != null) {
+                System.out.println("WARNING: OAuth2 User object has ID " + credentials.getUser().getId() + " - creating new User");
+                // Crea un nuovo oggetto User per evitare conflitti
+                User newUser = new User();
+                newUser.setName(credentials.getUser().getName());
+                newUser.setSurname(credentials.getUser().getSurname());
+                credentials.setUser(newUser);
+            }
+            
+            // Assicurati che anche le credenziali non abbiano ID
+            credentials.setId(null);
         }
         
+        System.out.println("=== FINAL DATA BEFORE SAVE ===");
+        System.out.println("Final email: " + credentials.getEmail());
+        System.out.println("Final username: " + credentials.getUsername());
+        System.out.println("Final role: " + credentials.getRole());
+        System.out.println("Final credentials ID: " + credentials.getId());
+        System.out.println("Final user ID: " + (credentials.getUser() != null ? credentials.getUser().getId() : "null"));
+        System.out.println("Final user name: " + (credentials.getUser() != null ? credentials.getUser().getName() : "null"));
+        System.out.println("Final user surname: " + (credentials.getUser() != null ? credentials.getUser().getSurname() : "null"));
+        
+        // ========== SALVATAGGIO ==========
+        
         try {
+            System.out.println("=== ATTEMPTING TO SAVE ===");
+            
             // Salva le credenziali
             Credentials savedCredentials = credentialsService.saveCredentials(credentials);
-            System.out.println("Credentials saved successfully!");
+            
+            System.out.println("=== SAVE SUCCESSFUL ===");
             System.out.println("Saved credentials ID: " + savedCredentials.getId());
             System.out.println("Saved user ID: " + (savedCredentials.getUser() != null ? savedCredentials.getUser().getId() : "null"));
             
             // Verifica che sia stato salvato correttamente
             Credentials retrievedCredentials = credentialsService.getByUsername(credentials.getUsername());
             if (retrievedCredentials != null) {
-                System.out.println("Verification: User can be found by username");
+                System.out.println("VERIFICATION: User successfully found by username after save");
                 System.out.println("Retrieved email: " + retrievedCredentials.getEmail());
                 System.out.println("Retrieved role: " + retrievedCredentials.getRole());
+                System.out.println("Retrieved user ID: " + (retrievedCredentials.getUser() != null ? retrievedCredentials.getUser().getId() : "null"));
             } else {
-                System.out.println("ERROR: User NOT found by username after save!");
+                System.out.println("CRITICAL ERROR: User NOT found by username after save!");
             }
             
-            // 🔥 NUOVO: AUTO-LOGIN DOPO REGISTRAZIONE
+            // ========== AUTO-LOGIN ==========
+            
             System.out.println("=== PERFORMING AUTO-LOGIN ===");
             authenticationService.loginUserAutomatically(savedCredentials, request);
             
             // Pulisci la sessione
             sessionStatus.setComplete();
             
-            // 🔥 NUOVO: Redirect diretto alla home (l'utente è ora loggato)
+            // Redirect appropriato
             String redirectUrl = isOAuth2Registration ? "/?oauth_registered=true" : "/?registered=true";
-            System.out.println("Redirecting to: " + redirectUrl);
+            System.out.println("SUCCESS: Redirecting to: " + redirectUrl);
             
             return "redirect:" + redirectUrl;
             
         } catch (Exception e) {
+            System.out.println("=== SAVE ERROR ===");
             System.out.println("ERROR saving credentials: " + e.getMessage());
             e.printStackTrace();
-            model.addAttribute("errorMessage", "Errore durante il salvataggio");
+            
+            // In caso di errore, controlla se è un problema di duplicati
+            if (e.getMessage() != null && e.getMessage().contains("constraint") || 
+                e.getMessage() != null && e.getMessage().contains("duplicate")) {
+                
+                System.out.println("Detected constraint violation - possible duplicate");
+                
+                if (isOAuth2Registration) {
+                    // Per OAuth2, verifica se nel frattempo è stato creato un utente
+                    Credentials existingByEmail = credentialsService.getByEmail(credentials.getEmail());
+                    if (existingByEmail != null) {
+                        System.out.println("Found existing user created during save attempt - auto-login");
+                        sessionStatus.setComplete();
+                        authenticationService.loginUserAutomatically(existingByEmail, request);
+                        return "redirect:/?oauth_recovered=true";
+                    }
+                }
+            }
+            
+            // Errore generico
+            model.addAttribute("errorMessage", "Errore durante il salvataggio: " + e.getMessage());
             model.addAttribute("isOAuth2", isOAuth2Registration);
             return "register-step2";
         }
     }
+    
+    
 
     // Metodo per annullare la registrazione
     @GetMapping("/register/cancel")

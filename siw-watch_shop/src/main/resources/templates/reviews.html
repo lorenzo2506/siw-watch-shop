@@ -102,8 +102,8 @@
                 </div>
             </div>
             
-            <div th:if="${reviews == null or reviews.empty}" class="no-reviews">
-                <p>Nessuna recensione ancora. Sii il primo a lasciare un feedback!</p>
+            <div th:if="${(reviews == null or reviews.empty) and userReview == null}" class="no-reviews">
+                <p style="color: black;">Nessuna recensione ancora. Sii il primo a lasciare un feedback!</p>
             </div>
 
 

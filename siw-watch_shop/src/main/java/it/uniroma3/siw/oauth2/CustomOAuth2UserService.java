@@ -34,63 +34,32 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         return processOAuth2User(oAuth2User, userRequest.getClientRegistration().getRegistrationId());
     }
     
+
     public OAuth2User processOAuth2User(OAuth2User oAuth2User, String registrationId) {
-        System.out.println("=== Processing OAuth2 User ===");
-        System.out.println("Provider: " + registrationId);
-        System.out.println("User attributes: " + oAuth2User.getAttributes());
-        
         String email = oAuth2User.getAttribute("email");
-        String name = oAuth2User.getAttribute("given_name");
-        String surname = oAuth2User.getAttribute("family_name");
         
-        // Se non abbiamo nome e cognome separati, proviamo a prenderli da "name"
-        if (name == null || surname == null) {
-            String fullName = oAuth2User.getAttribute("name");
-            if (fullName != null) {
-                String[] nameParts = fullName.split(" ", 2);
-                name = nameParts[0];
-                surname = nameParts.length > 1 ? nameParts[1] : "";
-            }
-        }
-        
-        System.out.println("Extracted - Email: " + email + ", Name: " + name + ", Surname: " + surname);
-        
-        if (email == null) {
-            System.out.println("ERROR: Email is null!");
-            throw new OAuth2AuthenticationException("Email non disponibile dal provider OAuth2");
-        }
-        
-        // Verifica se l'utente esiste già tramite EMAIL (non username!)
+        // Verifica se l'utente esiste già tramite EMAIL
         Credentials existingCredentials = credentialsService.getByEmail(email);
         
         if (existingCredentials != null) {
             System.out.println("User already exists with email: " + email);
-            System.out.println("Existing username: " + existingCredentials.getUsername());
-            System.out.println("Existing user: " + existingCredentials.getUser());
+            // IMPORTANTE: Restituisci ESATTAMENTE le credenziali esistenti
+            // NON creare nuovi oggetti User
             return new CustomOAuth2User(oAuth2User, existingCredentials, true);
         } else {
-            System.out.println("New user with email: " + email + " - needs to complete registration");
+            // Solo per utenti veramente nuovi
+            String name = oAuth2User.getAttribute("given_name");
+            String surname = oAuth2User.getAttribute("family_name");
             
-            // Crea User temporaneo (name, surname)
+            // Crea User temporaneo solo per nuovi utenti
             User newUser = new User();
             newUser.setName(name != null ? name : "");
             newUser.setSurname(surname != null ? surname : "");
             
-            // Crea Credentials temporanee (email, role) - username sarà scelto dopo
             Credentials tempCredentials = new Credentials();
             tempCredentials.setEmail(email);
             tempCredentials.setRole(Role.USER);
             tempCredentials.setUser(newUser);
-            // password = null per OAuth2
-            // username = null per ora (sarà scelto nello step 2)
-            
-            System.out.println("Created temp credentials:");
-            System.out.println("- Email: " + tempCredentials.getEmail());
-            System.out.println("- Username: " + tempCredentials.getUsername() + " (null è normale)");
-            System.out.println("- Password: " + tempCredentials.getPassword() + " (null è normale)");
-            System.out.println("- Role: " + tempCredentials.getRole());
-            System.out.println("- User name: " + tempCredentials.getUser().getName());
-            System.out.println("- User surname: " + tempCredentials.getUser().getSurname());
             
             return new CustomOAuth2User(oAuth2User, tempCredentials, false);
         }

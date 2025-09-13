@@ -14,9 +14,9 @@
                 <div class="header-content">
                     <h1 class="page-title">
                         <i class="material-icons">watch</i>
-                        Collezione Luxury
+                        Collezione Orologi
                     </h1>
-                    <p class="page-subtitle">Scopri la nostra esclusiva selezione di orologi di lusso</p>
+                    <p class="page-subtitle">Scopri la nostra esclusiva selezione di orologi</p>
                     <div class="page-stats" th:if="${!#lists.isEmpty(watches)}">
                         <span class="stat-badge">
                             <i class="material-icons">inventory</i>
@@ -32,17 +32,12 @@
                     <div class="empty-icon">
                         <i class="material-icons">watch_off</i>
                     </div>
-                    <h2 class="empty-title">Collezione temporaneamente vuota</h2>
-                    <p class="empty-description">
-                        La nostra collezione di orologi di lusso è in aggiornamento. 
+                    <h2 class="empty-title" style="color: black;">Collezione temporaneamente vuota</h2>
+                    <p class="empty-description" style="color: black;">
+                        La nostra collezione di orologi è in aggiornamento. 
                         Torna presto per scoprire le ultime novità!
                     </p>
-                    <div class="empty-actions">
-                        <a th:href="@{/}" class="btn-primary">
-                            <i class="material-icons">home</i>
-                            Torna alla Home
-                        </a>
-                    </div>
+                    
                 </div>
             </div>
             
@@ -87,13 +82,6 @@
                 </div>
             </div>
             
-            <!-- Azioni generali -->
-            <div class="page-actions" th:if="${!#lists.isEmpty(watches)}">
-                <a th:href="@{/}" class="btn-secondary">
-                    <i class="material-icons">home</i>
-                    Torna alla Home
-                </a>
-            </div>
             
         </section>
     </div>
