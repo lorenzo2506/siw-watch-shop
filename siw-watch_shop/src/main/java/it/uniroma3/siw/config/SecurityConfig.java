@@ -8,27 +8,21 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
-
-import it.uniroma3.siw.oauth2.CustomOAuth2UserService;
-import it.uniroma3.siw.oauth2.CustomOidcUserService;
-import it.uniroma3.siw.oauth2.OAuth2AuthenticationSuccessHandler;
-import it.uniroma3.siw.service.CredentialsService;
-
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import it.uniroma3.siw.oauth2.CustomOAuth2UserService;
+import it.uniroma3.siw.oauth2.OAuth2AuthenticationSuccessHandler;
+import it.uniroma3.siw.service.CredentialsService;
 
 @Configuration
 public class SecurityConfig {
 
-	@Autowired
-	private CredentialsService credentialsService;
-
-	@Autowired
-    private CustomOAuth2UserService oAuth2UserService;
-    
     @Autowired
-    private CustomOidcUserService oidcUserService;
+    private CredentialsService credentialsService;
+
+    @Autowired
+    private CustomOAuth2UserService oAuth2UserService;
 
     @Autowired
     private OAuth2AuthenticationSuccessHandler oAuth2SuccessHandler;
@@ -56,34 +50,25 @@ public class SecurityConfig {
                 .successHandler(customAuthSuccessHandler)
                 .permitAll()
             )
-            .oauth2Login(oauth -> {
-                oauth
-                    .loginPage("/login")
-                    .userInfoEndpoint(userInfo -> {
-                        userInfo
-                            .userService(oAuth2UserService)
-                            .oidcUserService(oidcUserService);
-                    })
-                    .successHandler(oAuth2SuccessHandler);
-            })
+            .oauth2Login(oauth -> oauth
+                .loginPage("/login")
+                .userInfoEndpoint(userInfo -> userInfo
+                    .userService(oAuth2UserService)
+                    // NOTA: NON oidcUserService - solo OAuth2 standard
+                )
+                .successHandler(oAuth2SuccessHandler)
+            )
             .logout(logout -> logout
                 .logoutSuccessUrl("/").permitAll()
             )
-            // CSRF CONFIGURAZIONE CORRETTA
             .csrf(csrf -> csrf
-                    .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                    .ignoringRequestMatchers(
-                        "/logout",
-                        "/oauth2/**",
-                        "/login/**",
-                        "/login/oauth2/**",
-                        "/admin/**",
-                        "/register/step2",
-                        "/currentOrder/**",
-                        "/watch/*/reviews",
-                        "/watch/*/reviews/**"
-                    )
-             );
+                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .ignoringRequestMatchers(
+                    "/logout", "/oauth2/**", "/login/**", "/login/oauth2/**",
+                    "/admin/**", "/register/step2", "/currentOrder/**",
+                    "/watch/*/reviews", "/watch/*/reviews/**"
+                )
+            );
         
         return http.build();
     }

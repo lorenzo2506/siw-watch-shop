@@ -1,15 +1,14 @@
 package it.uniroma3.siw.oauth2;
 
 import java.io.IOException;
-
+import java.util.Collection;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 @Component
 public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccessHandler {
@@ -21,44 +20,34 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
         System.out.println("=== OAuth2 Authentication Success ===");
         System.out.println("Principal type: " + authentication.getPrincipal().getClass());
         
-        if (authentication.getPrincipal() instanceof CustomOAuth2User customUser) {
-            System.out.println("CustomOAuth2User detected!");
-            handleCustomUser(customUser, request, response);
-        } else if (authentication.getPrincipal() instanceof CustomOidcUser customOidcUser) {
-            System.out.println("CustomOidcUser detected!");
-            handleCustomOidcUser(customOidcUser, request, response);
-        } else {
-            System.out.println("Unexpected principal type: " + authentication.getPrincipal().getClass());
+        if (!(authentication.getPrincipal() instanceof CustomOAuth2User)) {
+            System.out.println("Unexpected principal type - redirecting to error");
             response.sendRedirect("/login?error=oauth");
+            return;
         }
-    }
-    
-    private void handleCustomUser(CustomOAuth2User customUser, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        
+        CustomOAuth2User customUser = (CustomOAuth2User) authentication.getPrincipal();
+        
         System.out.println("User email: " + customUser.getEmail());
         System.out.println("Is existing user: " + customUser.isExistingUser());
         
         if (customUser.isExistingUser()) {
-            System.out.println("Redirecting existing user to home");
+            // Controlla il ruolo per decidere dove reindirizzare
+            Collection<? extends GrantedAuthority> authorities = customUser.getAuthorities();
+            
+            for (GrantedAuthority authority : authorities) {
+                if ("ROLE_ADMIN".equals(authority.getAuthority())) {
+                    System.out.println("OAuth2 Admin user - redirecting to admin panel");
+                    response.sendRedirect("/admin");
+                    return;
+                }
+            }
+            
+            System.out.println("OAuth2 Regular user - redirecting to home");
             response.sendRedirect("/");
         } else {
             System.out.println("New user, redirecting to step 2");
-            HttpSession session = request.getSession();
-            session.setAttribute("credentials", customUser.getCredentials());
-            response.sendRedirect("/register/step2");
-        }
-    }
-    
-    private void handleCustomOidcUser(CustomOidcUser customOidcUser, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        System.out.println("User email: " + customOidcUser.getEmail());
-        System.out.println("Is existing user: " + customOidcUser.isExistingUser());
-        
-        if (customOidcUser.isExistingUser()) {
-            System.out.println("Redirecting existing user to home");
-            response.sendRedirect("/");
-        } else {
-            System.out.println("New user, redirecting to step 2");
-            HttpSession session = request.getSession();
-            session.setAttribute("credentials", customOidcUser.getCredentials());
+            request.getSession().setAttribute("credentials", customUser.getCredentials());
             response.sendRedirect("/register/step2");
         }
     }
