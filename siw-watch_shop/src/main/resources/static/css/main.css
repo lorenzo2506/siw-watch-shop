@@ -20,9 +20,8 @@
 @import url('watches.css');      /* Per watches.html */
 @import url('cart.css');         /* Per currentOrder.html */
 
-@import url('order-detail.css');         /* Per placedorder.html */
-
-@import url('reviews.css');
+@import url('order-detail.css');   
+@import url('reviews.css')      /* Per placedorder.html */
 /* 
 Uncomment imports as you create the corresponding CSS files:
 @import url('buttons.css');     TODO: Create when needed

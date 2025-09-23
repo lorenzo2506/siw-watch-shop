@@ -63,7 +63,7 @@ public class SecurityConfig {
             )
             .csrf(csrf -> csrf
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .ignoringRequestMatchers(
+                .ignoringRequestMatchers("/",
                     "/logout", "/oauth2/**", "/login/**", "/login/oauth2/**",
                     "/admin/**", "/register/step2", "/currentOrder/**",
                     "/watch/*/reviews", "/watch/*/reviews/**"

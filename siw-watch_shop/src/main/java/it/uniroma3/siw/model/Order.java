@@ -41,6 +41,7 @@ public class Order {
 	
 	
 	@OneToMany(cascade=CascadeType.ALL)
+	@JoinColumn(name="order_id")
 	private List <Watch> watches;
 	
 	

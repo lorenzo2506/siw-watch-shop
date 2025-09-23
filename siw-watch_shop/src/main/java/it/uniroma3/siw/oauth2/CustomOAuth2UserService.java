@@ -18,27 +18,22 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     private CredentialsService credentialsService;
 
     public CustomOAuth2UserService() {
-        System.out.println("=== CustomOAuth2UserService CONSTRUCTOR CALLED ===");
     }
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        System.out.println("=== CustomOAuth2UserService.loadUser() CALLED ===");
         
         OAuth2User oAuth2User = super.loadUser(userRequest);
         String email = oAuth2User.getAttribute("email");
         
-        System.out.println("Processing OAuth2 user with email: " + email);
         
         // Controlla se utente esiste già
         Credentials existingCredentials = credentialsService.getByEmail(email);
         if (existingCredentials != null) {
-            System.out.println("User already exists with email: " + email);
             return new CustomOAuth2User(oAuth2User, existingCredentials, true);
         }
         
         // Nuovo utente - crea credenziali temporanee
-        System.out.println("Creating new user with email: " + email);
         Credentials tempCredentials = createTempCredentials(oAuth2User, email);
         return new CustomOAuth2User(oAuth2User, tempCredentials, false);
     }
