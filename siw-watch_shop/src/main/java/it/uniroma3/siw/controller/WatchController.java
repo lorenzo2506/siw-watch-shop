@@ -83,16 +83,27 @@ public class WatchController {
 	
 	@GetMapping("/watches")
 	public String showAvailableWatches(Model model) {
-		model.addAttribute("watches", watchService.getAllAvailableWatches());
-		return "watches.html";
+	    model.addAttribute("watches", watchService.getAllAvailableWatches());
+	    model.addAttribute("brands", watchService.getAllAvailableBrands()); // NUOVO
+	    model.addAttribute("selectedBrand", null); // NUOVO
+	    return "watches.html";
 	}
-	
+
 	@GetMapping("/watches/searchBar")
-	public String showAvailableWatchesBySearchBar(@RequestParam("search") String searchQuery ,Model model) {
-		
-		model.addAttribute("watches", this.watchService.getAllAvailableWatchesBySearchBar(searchQuery));
-		model.addAttribute("searchQuery", searchQuery);
-		return "watches.html";
+	public String showAvailableWatchesBySearchBar(@RequestParam("search") String searchQuery, Model model) {
+	    model.addAttribute("watches", this.watchService.getAllAvailableWatchesBySearchBar(searchQuery));
+	    model.addAttribute("searchQuery", searchQuery);
+	    model.addAttribute("brands", watchService.getAllAvailableBrands()); // NUOVO
+	    return "watches.html";
+	}
+
+	// NUOVO METODO per filtrare per brand
+	@GetMapping("/watches/brand/{brand}")
+	public String showAvailableWatchesByBrand(@PathVariable String brand, Model model) {
+	    model.addAttribute("watches", watchService.getAllAvailableWatchesByBrand(brand));
+	    model.addAttribute("selectedBrand", brand);
+	    model.addAttribute("brands", watchService.getAllAvailableBrands());
+	    return "watches.html";
 	}
 	
 	

@@ -21,24 +21,24 @@ public class WatchService {
 	}
 	
 	public Watch getAvailableWatch(String name, String brand, Integer year) {
-		return watchRepo.findByNameAndBrandAndYearAndAvailabilityTrue(name, brand, year).get();
+		return watchRepo.findByNameAndBrandAndYearAndAvailabilityTrue(name.toUpperCase().trim(), brand.toUpperCase().trim(), year).get();
 	}
 	
 	
 	public List<Watch> getAvailableWatch(String name, String brand) {
-		return watchRepo.findByNameAndBrandAndAvailabilityTrue(name, brand);
+		return watchRepo.findByNameAndBrandAndAvailabilityTrue(name.toUpperCase().trim(), brand.toUpperCase().trim());
 	}
 	
 	public List<Watch> getAllAvailableWatchesBySearchBar(String value) {
-		return watchRepo.findBySearchBar(value);
+		return watchRepo.findBySearchBar(value.toUpperCase().trim());
 	}
 	
 	public boolean existsByNameAndBrandAndYearAndAvailability(String name, String brand, Integer year) {
-		return watchRepo.existsByNameAndBrandAndYearAndAvailabilityTrue(name, brand, year);
+		return watchRepo.existsByNameAndBrandAndYearAndAvailabilityTrue(name.toUpperCase().trim(), brand.toUpperCase().trim(), year);
 	}
 	
 	public boolean existsByNameAndBrandAndAvailability(String name, String brand) {
-		return watchRepo.existsByNameAndBrandAndAvailabilityTrue(name, brand);
+		return watchRepo.existsByNameAndBrandAndAvailabilityTrue(name.toUpperCase().trim(), brand.toUpperCase().trim());
 	}
 	
 	
@@ -52,20 +52,20 @@ public class WatchService {
 	}
 	
 	public Watch getWatch(String name, String brand, Integer year) {
-		return watchRepo.findByNameAndBrandAndYear(name, brand, year).get();
+		return watchRepo.findByNameAndBrandAndYear(name.toUpperCase().trim(), brand.toUpperCase().trim(), year).get();
 	}
 	
 	
 	public List<Watch> getWatch(String name, String brand) {
-		return watchRepo.findByNameAndBrand(name, brand);
+		return watchRepo.findByNameAndBrand(name.toUpperCase().trim(), brand.toUpperCase().trim());
 	}
 	
 	public boolean existsByNameAndBrandAndYear(String name, String brand, Integer year) {
-		return watchRepo.existsByNameAndBrandAndYear(name, brand, year);
+		return watchRepo.existsByNameAndBrandAndYear(name.toUpperCase().trim(), brand.toUpperCase().trim(), year);
 	}
 	
 	public boolean existsByNameAndBrand(String name, String brand) {
-		return watchRepo.existsByNameAndBrand(name, brand);
+		return watchRepo.existsByNameAndBrand(name.toUpperCase().trim(), brand.toUpperCase().trim());
 	}
 	
 	
@@ -77,7 +77,7 @@ public class WatchService {
         Watch watch = watchRepo.findById(id)
             .orElseThrow(() -> new RuntimeException("Watch not found"));
         watch.setAvailability(false);
-        watchRepo.save(watch);
+        this.save(watch);
     }
     
    
@@ -85,10 +85,13 @@ public class WatchService {
         Watch watch = watchRepo.findById(id)
             .orElseThrow(() -> new RuntimeException("Watch not found"));
         watch.setAvailability(true);
-        watchRepo.save(watch);
+        this.save(watch);
     }
     
     public void save(Watch watch) {
+    	
+    	watch.setName(watch.getName().toUpperCase().trim());
+    	watch.setBrand(watch.getBrand().toUpperCase().trim());
 		watchRepo.save(watch);
 	}
     
@@ -104,7 +107,7 @@ public class WatchService {
     	watch.getReviews().add(review);
     	this.calcAndSetAverageRating(watch);
     	this.calcAndSetRatingCount(watch);
-    	watchRepo.save(watch);
+    	this.save(watch);
     }
     
     public void calcAndSetAverageRating(Watch watch) {
@@ -127,6 +130,14 @@ public class WatchService {
     		throw new IllegalArgumentException("orologio o review non esistenti o id malcodificati");
     	
     	watch.getReviews().remove(review);
+	}
+	
+	public List<String> getAllAvailableBrands() {
+	    return watchRepo.findAllAvailableBrands();
+	}
+
+	public List<Watch> getAllAvailableWatchesByBrand(String brand) {
+	    return watchRepo.findAllAvailableByBrand(brand.toUpperCase().trim());
 	}
 
 }

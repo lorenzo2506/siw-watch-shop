@@ -1,145 +1,163 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      th:replace="fragments/layout.html :: base(${watch?.name + ' - WatchLux' ?: 'Orologio - WatchLux'}, ~{::contenuto})">
+<html lang="it" xmlns:th="http://www.thymeleaf.org" 
+      th:replace="~{fragments/layout :: base(~{::title}, ~{::main})}">
 <head>
-    <title th:text="${watch?.name + ' - WatchLux' ?: 'Orologio - WatchLux'}">Orologio - WatchLux</title>
+    <title th:text="${watch.name} + ' - TimeCraft'">Orologio - TimeCraft</title>
 </head>
 <body>
-    <!-- Contenuto specifico del dettaglio orologio -->
-    <div th:fragment="contenuto">
-        
-        <!-- Breadcrumb -->
-        <nav class="breadcrumb">
-            <a th:href="@{/}" class="breadcrumb-link">
-                <i class="material-icons">home</i>
-                Home
-            </a>
-            <span class="breadcrumb-separator">></span>
-            <a th:href="@{/watches}" class="breadcrumb-link">Orologi</a>
-            <span class="breadcrumb-separator">></span>
-            <span class="breadcrumb-current" th:text="${watch?.name ?: 'Orologio'}">Orologio</span>
-        </nav>
-        
-        <!-- Contenuto principale -->
-        <div th:if="${watch}" class="product-container">
-            <div class="product-detail">
+    <main>
+        <div class="watch-detail-container">
+            <!-- Breadcrumb -->
+            <nav class="breadcrumb">
+                <a th:href="@{/}">Home</a>
+                <span>›</span>
+                <a th:href="@{/watches}">Orologi</a>
+                <span>›</span>
+                <span th:text="${watch.name}">Nome Orologio</span>
+            </nav>
 
-                        <!-- Colonna sinistra: Immagine + Garanzie -->
-                <div class="product-left-column">
-                    <!-- Singola immagine -->
-                    <img th:src="@{'/images/' + ${watch.imagePath}}" 
-                        alt="Watch image" 
-                        class="watch-image"
-                        th:if="${watch.imagePath != null}" />
-
-                    <!-- Immagine placeholder se non c'è immagine -->
-                    <div th:unless="${watch.imagePath != null}" class="no-image">
-                        <p>Nessuna immagine disponibile</p>
-                    </div>
-                    
-                    <!-- Caratteristiche spostate qui -->
-                    <div class="product-features">
-                        <h3>Garanzie Incluse</h3>
-                        <ul class="features-list">
-                            <li>
-                                <i class="material-icons">shield</i>
-                                Garanzia ufficiale 2 anni
-                            </li>
-                            <li>
-                                <i class="material-icons">verified</i>
-                                Certificato di autenticità 
-                            </li>
-                            <li>
-                                <i class="material-icons">local_shipping</i>
-                                Spedizione assicurata gratuita
-                            </li>
-                            <li>
-                                <i class="material-icons">assignment_return</i>
-                                Reso gratuito entro 30 giorni
-                            </li>
-                        </ul>
+            <!-- Grid principale -->
+            <div class="watch-detail-grid">
+                <!-- Immagine -->
+                <div class="watch-detail-image">
+                    <img th:if="${watch.imagePath}" 
+                         th:src="@{/images/{filename}(filename=${watch.imagePath})}" 
+                         th:alt="${watch.name}"
+                         class="watch-detail-img">
+                    <div th:unless="${watch.imagePath}" class="watch-detail-placeholder">
+                        <span>⌚</span>
                     </div>
                 </div>
 
-                
-                <!-- Informazioni Prodotto -->
-                <div class="product-info">
-                    <div class="product-header">
-                        <p class="product-brand" th:text="${watch.brand} + '  ' + ${watch.name} + '  -  ' + ${watch.year}">Marca</p>
-                    </div>
+                <!-- Informazioni -->
+                <div class="watch-detail-info">
+                    <div class="watch-detail-brand" th:text="${watch.brand}">Brand</div>
+                    <h1 class="watch-detail-name" th:text="${watch.name}">Nome Orologio</h1>
                     
-                    
-                    <div class="product-price">
-                        <span class="price-currency">€</span>
-                        <span class="price-amount" th:text="${#numbers.formatDecimal(watch.price, 1, 2)}">0.00</span>
-                    </div>
-                    
-                    <!-- Azioni -->
-                    <div class="product-actions">
-                        <div th:if="${userDetails == null or userDetails.role.name() == 'USER'}">
-                            <form th:action="@{/currentOrder/add/{id}(id=${watch.id})}" method="post" class="add-to-cart-form">
-                                <button type="submit" class="btn-add-cart">
-                                    <i class="material-icons">shopping_cart</i>
-                                    Aggiungi al Carrello
-                                </button>
-                            </form>
+                    <!-- Rating -->
+                    <div class="watch-detail-rating" th:if="${watch.averageRating}">
+                        <div class="stars">
+                            <span class="star filled" th:each="i : ${#numbers.sequence(1, T(java.lang.Math).floor(watch.averageRating))}">★</span>
+                            <span class="star half" th:if="${watch.averageRating % 1 >= 0.5}">★</span>
+                            <span class="star empty" th:each="i : ${#numbers.sequence(1, 5 - T(java.lang.Math).ceil(watch.averageRating))}">★</span>
                         </div>
-                        <div th:if="${isAuthenticated and userDetails != null and userDetails.role.name() == 'ADMIN'}">
-                            <form th:action="@{'/admin/watch/' + ${watch.id} + '/deactivate'}" method="post" class="add-to-cart-form">
-                                <button type="submit" class="btn-add-cart">
-                                    <i class="material-icons">shopping_cart</i>
-                                    Rimuovi orologio dal listino
-                                </button>
-	                            </form>
-	                        </div>
-	                </div>
-	                
-               </div>
-                	
-                	
-            </div>
-        </div>
-        
-        
-        <!-- Sezione Recensioni Semplificata da aggiungere in watch.html dopo il product-container -->
-		<!-- Sezione Recensioni Semplificata -->
-        <div class="reviews-summary-section">
-            <div class="reviews-summary-card">
-                <div class="rating-display">
-                    <div class="rating-stars">
-                        <span class="stars-background">★★★★★</span>
-                        <span class="stars-filled" th:style="'width: ' + ${(watch.averageRating != null) ? (watch.averageRating / 5 * 100) : 0} + '%'">★★★★★</span>
+                        <span class="rating-text">
+                            <strong th:text="${#numbers.formatDecimal(watch.averageRating, 1, 1)}">4.5</strong>
+                            (<span th:text="${watch.ratingCount}">12</span> recensioni)
+                        </span>
                     </div>
-                    <span th:if="${watch.averageRating != null and watch.averageRating > 0}" class="rating-number" th:text="${#numbers.formatDecimal(watch.averageRating, 1, 1)}">0.0</span>
+                    <div class="watch-detail-rating no-rating" th:unless="${watch.averageRating}">
+                        <span class="no-rating-text">Nessuna recensione ancora</span>
+                    </div>
+
+                    <!-- Prezzo -->
+                    <div class="watch-detail-price">
+                        €<span th:text="${#numbers.formatDecimal(watch.price, 0, 2)}">999.00</span>
+                    </div>
+
+                    <!-- Anno -->
+                    <div class="watch-detail-year">
+                        Anno di produzione: <strong th:text="${watch.year}">2024</strong>
+                    </div>
+
+                    <!-- Descrizione -->
+                    <div class="watch-detail-description" th:if="${watch.description}">
+                        <p th:text="${watch.description}">Descrizione dell'orologio...</p>
+                    </div>
+
+                    <!-- Azioni per utenti autenticati -->
+                    <div class="watch-detail-actions" th:if="${isUser}">
+                        <form th:action="@{/currentOrder/add}" method="post">
+                            <input type="hidden" name="watchId" th:value="${watch.id}">
+                            <button type="submit" 
+                                    class="btn-add-cart" 
+                                    th:disabled="${!watch.availability}">
+                                <span th:if="${watch.availability}">Aggiungi al Carrello</span>
+                                <span th:unless="${watch.availability}">Non Disponibile</span>
+                            </button>
+                        </form>
+                        <a th:href="@{/currentOrder}" class="btn-view-cart">
+                            Vedi Carrello
+                        </a>
+                    </div>
+
+                    <!-- Prompt per login se non autenticato -->
+                    <div class="login-prompt" th:unless="${isUser}">
+                        <p>Accedi per aggiungere questo orologio al tuo carrello</p>
+                        <div class="auth-actions">
+                            <a th:href="@{/login}" class="btn-login">Accedi</a>
+                            <a th:href="@{/register}" class="btn-register">Registrati</a>
+                        </div>
+                    </div>
                 </div>
-                
-                <div class="reviews-info">
-                    <span class="reviews-count" th:text="${(watch.ratingCount ?: 0)} + ' recensioni'">0 recensioni</span>
-                    <a th:href="@{'/watch/' + ${watch.id} + '/reviews'}" class="view-reviews-btn">
-                        Vedi tutte le recensioni
-                        <i class="material-icons">arrow_forward</i>
-                    </a>
+            </div>
+
+            <!-- Sezione caratteristiche tecniche -->
+            <div class="watch-specs" th:if="${watch.description}">
+                <h3>Caratteristiche</h3>
+                <div class="specs-grid">
+                    <div class="spec-item">
+                        <span class="spec-label">Brand:</span>
+                        <span class="spec-value" th:text="${watch.brand}">Rolex</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-label">Anno:</span>
+                        <span class="spec-value" th:text="${watch.year}">2024</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-label">Disponibilità:</span>
+                        <span class="spec-value" th:text="${watch.availability ? 'Disponibile' : 'Non disponibile'}">Disponibile</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reviews link section -->
+            <div class="reviews-link-section">
+                <div class="reviews-link-card" th:if="${watch.ratingCount > 0}">
+                    <div class="reviews-summary">
+                        <h3>Recensioni Clienti</h3>
+                        <div class="rating-summary">
+                            <div class="stars-large">
+                                <span class="star filled" th:each="i : ${#numbers.sequence(1, T(java.lang.Math).floor(watch.averageRating))}">★</span>
+                                <span class="star half" th:if="${watch.averageRating % 1 >= 0.5}">★</span>
+                                <span class="star empty" th:each="i : ${#numbers.sequence(1, 5 - T(java.lang.Math).ceil(watch.averageRating))}">★</span>
+                            </div>
+                            <span class="rating-average" th:text="${#numbers.formatDecimal(watch.averageRating, 1, 1)}">4.5</span>
+                            <span class="rating-count">su 5 stelle</span>
+                        </div>
+                        <p class="total-reviews" th:text="${watch.ratingCount + ' recensioni totali'}">12 recensioni totali</p>
+                    </div>
+                    <div class="reviews-cta">
+                        <a th:href="@{/watch/{id}/reviews(id=${watch.id})}" class="btn-view-reviews">
+                            <span class="reviews-icon">💬</span>
+                            Leggi Recensioni
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Quando non ci sono recensioni -->
+                <div class="no-reviews-link" th:unless="${watch.ratingCount > 0}">
+                    <div class="no-reviews-summary">
+                        <h3>Recensioni</h3>
+                        <p>Questo orologio non ha ancora recensioni.</p>
+                        <p th:if="${isUser}">Sii il primo a lasciare una recensione dopo l'acquisto!</p>
+                    </div>
+                    <div class="first-review-cta" th:if="${isUser}">
+                        <span class="review-icon">⭐</span>
+                        <span>Acquista e lascia la prima recensione</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orologi correlati -->
+            <div class="related-watches" th:if="${watch.brand}">
+                <h3>Altri Orologi <span th:text="${watch.brand}">Brand</span></h3>
+                <div class="related-grid">
+                    <p>Scopri altri orologi dello stesso brand nella nostra collezione esclusiva.</p>
+                    <a th:href="@{/watches}" class="btn-view-all">Esplora Collezione</a>
                 </div>
             </div>
         </div>
-        
-        
-        <!-- Messaggio se l'orologio non esiste -->
-        <div th:unless="${watch}" class="not-found-container">
-            <div class="not-found-content">
-                <div class="not-found-icon">⌚</div>
-                <h2>Orologio non trovato</h2>
-                <p>L'orologio che stai cercando non esiste o non è più disponibile.</p>
-                <a th:href="@{/watches}" class="btn-back">
-                    <i class="material-icons">arrow_back</i>
-                    Torna agli Orologi
-                </a>
-            </div>
-        </div>
-        
-        
-        
-        
-    </div>
+    </main>
 </body>
 </html>

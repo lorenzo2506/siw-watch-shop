@@ -35,7 +35,7 @@ public class AdminController {
 	
 	@GetMapping("/admin")
 	public String adminIndex() {
-	    return "admin/adminHomePage";
+	    return "homePage";
 	}
 	
 	

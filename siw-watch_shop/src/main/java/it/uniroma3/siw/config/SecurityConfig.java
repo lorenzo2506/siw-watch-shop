@@ -39,10 +39,9 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(authz -> authz
-                .requestMatchers("/", "/index", "/login", "/register", "/register/**", 
-                               "/css/**", "/images/**", "/watches", "/formNewWatch", 
+                .requestMatchers("/static/**", "/css/**", "/js/**", "/images/**","/", "/index", "/login", "/register", "/register/**", 
+                               "/css/**", "/images/**", "/watches", 
                                "/watch/**", "/watch", "/watches/*").permitAll()
-                .requestMatchers("/currentOrder/**").authenticated()
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
@@ -62,13 +61,12 @@ public class SecurityConfig {
                 .logoutSuccessUrl("/").permitAll()
             )
             .csrf(csrf -> csrf
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .ignoringRequestMatchers("/",
-                    "/logout", "/oauth2/**", "/login/**", "/login/oauth2/**",
-                    "/admin/**", "/register/step2", "/currentOrder/**",
-                    "/watch/*/reviews", "/watch/*/reviews/**"
-                )
-            );
+                    .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                    .ignoringRequestMatchers(
+                        "/logout", "/oauth2/**", "/login/**", "/login/oauth2/**",
+                        "/admin/**", "/register/**"
+                    )
+                );
         
         return http.build();
     }

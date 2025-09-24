@@ -1,89 +1,95 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      th:replace="fragments/layout.html :: base('Modifica Recensione - WatchLux', ~{::contenuto})">
+<html lang="it" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <title>Modifica Recensione - WatchLux</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modifica Recensione</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
 </head>
 <body>
-    <div th:fragment="contenuto">
-        
+    <!-- Header -->
+    <header th:replace="~{fragments/header :: header}"></header>
+
+    <div class="edit-form-container">
         <!-- Breadcrumb -->
         <nav class="breadcrumb">
-            <a th:href="@{/}" class="breadcrumb-link">
-                <i class="material-icons">home</i>
-                Home
-            </a>
-            <span class="breadcrumb-separator">></span>
-            <a th:href="@{/watches}" class="breadcrumb-link">Orologi</a>
-            <span class="breadcrumb-separator">></span>
-            <a th:href="@{'/watch/' + ${review.watch?.id}}" class="breadcrumb-link" th:text="${review.watch?.name ?: 'Orologio'}">Orologio</a>
-            <span class="breadcrumb-separator">></span>
-            <a th:href="@{'/watch/' + ${review.watch?.id} + '/reviews'}" class="breadcrumb-link">Recensioni</a>
-            <span class="breadcrumb-separator">></span>
-            <span class="breadcrumb-current">Modifica</span>
+            <a th:href="@{/}">Home</a>
+            <span>›</span>
+            <a th:href="@{/watches}">Orologi</a>
+            <span>›</span>
+            <a th:href="@{/watch/{id}/reviews(id=${review.watch.id})}">Recensioni</a>
+            <span>›</span>
+            <span>Modifica</span>
         </nav>
 
         <!-- Header della pagina -->
-        <div>
-            <h1></h1>
+        <div class="edit-header">
+            <h1>Modifica la tua Recensione</h1>
+            <div class="watch-reference">
+                <span class="watch-info">
+                    <span class="watch-brand" th:text="${review.watch.brand}">Brand</span>
+                    <span class="watch-name" th:text="${review.watch.name}">Nome Orologio</span>
+                </span>
+            </div>
         </div>
 
-        <!-- Form Modifica Recensione -->
-        <div class="edit-review-section">
-            
-            <form th:action="@{'/watch/' + ${review.watch.id} + '/review/' + ${review.id} + '/editForm'}" 
-                  method="post" 
-                  class="review-form" 
-                  th:object="${review}">
+        <!-- Form di modifica -->
+        <div class="edit-form-card">
+            <form th:action="@{/watch/{watchId}/review/{reviewId}/editForm(watchId=${review.watch.id}, reviewId=${review.id})}" 
+                  th:object="${review}" method="post" class="edit-review-form">
                 
                 <!-- Rating -->
                 <div class="form-group">
-                    <label>Valutazione:</label>
+                    <label for="star_rating">Valutazione *</label>
                     <div class="rating-input">
-                        <input type="radio" id="edit-star5" name="star_rating" value="5" 
-                               th:checked="${review.star_rating == 5}" />
-                        <label for="edit-star5">★</label>
-                        <input type="radio" id="edit-star4" name="star_rating" value="4" 
-                               th:checked="${review.star_rating == 4}" />
-                        <label for="edit-star4">★</label>
-                        <input type="radio" id="edit-star3" name="star_rating" value="3" 
-                               th:checked="${review.star_rating == 3}" />
-                        <label for="edit-star3">★</label>
-                        <input type="radio" id="edit-star2" name="star_rating" value="2" 
-                               th:checked="${review.star_rating == 2}" />
-                        <label for="edit-star2">★</label>
-                        <input type="radio" id="edit-star1" name="star_rating" value="1" 
-                               th:checked="${review.star_rating == 1}" />
-                        <label for="edit-star1">★</label>
+                        <input type="radio" id="star5" name="star_rating" value="5" th:field="*{star_rating}">
+                        <label for="star5" class="star-label">★</label>
+                        <input type="radio" id="star4" name="star_rating" value="4" th:field="*{star_rating}">
+                        <label for="star4" class="star-label">★</label>
+                        <input type="radio" id="star3" name="star_rating" value="3" th:field="*{star_rating}">
+                        <label for="star3" class="star-label">★</label>
+                        <input type="radio" id="star2" name="star_rating" value="2" th:field="*{star_rating}">
+                        <label for="star2" class="star-label">★</label>
+                        <input type="radio" id="star1" name="star_rating" value="1" th:field="*{star_rating}">
+                        <label for="star1" class="star-label">★</label>
                     </div>
+                    <span th:if="${#fields.hasErrors('star_rating')}" 
+                          th:errors="*{star_rating}" class="error-message"></span>
                 </div>
 
                 <!-- Testo recensione -->
                 <div class="form-group">
-                    <label for="editReviewText">La tua recensione:</label>
-                    <textarea id="editReviewText" name="text" rows="4" 
-                              placeholder="Condividi la tua esperienza..." 
-                              required th:text="${review.text}"></textarea>
+                    <label for="text">Recensione *</label>
+                    <textarea id="text" th:field="*{text}" 
+                              placeholder="Condividi la tua esperienza con questo orologio..."
+                              rows="6" required></textarea>
+                    <span th:if="${#fields.hasErrors('text')}" 
+                          th:errors="*{text}" class="error-message"></span>
+                    <div class="form-hint">
+                        <span class="char-count" id="charCount">0</span> caratteri (minimo 10)
+                    </div>
                 </div>
-
-                <!-- Campi nascosti -->
-                <input type="hidden" th:field="*{id}" />
-                <input type="hidden" th:field="*{watch.id}" />
-                <input type="hidden" th:field="*{user.id}" />
 
                 <!-- Pulsanti -->
                 <div class="form-actions">
-                    <a th:href="@{'/watch/' + ${review.watch.id} + '/reviews'}" class="btn-secondary">
-                        <i class="material-icons">cancel</i>
-                        Annulla
-                    </a>
-                    <button type="submit" class="btn-primary">
-                        <i class="material-icons">save</i>
+                    <button type="submit" class="btn-save-changes">
                         Salva Modifiche
                     </button>
+                    <a th:href="@{/watch/{id}/reviews(id=${review.watch.id})}" class="btn-cancel-edit">
+                        Annulla
+                    </a>
                 </div>
             </form>
         </div>
+
+        <!-- Informazioni recensione -->
+        <div class="review-info">
+            <div class="info-item">
+                <span class="info-label">Creata il:</span>
+                <span class="info-value" th:text="${#temporals.format(review.createdAt, 'dd MMMM yyyy HH:mm')}">Data</span>
+            </div>
+        </div>
     </div>
+
 </body>
 </html>

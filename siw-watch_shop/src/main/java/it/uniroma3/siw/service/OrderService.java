@@ -111,10 +111,6 @@ public class OrderService {
     @Transactional
     public void addWatchToCurrentOrder(Long id) {
         Order currentOrder = this.getCurrentOrder();
-        
-        // Forza il refresh per assicurarti di avere lo stato più aggiornato
-       
-        
         Watch currentWatch = watchService.getAvailableWatch(id);
         OrderLine existingOrderLine = this.existingOrderLineInOrder(currentOrder, currentWatch);
 

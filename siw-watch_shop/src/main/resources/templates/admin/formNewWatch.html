@@ -1,113 +1,198 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      th:replace="fragments/layout.html :: base('Nuovo Orologio - WatchLux', ~{::contenuto})">
+<html lang="it" xmlns:th="http://www.thymeleaf.org" 
+      th:replace="~{fragments/layout :: base(~{::title}, ~{::main})}">
 <head>
-    <title>⌚ Nuovo Orologio - WatchLux</title>
+    <title>Aggiungi Nuovo Orologio - TimeCraft Admin</title>
 </head>
 <body>
-    <!-- Contenuto specifico del form -->
-    <div th:fragment="contenuto">
-        <section class="form-container">
-            <div class="form-wrapper">
-                <h1 class="form-title">
-                    <i class="material-icons">watch</i>
-                    Aggiungi Nuovo Orologio
-                </h1>
+    <main>
+        <div class="admin-form-container">
+            
+            <!-- Header della form -->
+            <div class="admin-form-header">
+                <h1>Aggiungi Nuovo Orologio</h1>
+                <p>Completa tutti i campi richiesti per aggiungere un nuovo orologio alla collezione TimeCraft</p>
+            </div>
+
+            <!-- Form principale -->
+            <form th:action="@{/watch}" method="post" enctype="multipart/form-data" th:object="${watch}" class="admin-form">
                 
-                <form th:action="@{/watch}" method="POST" th:object="${watch}" class="luxury-form" enctype="multipart/form-data">
+                <div class="form-grid">
                     
-                    <!-- Errori Globali - DENTRO IL FORM CON CSRF TOKEN -->
-                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                    
-                    <div th:if="${#fields.hasGlobalErrors()}">
-					    <p th:each="err : ${#fields.globalErrors()}" th:text="${err}" style="color: #dc2626; font-weight: 600; margin-bottom: 1rem;">...</p> 
-					</div>
-                    
-                    <!-- Nome -->
+                    <!-- Nome orologio -->
                     <div class="form-group">
-                        <label for="name" class="form-label">
-                            <i class="material-icons">title</i>
-                            Nome Orologio
-                        </label>
+                        <label for="name" class="required">Nome Orologio</label>
                         <input type="text" 
-                               id="name"
+                               id="name" 
                                th:field="*{name}" 
-                               class="form-input"
-                               placeholder="es. Submariner Date"
-                               required>
-                        <span class="error-text" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
+                               class="form-control"
+                               th:class="${#fields.hasErrors('name')} ? 'form-control error' : 'form-control'"
+                               placeholder="es. Submariner, Speedmaster..."
+                               maxlength="100">
+                        <div th:if="${#fields.hasErrors('name')}" class="error-message">
+                            <span th:errors="*{name}">Errore nome</span>
+                        </div>
                     </div>
-                    
+
                     <!-- Brand -->
                     <div class="form-group">
-                        <label for="brand" class="form-label">
-                            <i class="material-icons">business</i>
-                            Marca
-                        </label>
+                        <label for="brand" class="required">Brand</label>
                         <input type="text" 
-                               id="brand"
+                               id="brand" 
                                th:field="*{brand}" 
-                               class="form-input"
-                               placeholder="es. Rolex"
-                               required>
-                        <span class="error-text" th:if="${#fields.hasErrors('brand')}" th:errors="*{brand}"></span>
+                               class="form-control"
+                               th:class="${#fields.hasErrors('brand')} ? 'form-control error' : 'form-control'"
+                               placeholder="es. Rolex, Omega, Casio..."
+                               maxlength="50">
+                        <div th:if="${#fields.hasErrors('brand')}" class="error-message">
+                            <span th:errors="*{brand}">Errore brand</span>
+                        </div>
                     </div>
-                    
-                    <!-- Anno -->
-                    <div class="form-group">
-                        <label for="year" class="form-label">
-                            <i class="material-icons">calendar_today</i>
-                            Anno di Produzione
-                        </label>
-                        <input required type="number" 
-                               th:field="*{year}" 
-                               class="form-input">
-                        <span class="error-text" th:if="${#fields.hasErrors('year')}" th:errors="*{year}"></span>
-                    </div>
-                    
+
                     <!-- Prezzo -->
                     <div class="form-group">
-                        <label for="price" class="form-label">
-                            <i class="material-icons">euro</i>
-                            Prezzo (€)
-                        </label>
-                        <input required type="number" 
+                        <label for="price" class="required">Prezzo (€)</label>
+                        <input type="number" 
+                               id="price" 
                                th:field="*{price}" 
-                               class="form-input"
-                               placeholder="es. 8500.00">
-                        <span class="error-text" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></span>
+                               class="form-control"
+                               th:class="${#fields.hasErrors('price')} ? 'form-control error' : 'form-control'"
+                               placeholder="999.99"
+                               min="0"
+                               step="0.01">
+                        <div th:if="${#fields.hasErrors('price')}" class="error-message">
+                            <span th:errors="*{price}">Errore prezzo</span>
+                        </div>
                     </div>
-                    
+
+                    <!-- Anno -->
+                    <div class="form-group">
+                        <label for="year" class="required">Anno di Produzione</label>
+                        <input type="number" 
+                               id="year" 
+                               th:field="*{year}" 
+                               class="form-control"
+                               th:class="${#fields.hasErrors('year')} ? 'form-control error' : 'form-control'"
+                               placeholder="2024"
+                               min="1800"
+                               max="2025">
+                        <div th:if="${#fields.hasErrors('year')}" class="error-message">
+                            <span th:errors="*{year}">Errore anno</span>
+                        </div>
+                    </div>
+
+                    <!-- Stock -->
+                    <div class="form-group">
+                        <label for="stock">Quantità in Stock</label>
+                        <input type="number" 
+                               id="stock" 
+                               th:field="*{stock}" 
+                               class="form-control"
+                               th:class="${#fields.hasErrors('stock')} ? 'form-control error' : 'form-control'"
+                               placeholder="10"
+                               min="0">
+                        <div th:if="${#fields.hasErrors('stock')}" class="error-message">
+                            <span th:errors="*{stock}">Errore stock</span>
+                        </div>
+                        <small class="form-help">Lascia vuoto o 0 se non disponibile</small>
+                    </div>
+
                     <!-- Immagine -->
                     <div class="form-group">
-                        <label for="imageFile" class="form-label">
-                            <i class="material-icons">image</i>
-                            Immagine Orologio
+                        <label for="imageFile" class="required">Immagine Orologio</label>
+                        <div class="file-upload-wrapper">
+                            <input type="file" 
+                                   id="imageFile" 
+                                   name="imageFile" 
+                                   class="form-control file-input"
+                                   accept="image/jpeg,image/png,image/gif,image/webp"
+                                   required>
+                            <div class="file-upload-info">
+                                <span class="upload-icon">📷</span>
+                                <span class="upload-text">Seleziona immagine...</span>
+                                <span class="file-requirements">
+                                    Formati supportati: JPEG, PNG, GIF, WebP<br>
+                                    Dimensione massima: 5MB
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Descrizione (full width) -->
+                <div class="form-group form-group-full">
+                    <label for="description">Descrizione Dettagliata</label>
+                    <textarea id="description" 
+                              th:field="*{description}" 
+                              class="form-control"
+                              th:class="${#fields.hasErrors('description')} ? 'form-control error' : 'form-control'"
+                              placeholder="Descrizione completa dell'orologio, caratteristiche tecniche, materiali utilizzati, storia del modello..."
+                              rows="4"
+                              maxlength="1000"></textarea>
+                    <div th:if="${#fields.hasErrors('description')}" class="error-message">
+                        <span th:errors="*{description}">Errore descrizione</span>
+                    </div>
+                    <small class="form-help">Massimo 1000 caratteri - Descrivi le caratteristiche uniche del prodotto</small>
+                </div>
+
+                <!-- Availability checkbox -->
+                <div class="form-group form-group-full">
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" 
+                               id="availability" 
+                               th:field="*{availability}" 
+                               class="form-checkbox"
+                               checked>
+                        <label for="availability" class="checkbox-label">
+                            <span class="checkbox-custom"></span>
+                            Orologio disponibile per la vendita
                         </label>
-                        <input type="file" 
-                               id="imageFile"
-                               name="imageFile" 
-                               class="form-input"
-                               accept="image/*"
-                               required>
-                        <small class="form-help">Formati supportati: JPEG, PNG, GIF, WebP (max 5MB)</small>
-                        <span class="error-text" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
+                    </div>
+                    <small class="form-help">Disabilita se l'orologio non deve essere visibile nel catalogo pubblico</small>
+                </div>
+
+                <!-- Pulsanti azione -->
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <span class="btn-icon">✓</span>
+                        Aggiungi Orologio
+                    </button>
+                    
+                    <a th:href="@{/admin/watches}" class="btn btn-secondary">
+                        <span class="btn-icon">←</span>
+                        Torna Indietro
+                    </a>
+                    
+                    <button type="reset" class="btn btn-outline">
+                        <span class="btn-icon">⟲</span>
+                        Reset Form
+                    </button>
+                </div>
+
+            </form>
+
+            <!-- Info aggiuntive -->
+            <div class="form-footer">
+                <div class="info-cards">
+                    <div class="info-card">
+                        <h4>📋 Campi Obbligatori</h4>
+                        <p>Nome, Brand, Prezzo, Anno e Immagine sono necessari per pubblicare l'orologio nel catalogo.</p>
                     </div>
                     
-                    <!-- Bottoni -->
-                    <div class="form-actions">
-                        <a th:href="@{/}" class="btn-secondary">
-                            <i class="material-icons">arrow_back</i>
-                            Annulla
-                        </a>
-                        <button type="submit" class="btn-primary">
-                            <i class="material-icons">add</i>
-                            Aggiungi Orologio
-                        </button>
+                    <div class="info-card">
+                        <h4>🖼️ Immagini di Qualità</h4>
+                        <p>Usa immagini ad alta risoluzione per una presentazione ottimale. Formato consigliato: 800x800px minimo.</p>
                     </div>
-                </form>
+                    
+                    <div class="info-card">
+                        <h4>📦 Gestione Stock</h4>
+                        <p>Gli orologi con stock = 0 appariranno come "Esaurito" ma rimarranno visibili nel catalogo.</p>
+                    </div>
+                </div>
             </div>
-        </section>
-    </div>
+
+        </div>
+    </main>
 </body>
 </html>

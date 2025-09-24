@@ -1,89 +1,94 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{fragments/layout.html :: base('WatchLux - Luxury Watch Collection', ~{::contenuto})}">
+<html lang="it" xmlns:th="http://www.thymeleaf.org" 
+      th:replace="~{fragments/layout :: base(~{::title}, ~{::main})}">
 <head>
-    <title>WatchLux - Luxury Watch Collection</title>
+    <title>Orologi - TimeCraft</title>
 </head>
 <body>
-    <!-- Contenuto specifico della collezione orologi -->
-    <div th:fragment="contenuto">
-        <section class="watches-container">
-            
-            <!-- Header della collezione -->
-            <div class="page-header">
-                <div class="header-content">
-                    <h1 class="page-title">
-                        <i class="material-icons">watch</i>
-                        Collezione Orologi
-                    </h1>
-                    <p class="page-subtitle">Scopri la nostra esclusiva selezione di orologi</p>
-                    <div class="page-stats" th:if="${!#lists.isEmpty(watches)}">
-                        <span class="stat-badge">
-                            <i class="material-icons">inventory</i>
-                            <span th:text="${#lists.size(watches)}">0</span> Orologi disponibili
-                        </span>
+    <main>
+        <div class="watches-container">
+            <!-- Header della pagina -->
+            <div class="watches-page-header">
+                <div class="page-title-section">
+                    <h1 class="page-title">La Nostra Collezione</h1>
+                    <div th:if="${isAdmin}" class="admin-actions">
+                        <a th:href="@{/admin/formNewWatch}" class="btn-add">+ Aggiungi Orologio</a>
                     </div>
                 </div>
+                
+                <p th:if="${searchQuery}" class="search-info">
+                    Risultati per: <span class="search-term" th:text="${searchQuery}"></span>
+                </p>
+                <p th:unless="${searchQuery}" class="collection-info">
+                    Scopri la nostra selezione curata di orologi di lusso
+                </p>
             </div>
-            
-            <!-- Stato vuoto - Nessun orologio -->
-            <div th:if="${#lists.isEmpty(watches)}" class="empty-state">
-                <div class="empty-content">
-                    <div class="empty-icon">
-                        <i class="material-icons">watch_off</i>
-                    </div>
-                    <h2 class="empty-title" style="color: black;">Collezione temporaneamente vuota</h2>
-                    <p class="empty-description" style="color: black;">
-                        La nostra collezione di orologi è in aggiornamento. 
-                        Torna presto per scoprire le ultime novità!
-                    </p>
-                    
-                </div>
-            </div>
-            
-            <!-- Griglia orologi -->
-            <div th:if="${!#lists.isEmpty(watches)}" class="watches-grid">
-                <div th:each="watch : ${watches}" class="watch-card">
-                    
-                    <!-- Immagine orologio -->
-                    <!-- Singola immagine -->
-                    <img th:src="@{'/images/' + ${watch.imagePath}}" 
-                        alt="Watch image" 
-                        class="watch-image"
-                        th:if="${watch.imagePath != null}" />
 
-                    <!-- Immagine placeholder se non c'è immagine -->
-                    <div th:unless="${watch.imagePath != null}" class="no-image">
-                        <p>Nessuna immagine disponibile</p>
-                    </div>
-                    
-                    <!-- Dettagli orologio -->
-                    <div class="watch-details">
-                        
-                        
-                        <div class="watch-footer">
-                            <div class="watch-price" th:if="${watch.price}">
-                                <span th:text="${watch.name}">name</span>
-                                <span th:text="${watch.brand}">brand</span>
-                                <span th:text="${watch.year}">year</span>
-                                <span class="price-label">Prezzo:</span>
-                                <span class="price-value">
-                                    €<span th:text="${#numbers.formatDecimal(watch.price, 0, 'COMMA', 2, 'POINT')}">0,00</span>
-                                </span>
+            <!-- Filtro Brand -->
+            <div class="categories-filter">
+                <a th:href="@{/watches}" 
+                   class="filter-btn" 
+                   th:classappend="${selectedBrand == null} ? 'active' : ''">
+                   Tutti i Brand
+                </a>
+                <a th:each="brand : ${brands}" 
+                   th:href="@{/watches/brand/{brand}(brand=${brand})}" 
+                   class="filter-btn"
+                   th:classappend="${selectedBrand == brand} ? 'active' : ''"
+                   th:text="${brand}">Brand</a>
+            </div>
+
+            <!-- Griglia orologi -->
+            <div class="watches-grid" th:if="${watches} and !${#lists.isEmpty(watches)}">
+                <div class="watch-card" th:each="watch : ${watches}">
+                    <a th:href="@{/watch/{id}(id=${watch.id})}" class="watch-link">
+                        <!-- Immagine orologio -->
+                        <div class="watch-image">
+                            <img th:if="${watch.imagePath}" 
+                                 th:src="@{/images/{filename}(filename=${watch.imagePath})}" 
+                                 th:alt="${watch.name}"
+                                 class="watch-img">
+                            <div th:unless="${watch.imagePath}" class="watch-placeholder">
+                                <span>⌚</span>
                             </div>
-                            <div class="watch-actions">
-                                <a th:href="@{'/watch/' + ${watch.id}}" class="btn-primary">
-                                    <i class="material-icons">info</i>
-                                    Vedi Dettagli
-                                </a>
+                            
+                            <!-- Badge disponibilità -->
+                            <span th:if="${watch.availability}" class="availability-badge">Disponibile</span>
+                            <span th:unless="${watch.availability}" class="availability-badge sold-out">Esaurito</span>
+                        </div>
+
+                        <!-- Info orologio -->
+                        <div class="watch-info">
+                            <div class="watch-brand" th:text="${watch.brand}">Brand</div>
+                            <h3 class="watch-name" th:text="${watch.name}">Nome Orologio</h3>
+                            
+                            <!-- Anno -->
+                            <div class="watch-year" th:text="${watch.year}">2024</div>
+
+                            <!-- Prezzo -->
+                            <div class="watch-price">
+                                <span class="price-amount">€<span th:text="${#numbers.formatDecimal(watch.price, 0, 2)}">999.00</span></span>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
             </div>
-            
-            
-        </section>
-    </div>
+
+            <!-- Stato vuoto -->
+            <div class="empty-state" th:if="${watches == null or #lists.isEmpty(watches)}">
+                <div class="empty-icon">⌚</div>
+                <h3>Nessun Orologio Trovato</h3>
+                <p th:if="${searchQuery}">
+                    Non abbiamo trovato orologi corrispondenti a "<span th:text="${searchQuery}"></span>"
+                </p>
+                <p th:unless="${searchQuery}">
+                    La collezione è temporaneamente vuota. Torna presto per scoprire le nostre novità!
+                </p>
+                <a th:href="@{/watches}" class="btn btn-primary" th:if="${searchQuery}">
+                    Vedi Tutti gli Orologi
+                </a>
+            </div>
+        </div>
+    </main>
 </body>
 </html>

@@ -1,91 +1,103 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      th:replace="fragments/layout.html :: base(#{Registrazione Step 2 - WatchLux}, ~{::contenuto})">
+<html lang="it" xmlns:th="http://www.thymeleaf.org" 
+      th:replace="~{fragments/layout :: base(~{::title}, ~{::main})}">
 <head>
-    <title>Registrazione Step 2 - WatchLux</title>
+    <title th:text="${pageTitle} ?: 'Scegli Username - TimeCraft'">Scegli Username - TimeCraft</title>
 </head>
 <body>
-    <!-- Contenuto specifico della registrazione step 2 -->
-    <div th:fragment="contenuto">
-        <section class="form-container">
-            <div class="form-wrapper">
-                <!-- Header con progress -->
-                <div class="registration-header">
-                    <h1 class="form-title">
-                        <i class="material-icons">person_add</i>
-                        Registrazione
-                    </h1>
+    <main>
+        <div class="auth-container">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <h1>⌚ TimeCraft</h1>
+                    <h2 th:text="${pageTitle} ?: 'Scegli il tuo username'">Scegli il tuo username</h2>
                     
-                    <div class="progress-bar">
-                        <div class="step completed">
-                            <span class="step-number">
-                                <i class="material-icons">check</i>
-                            </span>
-                            <span class="step-label">Dati Personali</span>
-                        </div>
-                        <div class="step-connector completed"></div>
-                        <div class="step active">
-                            <span class="step-number">2</span>
-                            <span class="step-label">Username</span>
-                        </div>
+                    <!-- Messaggio di benvenuto per OAuth -->
+                    <div th:if="${isOAuth2}" class="welcome-message">
+                        <p th:text="${welcomeMessage}">Benvenuto!</p>
                     </div>
                     
-                    <p class="step-description">Ultimo passaggio: scegli il tuo username univoco</p>
+                    <p th:text="${instructions}">Ultimo passaggio per completare la registrazione</p>
                 </div>
-                
-                <!-- Info email confermata -->
-                <div class="info-box">
-                    <div class="info-content">
-                        <i class="material-icons">check_circle</i>
-                        <div>
-                            <strong>Email confermata:</strong>
-                            <span th:text="${credentials.email}">email@esempio.com</span>
-                        </div>
+
+                <!-- Progress indicator per registrazione normale -->
+                <div class="progress-steps" th:unless="${isOAuth2}">
+                    <div class="step completed">
+                        <span class="step-number">✓</span>
+                        <span class="step-label">Dati Personali</span>
+                    </div>
+                    <div class="step-line completed"></div>
+                    <div class="step active">
+                        <span class="step-number">2</span>
+                        <span class="step-label">Username</span>
                     </div>
                 </div>
-                
-                <!-- Form Step 2 -->
-                <form th:action="@{/register/step2}" method="post" th:object="${credentials}" class="luxury-form">
-                    
-                    <!-- Username -->
-                    <div class="form-group">
-                        <label for="username" class="form-label">
-                            <i class="material-icons">alternate_email</i>
-                            Username
-                        </label>
-                        <input type="text" 
-                               th:field="*{username}" 
-                               id="username" 
-                               class="form-input" 
-                               placeholder="es. mario_rossi"
-                               required>
-                        
-                        <!-- Errore username esistente -->
-                        <div th:if="${usernameExists}" class="error-text">
-                            <i class="material-icons">error</i>
-                            <span th:text="${usernameExists}">Questo username è già in uso</span>
+
+                <!-- Progress indicator per OAuth -->
+                <div class="oauth-progress" th:if="${isOAuth2}">
+                    <div class="oauth-step">
+                        <span class="oauth-icon">🎯</span>
+                        <span class="oauth-label">Ultimo passaggio</span>
+                    </div>
+                </div>
+
+                <!-- Messaggi di errore -->
+                <div th:if="${usernameExists}" class="alert alert-error" th:text="${usernameExists}"></div>
+                <div th:if="${errorMessage}" class="alert alert-error" th:text="${errorMessage}"></div>
+
+                <div class="auth-form-container">
+                    <!-- Username Selection Form -->
+                    <form class="auth-form" th:action="@{/register/step2}" method="post" th:object="${credentials}">
+                        <!-- Hidden fields per mantenere i dati dalla sessione -->
+                        <input type="hidden" th:field="*{email}">
+                        <input type="hidden" th:field="*{password}">
+                        <input type="hidden" th:if="*{user?.name}" th:field="*{user.name}">
+                        <input type="hidden" th:if="*{user?.surname}" th:field="*{user.surname}">
+
+                        <div class="form-group">
+                            <label for="username">Username *</label>
+                            <input type="text" id="username" name="username" th:field="*{username}" 
+                                   placeholder="Il tuo username unico" required>
+                            <small class="form-hint">Sarà visibile agli altri utenti nella community</small>
                         </div>
-                        
-                        <small class="form-hint">
-                            <i class="material-icons">info</i>
-                            L'username deve essere univoco e può contenere lettere, numeri e underscore
-                        </small>
+
+                        <!-- Recap info per conferma -->
+                        <div class="user-recap" th:if="*{email}">
+                            <h4>📋 Riepilogo account:</h4>
+                            <div class="recap-info">
+                                <span class="recap-label">Email:</span>
+                                <span class="recap-value" th:text="*{email}"></span>
+                            </div>
+                            <div class="recap-info" th:if="*{user?.name}">
+                                <span class="recap-label">Nome:</span>
+                                <span class="recap-value" th:text="*{user.name} + ' ' + *{user.surname}"></span>
+                            </div>
+                            <div class="recap-info">
+                                <span class="recap-label">Tipo account:</span>
+                                <span class="recap-value" th:text="${isOAuth2} ? 'Google OAuth' : 'Registrazione diretta'"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <a th:href="@{/register/cancel}" class="btn-auth-secondary">Annulla</a>
+                            <button type="submit" class="btn-auth-primary">
+                                <span th:if="${isOAuth2}">Completa Registrazione</span>
+                                <span th:unless="${isOAuth2}">Crea Account</span>
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Note privacy -->
+                    <div class="auth-footer">
+                        <p class="privacy-note">
+                            Continuando, accetti i nostri 
+                            <a href="#" class="link-secondary">Termini di Servizio</a> e la 
+                            <a href="#" class="link-secondary">Privacy Policy</a>
+                        </p>
                     </div>
-                    
-                    <!-- Azioni -->
-                    <div class="form-actions">
-                        <button type="submit" class="btn-success">
-                            <i class="material-icons">check</i>
-                            Completa Registrazione
-                        </button>
-                        <a th:href="@{/register/cancel}" class="btn-secondary">
-                            <i class="material-icons">close</i>
-                            Annulla
-                        </a>
-                    </div>
-                </form>
+                </div>
             </div>
-        </section>
-    </div>
+        </div>
+    </main>
 </body>
 </html>

@@ -1,39 +1,30 @@
 <!DOCTYPE html>
-<html lang="it" xmlns:th="http://www.thymeleaf.org" th:fragment="base(title, content)">
+<html lang="it" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" th:fragment="base(title, content)">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${title}">WatchLux</title>
+    <meta name="description" content="TimeCraft - Orologi di lusso e precisione svizzera">
+    <meta name="keywords" content="orologi, lusso, swiss made, precisione, eleganza">
+    <meta name="author" content="TimeCraft">
     
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+    <title th:replace="${title}">TimeCraft - Orologi di Lusso</title>
     
-    <!-- Material Icons -->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    
-    <!-- CSS Main -->
+    <!-- CSS Principale -->
     <link rel="stylesheet" th:href="@{/css/main.css}">
+    
 </head>
 <body>
     
-    <!-- Header per ADMIN autenticati -->
-    <div th:if="${isAuthenticated and userDetails != null and userDetails.role.name() == 'ADMIN'}">
-    	<header th:replace="fragments/admin-header.html :: intestazione"></header>
-    </div>
-	
-	<div th:if="${!isAuthenticated or (isAuthenticated and userDetails != null and userDetails.role.name() == 'USER')}">
-    	<header th:replace="fragments/header.html :: intestazione"></header>
-    </div>
-    
-    
-    
+    <!-- Header -->
+    <header th:replace="~{fragments/header :: header}"></header>
     
     <!-- Main Content -->
-    <main th:replace="${content}">
+    <main id="main-content" th:replace="${content}" role="main">
         <!-- Il contenuto della pagina verrà inserito qui -->
     </main>
     
-    <!-- Footer (opzionale per il futuro) -->
-    <!-- <footer th:replace="fragments/footer.html :: piede"></footer> -->
+    <!-- Footer -->
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    
 </body>
 </html>

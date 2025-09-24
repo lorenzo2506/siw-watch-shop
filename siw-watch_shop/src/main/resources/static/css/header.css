@@ -1,64 +1,236 @@
-/* AGGIUNGI QUESTE REGOLE AL TUO header.css ESISTENTE */
+/* header.css - Header TimeCraft Redesign */
 
-/* Immagini nelle icone */
-.home-icon-container img,
-.profile-icon-img,
-.cart-icon-img {
-    width: 20px !important;
-    height: 20px !important;
-    filter: brightness(0) invert(1) !important;
-    display: block !important;
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-color);
+    z-index: 1000;
+    height: 80px;
+    transition: all var(--transition-normal);
 }
 
-/* Hover per le immagini */
-.home-icon-container:hover img,
-.profile-container:hover .profile-icon-img,
-.cart-container:hover .cart-icon-img {
-    transform: scale(1.1) !important;
-    transition: all 0.3s ease !important;
+.nav-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--space-4);
+    height: 100%;
 }
 
-/* Nascondi le icone material se presenti */
-.profile-icon,
-.cart-icon {
-    display: none !important;
+/* Logo */
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    transition: color var(--transition-fast);
 }
 
-/* Badge carrello posizionamento */
-.cart-container {
-    position: relative !important;
+.logo:hover {
+    color: var(--primary-dark);
 }
 
+.logo::before {
+    content: "⌚";
+    font-size: 1.25rem;
+}
+
+/* Search container */
+.search-container {
+    flex: 1;
+    max-width: 400px;
+    margin: 0 var(--space-8);
+}
+
+.search-form {
+    position: relative;
+    display: flex;
+}
+
+.search-box {
+    flex: 1;
+    padding: var(--space-3) var(--space-4);
+    padding-right: 3rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-full);
+    background: var(--bg-secondary);
+    font-size: 0.875rem;
+    transition: all var(--transition-fast);
+}
+
+.search-box:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    background: var(--bg-primary);
+    box-shadow: 0 0 0 3px rgb(37 99 235 / 0.1);
+}
+
+.search-box::placeholder {
+    color: var(--text-muted);
+}
+
+.search-btn {
+    position: absolute;
+    right: var(--space-1);
+    top: 50%;
+    transform: translateY(-50%);
+    padding: var(--space-2);
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-radius: var(--radius-full);
+    transition: all var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.search-btn:hover {
+    background: var(--primary-bg);
+    color: var(--primary-color);
+}
+
+/* Navigation menu */
+.nav-menu {
+    display: flex;
+    list-style: none;
+    align-items: center;
+    gap: var(--space-6);
+    margin: 0;
+    padding: 0;
+}
+
+.nav-menu li {
+    margin: 0;
+}
+
+.nav-menu a {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-decoration: none;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+    position: relative;
+}
+
+.nav-menu a:hover {
+    color: var(--primary-color);
+    background: var(--primary-bg);
+}
+
+/* Active state per link corrente */
+.nav-menu a.active {
+    color: var(--primary-color);
+    background: var(--primary-bg);
+}
+
+/* Logout form integrato nel menu */
+.logout-form {
+    display: inline-block;
+    margin: 0;
+}
+
+.logout-form button {
+    background: none;
+    border: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+}
+
+.logout-form button:hover {
+    color: var(--error);
+    background: var(--error-bg);
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .header {
+        height: 70px;
+    }
+    
+    .nav-container {
+        padding: 0 var(--space-3);
+    }
+    
+    .search-container {
+        display: none; /* Nasconde la ricerca su mobile */
+    }
+    
+    .nav-menu {
+        gap: var(--space-3);
+    }
+    
+    .nav-menu a {
+        font-size: 0.75rem;
+        padding: var(--space-1) var(--space-2);
+    }
+    
+    .logo {
+        font-size: 1.25rem;
+    }
+    
+    body {
+        padding-top: 70px;
+    }
+}
+
+@media (max-width: 640px) {
+    .nav-menu {
+        gap: var(--space-2);
+    }
+    
+    .nav-menu a {
+        padding: var(--space-1);
+        font-size: 0.75rem;
+    }
+    
+    /* Menu mobile compatto */
+    .nav-menu li:not(:last-child) {
+        display: none;
+    }
+    
+    .nav-menu li:last-child {
+        margin-left: auto;
+    }
+}
+
+/* Animazioni smooth */
+.header.scrolled {
+    background: rgba(255, 255, 255, 0.98);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Badge per carrello (se presente) */
 .cart-badge {
-    position: absolute !important;
-    top: -4px !important;
-    right: -4px !important;
-    background: #ff4444 !important;
-    color: #fff !important;
-    border-radius: 50% !important;
-    width: 16px !important;
-    height: 16px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    font-size: 0.65rem !important;
-    font-weight: bold !important;
-    border: 1px solid #fff !important;
-}
-
-/* Profile badge posizionamento */
-.profile-container {
-    position: relative !important;
-}
-
-.profile-badge {
-    position: absolute !important;
-    top: 2px !important;
-    right: 2px !important;
-    width: 8px !important;
-    height: 8px !important;
-    background: #4CAF50 !important;
-    border-radius: 50% !important;
-    border: 1px solid #fff !important;
-    font-size: 8px !important;
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: var(--primary-color);
+    color: white;
+    font-size: 0.625rem;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: var(--radius-full);
+    min-width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

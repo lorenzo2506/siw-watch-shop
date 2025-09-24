@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Recensione di ' + ${user.name} + ' ' + ${user.surname}">Recensione</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+<body>
+    <!-- Header -->
+    <header th:replace="~{fragments/header :: header}"></header>
+
+    <div class="single-review-container">
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb">
+            <a th:href="@{/}">Home</a>
+            <span>›</span>
+            <a th:href="@{/watches}">Orologi</a>
+            <span>›</span>
+            <a th:href="@{/watch/{id}(id=${review.watch.id})}" 
+               th:text="${review.watch.brand + ' ' + review.watch.name}">Orologio</a>
+            <span>›</span>
+            <a th:href="@{/watch/{id}/reviews(id=${review.watch.id})}">Recensioni</a>
+            <span>›</span>
+            <span>Recensione</span>
+        </nav>
+
+        <!-- Header della recensione -->
+        <div class="single-review-header">
+            <div class="review-watch-info">
+                <div class="watch-image-small">
+                    <img th:if="${review.watch.imagePath}" 
+                         th:src="@{/images/{filename}(filename=${review.watch.imagePath})}" 
+                         th:alt="${review.watch.name}" 
+                         class="watch-img-small">
+                    <div th:unless="${review.watch.imagePath}" class="watch-placeholder-small">⌚</div>
+                </div>
+                <div class="watch-details">
+                    <h1 class="review-title">Recensione</h1>
+                    <div class="watch-name">
+                        <span class="watch-brand" th:text="${review.watch.brand}">Brand</span>
+                        <span class="watch-model" th:text="${review.watch.name}">Modello</span>
+                    </div>
+                    <div class="watch-year" th:text="'Anno: ' + ${review.watch.year}">Anno: 2023</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenuto della recensione -->
+        <div class="single-review-content">
+            <!-- Informazioni autore -->
+            <div class="review-author-section">
+                <div class="author-card">
+                    <div class="author-avatar-large">
+                        <span th:text="${#strings.substring(user.name, 0, 1) + #strings.substring(user.surname, 0, 1)}">
+                            JD
+                        </span>
+                    </div>
+                    <div class="author-details">
+                        <h2 th:text="${user.name + ' ' + user.surname}">Nome Cognome</h2>
+                        <div class="review-meta">
+                            <span class="review-date">
+                                📅 <span th:text="${#temporals.format(review.createdAt, 'dd MMMM yyyy')}">Data</span>
+                            </span>
+                            <span class="review-time">
+                                🕐 <span th:text="${#temporals.format(review.createdAt, 'HH:mm')}">Ora</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rating e recensione -->
+            <div class="review-content-section">
+                <div class="review-rating-large">
+                    <div class="stars-display">
+                        <span th:each="i : ${#numbers.sequence(1, 5)}" 
+                              th:class="${i <= review.star_rating} ? 'star-large filled' : 'star-large'">★</span>
+                    </div>
+                    <div class="rating-info">
+                        <span class="rating-number" th:text="${review.star_rating}">5</span>
+                        <span class="rating-label">su 5 stelle</span>
+                    </div>
+                </div>
+
+                <div class="review-text-content">
+                    <h3>Recensione</h3>
+                    <div class="review-text-display" th:text="${review.text}">
+                        Testo della recensione che può essere molto lungo e dettagliato...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Azioni (se è la recensione dell'utente corrente) -->
+        <div th:if="${currentUser != null and currentUser.id == user.id}" class="review-user-actions">
+            <div class="actions-card">
+                <h3>Gestisci la tua recensione</h3>
+                <div class="action-buttons">
+                    <a th:href="@{/watch/{watchId}/reviews/{reviewId}/editForm(watchId=${review.watch.id}, reviewId=${review.id})}" 
+                       class="btn-edit-full">
+                        ✎ Modifica Recensione
+                    </a>
+                    <form th:action="@{/watch/{watchId}/reviews/{reviewId}/delete(watchId=${review.watch.id}, reviewId=${review.id})}" 
+                          method="post" style="display: inline;">
+                        <button type="submit" class="btn-delete-full" 
+                                onclick="return confirm('Sei sicuro di voler eliminare la tua recensione?')">
+                            🗑 Elimina Recensione
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Azioni admin -->
+        <div th:if="${isAdmin}" class="admin-actions">
+            <div class="admin-card">
+                <h3>Azioni Amministratore</h3>
+                <form th:action="@{/admin/watch/{watchId}/reviews/{reviewId}/delete(watchId=${review.watch.id}, reviewId=${review.id})}" 
+                      method="post">
+                    <button type="submit" class="btn-admin-delete-full" 
+                            onclick="return confirm('Sei sicuro di voler eliminare questa recensione?')">
+                        🗑 Elimina Recensione (Admin)
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Link di navigazione -->
+        <div class="review-navigation">
+            <div class="nav-links">
+                <a th:href="@{/watch/{id}/reviews(id=${review.watch.id})}" class="btn-back-reviews">
+                    ← Tutte le Recensioni
+                </a>
+                <a th:href="@{/watch/{id}(id=${review.watch.id})}" class="btn-back-watch">
+                    Torna all'Orologio →
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>
