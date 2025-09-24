@@ -25,9 +25,7 @@
                 <li><a th:href="@{/profile}">Profilo</a></li>
                 
                 <!-- Carrello: solo se autenticato E non admin -->
-                <li th:if="${!isAuthenticated and isUser}">
-                    <a th:href="@{/currentOrder}">Carrello</a>
-                </li>  
+                <li> <a th:href="@{/currentOrder}">Carrello</a></li>  
             </ul>
             
             <ul th:if="${isAdmin}" class="nav-menu">

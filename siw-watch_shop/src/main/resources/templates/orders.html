@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org" 
+      th:replace="~{fragments/layout :: base(~{::title}, ~{::main})}">
+<head>
+    <title>I Tuoi Ordini - WatchLux</title>
+    <link rel="stylesheet" th:href="@{/css/order.css}">
+</head>
+<body>
+    <main>
+        <div class="orders-container">
+            <!-- Header della pagina -->
+            <div class="orders-header">
+                <div class="breadcrumb">
+                    <a th:href="@{/}">Home</a>
+                    <span>›</span>
+                    <span>I Tuoi Ordini</span>
+                </div>
+                
+                <div class="orders-title-section">
+                    <h1 class="orders-title">I Tuoi Ordini</h1>
+                    <p class="orders-subtitle">
+                        Visualizza e gestisci tutti i tuoi ordini effettuati
+                    </p>
+                </div>
+            </div>
+
+            <!-- Messaggi di successo/errore -->
+            <div th:if="${success}" class="alert alert-success">
+                <span th:text="${success}">Messaggio di successo</span>
+            </div>
+            
+            <div th:if="${error}" class="alert alert-error">
+                <span th:text="${error}">Messaggio di errore</span>
+            </div>
+
+            <!-- Nessun ordine -->
+            <div th:if="${orders == null or #lists.isEmpty(orders)}" class="empty-orders">
+                
+                <h2>Non hai ancora effettuato ordini</h2>
+                <p>Inizia a esplorare la nostra collezione di orologi di lusso e completa il tuo primo ordine.</p>
+                <a th:href="@{/watches}" class="btn btn-primary btn-lg">
+                    Inizia a Comprare
+                </a>
+            </div>
+
+            <!-- Lista ordini -->
+            <div th:unless="${orders == null or #lists.isEmpty(orders)}" class="orders-list">
+                <div class="orders-summary-bar">
+                    <div class="orders-count">
+                        <span th:text="${#lists.size(orders)} + ' ' + (${#lists.size(orders)} == 1 ? 'ordine trovato' : 'ordini trovati')">
+                            3 ordini trovati
+                        </span>
+                    </div>
+                    
+                    <div class="view-current-order">
+                        <a th:href="@{/currentOrder}" class="btn btn-outline btn-sm">
+                            Vai al Carrello
+                        </a>
+                    </div>
+                </div>
+
+                <div class="orders-grid">
+                    <div class="order-card" th:each="order : ${orders}">
+                        <!-- Header della card -->
+                        <div class="order-card-header">
+                            <div class="order-id-section">
+                                <h3 class="order-code" th:text="${order.code}">ORD-1234567890</h3>
+                                <div class="order-status">
+                                    <span class="status-badge" 
+                                          th:classappend="${order.status.name()} == 'EFFETTUATO' ? 'completed' : 
+                                                         (${order.status.name()} == 'ANNULLATO' ? 'cancelled' : 'in-progress')"
+                                          th:text="${order.status.name() == 'EFFETTUATO' ? 'Completato' : 
+                                                   (order.status.name() == 'ANNULLATO' ? 'Annullato' : 'In Elaborazione')}">
+                                        Completato
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="order-date">
+                                <span class="date-label">Ordinato il:</span>
+                                <span class="date-value" th:text="${#temporals.format(order.creationTime, 'dd/MM/yyyy HH:mm')}">
+                                    15/12/2024 14:30
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Info ordine -->
+                        <div class="order-info">
+                            <div class="order-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">Articoli:</span>
+                                    <span class="stat-value" 
+                                          th:text="${order.orderLines.size()}">3</span>
+                                </div>
+                                
+                                <div class="stat-item">
+                                    <span class="stat-label">Totale:</span>
+                                    <span class="stat-value price">
+                                        €<span th:text="${#numbers.formatDecimal(order.totalPrice, 0, 2)}">2,997.00</span>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Preview articoli -->
+                            <div class="order-preview">
+                                <div class="preview-items">
+                                    <div class="preview-item" 
+                                         th:each="orderLine, iterStat : ${order.orderLines}"
+                                         th:if="${iterStat.index < 3}">
+                                        <div class="preview-image">
+                                            <img th:if="${orderLine.watchImagePath}" 
+                                                 th:src="@{/images/{filename}(filename=${orderLine.watchImagePath})}" 
+                                                 th:alt="${orderLine.watchName}"
+                                                 class="preview-img">
+                                            <div th:unless="${orderLine.watchImagePath}" class="preview-placeholder">
+                                                <img th:src="@{/images/icons/watch.png}" 
+                                                     style="width: 30px; height: 30px;">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="preview-info">
+                                            <div class="preview-name" 
+                                                 th:text="${orderLine.watchBrand} + ' - ' + ${orderLine.watchName}">
+                                                Brand - Nome
+                                            </div>
+                                            <div class="preview-quantity">
+                                                Qtà: <span th:text="${orderLine.quantity}">1</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Indicatore articoli aggiuntivi -->
+                                    <div th:if="${order.orderLines.size() > 3}" class="more-items">
+                                        <span th:text="'+' + ${order.orderLines.size() - 3} + ' altri'">+2 altri</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Azioni -->
+                        <div class="order-actions">
+                            <a th:href="@{/order/{id}(id=${order.id})}" class="btn btn-primary">
+                                Visualizza Dettagli
+                            </a>
+                            
+                            <a th:href="@{/watches}" class="btn btn-outline btn-sm">
+                                Riordina Articoli
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Paginazione (se necessaria in futuro) -->
+                <!-- 
+                <div class="orders-pagination">
+                    <div class="pagination-info">
+                        Mostrando 1-10 di 25 ordini
+                    </div>
+                    <div class="pagination-controls">
+                        <button class="btn btn-outline btn-sm" disabled>Precedente</button>
+                        <button class="btn btn-outline btn-sm">Successivo</button>
+                    </div>
+                </div>
+                -->
+            </div>
+
+            
+        </div>
+    </main>
+</body>
+</html>

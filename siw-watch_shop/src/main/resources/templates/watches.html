@@ -8,21 +8,15 @@
     <main>
         <div class="watches-container">
             <!-- Header della pagina -->
-            <div class="watches-page-header">
-                <div class="page-title-section">
-                    <h1 class="page-title">La Nostra Collezione</h1>
-                    <div th:if="${isAdmin}" class="admin-actions">
-                        <a th:href="@{/admin/formNewWatch}" class="btn-add">+ Aggiungi Orologio</a>
+            
+            <div th:if="${isAdmin}" class="admin-actions">
+                        <a th:href="@{/admin/formNewWatch}" class="btn-add"> Aggiungi Orologio</a>
                     </div>
-                </div>
-                
-                <p th:if="${searchQuery}" class="search-info">
+                    <p th:if="${searchQuery}" class="search-info">
                     Risultati per: <span class="search-term" th:text="${searchQuery}"></span>
                 </p>
-                <p th:unless="${searchQuery}" class="collection-info">
-                    Scopri la nostra selezione curata di orologi di lusso
-                </p>
-            </div>
+                    
+            
 
             <!-- Filtro Brand -->
             <div class="categories-filter">
@@ -74,7 +68,7 @@
 
             <!-- Stato vuoto -->
             <div class="empty-state" th:if="${watches == null or #lists.isEmpty(watches)}">
-                <div class="empty-icon">⌚</div>
+                <div class="empty-icon"></div>
                 <h3>Nessun Orologio Trovato</h3>
                 <p th:if="${searchQuery}">
                     Non abbiamo trovato orologi corrispondenti a "<span th:text="${searchQuery}"></span>"

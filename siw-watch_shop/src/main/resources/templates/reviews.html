@@ -45,9 +45,7 @@
                                 (12 recensioni)
                             </span>
                         </div>
-                        <div th:unless="${watch.averageRating != null}" class="no-rating">
-                            <span class="no-rating-text">Nessuna recensione ancora</span>
-                        </div>
+                        
                     </div>
                 </div>
             </div>
@@ -95,7 +93,7 @@
         </div>
 
         <!-- Form per nuova recensione (solo se utente autenticato e non ha già recensito) -->
-        <div th:if="${isAuthenticated and userReview == null}" class="review-form-section">
+        <div th:if="${isUser and userReview == null}" class="review-form-section">
             <h2>Scrivi una Recensione</h2>
             <form th:action="@{/watch/{watchId}/reviews(watchId=${watch.id})}" 
                   th:object="${review}" method="post" class="review-form">
@@ -127,7 +125,7 @@
                               rows="5" required></textarea>
                     <span th:if="${#fields.hasErrors('text')}" 
                           th:errors="*{text}" class="error-message"></span>
-                    <div class="form-hint">Minimo 10 caratteri</div>
+                    <div class="form-hint">Massimo 1000 caratteri</div>
                 </div>
 
                 <!-- Pulsanti -->
@@ -159,11 +157,11 @@
                 <span class="reviews-count" th:text="'(' + ${#lists.size(reviews)} + ')'"></span>
             </h2>
             
-            <div th:if="${#lists.isEmpty(reviews)}" class="no-reviews">
+            <div th:if="${#lists.isEmpty(reviews) and userReview == null}" class="no-reviews">
                 <div class="no-reviews-icon">💭</div>
-                <h3>Nessuna recensione disponibile</h3>
-                <p th:if="${userReview == null}">Sii il primo a recensire questo orologio!</p>
-                <p th:if="${userReview != null}">Sei l'unico ad aver recensito questo orologio.</p>
+                <h3>Nessuna recensione ancora pubblicata</h3>
+                <p th:if="${userReview == null and !isAdmin}">Sii il primo a recensire questo orologio!</p>
+                <p th:if="${userReview != null and !isAdmin}">Sei l'unico ad aver recensito questo orologio.</p>
             </div>
 
             <div class="reviews-list" th:if="${#lists.size(reviews) > 0}">

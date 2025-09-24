@@ -34,7 +34,6 @@ public class Order {
 	private Long id;
 	
 	
-	// Usa @Fetch o query personalizzate
 	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
 	@JoinColumn(name="order_id")
 	private List<OrderLine> orderLines;
@@ -60,11 +59,8 @@ public class Order {
     private User user;
 
     
- // Assicurati che la sessione sia aperta o usa @Transactional
- // In Order.java - Sostituisci il metodo calculateTotalPrice:
-
+ 
     public Float calculateTotalPrice() {
-        // 🔥 CONTROLLO NULL SAFETY
         if (orderLines == null || orderLines.isEmpty()) {
             this.totalPrice = 0.0f;
             return this.totalPrice;
@@ -73,7 +69,6 @@ public class Order {
         float total = 0.0f;
         
         for (OrderLine orderLine : orderLines) {
-            // 🔥 CONTROLLO NULL per ogni orderLine
             if (orderLine != null && orderLine.getTotalPrice() != null) {
                 total += orderLine.getTotalPrice();
             }

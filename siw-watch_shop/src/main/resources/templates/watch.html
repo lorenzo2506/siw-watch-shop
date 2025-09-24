@@ -60,13 +60,14 @@
                     </div>
 
                     <!-- Descrizione -->
-                    <div class="watch-detail-description" th:if="${watch.description}">
-                        <p th:text="${watch.description}">Descrizione dell'orologio...</p>
-                    </div>
+                    <div class="watch-detail-description">
+					    <p th:text="${watch.description ?: 'Nessuna descrizione'}"></p>
+					</div>
+                    
 
                     <!-- Azioni per utenti autenticati -->
                     <div class="watch-detail-actions" th:if="${isUser}">
-                        <form th:action="@{/currentOrder/add}" method="post">
+                        <form th:action="@{/currentOrder/add/{id}(id=${watch.id})}" method="post">
                             <input type="hidden" name="watchId" th:value="${watch.id}">
                             <button type="submit" 
                                     class="btn-add-cart" 
@@ -74,31 +75,31 @@
                                 <span th:if="${watch.availability}">Aggiungi al Carrello</span>
                                 <span th:unless="${watch.availability}">Non Disponibile</span>
                             </button>
-                        </form>
-                        <a th:href="@{/currentOrder}" class="btn-view-cart">
-                            Vedi Carrello
-                        </a>
+                        </form>   
                     </div>
 
 						<div th:if="${isAdmin}" class="watch-detail-actions">
-								<form th:if="${watch.availability}" th:action="@{/admin/watch/{id}/deactivate(id=${watch.id})}" method="post">
-	                            <input type="hidden" name="watchId" th:value="${watch.id}">
-	                            <button type="submit" 
-	                                    class="btn-add-cart" 
-	                                    th:disabled="${!watch.availability}">
-	                                <span th:if="${watch.availability}">disattiva watch</span>
-	                            </button>
-	                        </form>
-							<form th:if="${!watch.availability}" th:action="@{/admin/watch/{id}/reactivate(id=${watch.id})}" method="post">
-	                            <input type="hidden" name="watchId" th:value="${watch.id}">
-	                            <button type="submit" 
-	                                    class="btn-add-cart" 
-	                                    th:disabled="${!watch.availability}">
-	                                <span th:unless="${watch.availability}">riattiva watch</span>
-	                            </button>
-	                        </form>
-	                        
-                    	</div>
+    
+						    <form th:if="${watch.availability}" th:action="@{/admin/watch/{id}/deactivate(id=${watch.id})}" method="post">
+						        <button type="submit" class="btn-add-cart" style="background: #ffa500">
+						            Disattiva Watch
+						        </button>
+						    </form>
+						    
+						    <!-- Riattiva (solo se non attivo) -->
+						    <form th:if="${!watch.availability}" th:action="@{/admin/watch/{id}/reactivate(id=${watch.id})}" method="post">
+						        <button type="submit" class="btn-add-cart">
+						            Riattiva Watch
+						        </button>
+						    </form>
+						    
+						    <!-- Elimina (sempre disponibile) -->
+						    <form th:action="@{/admin/watch/{id}/delete(id=${watch.id})}" method="post" >
+						        <button type="submit" class="btn-add-cart" style="background: #ef4444;">
+						            Elimina Watch
+						        </button>
+						    </form>
+						</div>
                     	
                     	
                     <!-- Prompt per login se non autenticato -->
@@ -149,16 +150,16 @@
                     </div>
                     <div class="reviews-cta">
                         <a th:href="@{/watch/{id}/reviews(id=${watch.id})}" class="btn-view-reviews">
-                            <span class="reviews-icon">💬</span>
+                            <span class="reviews-icon"></span>
                             Leggi Recensioni
                         </a>
                     </div>
                 </div>
                 
                 
-                <div class="reviews-cta">
+                <div th:if="${#lists.isEmpty(reviews)}" class="reviews-cta">
                         <a th:href="@{/watch/{id}/reviews(id=${watch.id})}" class="btn-view-reviews">
-                            <span class="reviews-icon">💬</span>
+                            <span class="reviews-icon"></span>
                             Leggi Recensioni
                         </a>
                     </div>

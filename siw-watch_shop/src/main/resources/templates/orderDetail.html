@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org" 
+      th:replace="~{fragments/layout :: base(~{::title}, ~{::main})}">
+<head>
+    <title>Dettagli Ordine - WatchLux</title>
+    <link rel="stylesheet" th:href="@{/css/order.css}">
+</head>
+<body>
+    <main>
+        <div class="order-detail-container">
+            <!-- Header della pagina -->
+            <div class="order-detail-header">
+                <div class="breadcrumb">
+                    <a th:href="@{/}">Home</a>
+                    <span>›</span>
+                    <a th:href="@{/orders}">I Tuoi Ordini</a>
+                    <span>›</span>
+                    <span th:text="${order.code}">Dettagli Ordine</span>
+                </div>
+                
+                <div class="order-title-section">
+                    <h1 class="order-title">
+                        Ordine <span th:text="${order.code}">ORD-1234567890</span>
+                    </h1>
+                    <div class="order-status-section">
+                        <span class="status-badge" 
+                              th:classappend="${order.status.name()} == 'EFFETTUATO' ? 'completed' : 
+                                             (${order.status.name()} == 'ANNULLATO' ? 'cancelled' : 'in-progress')"
+                              th:text="${order.status.name() == 'EFFETTUATO' ? 'Completato' : 
+                                       (order.status.name() == 'ANNULLATO' ? 'Annullato' : 'In Elaborazione')}">
+                            Completato
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Info ordine principale -->
+            <div class="order-summary-card">
+                <div class="order-overview">
+                    <div class="overview-item">
+                        <span class="overview-label">Data Ordine:</span>
+                        <span class="overview-value" th:text="${#temporals.format(order.creationTime, 'dd MMMM yyyy')}">
+                            15 dicembre 2024
+                        </span>
+                    </div>
+                    
+                    <div class="overview-item">
+                        <span class="overview-label">Ora:</span>
+                        <span class="overview-value" th:text="${#temporals.format(order.creationTime, 'HH:mm')}">
+                            14:30
+                        </span>
+                    </div>
+                    
+                    <div class="overview-item">
+                        <span class="overview-label">Numero Articoli:</span>
+                        <span class="overview-value" th:text="${orderLines.size()}">3</span>
+                    </div>
+                    
+                    <div class="overview-item total">
+                        <span class="overview-label">Totale Pagato:</span>
+                        <span class="overview-value price">
+                            €<span th:text="${#numbers.formatDecimal(order.totalPrice, 0, 2)}">2,997.00</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dettagli articoli -->
+            <div class="order-items-section">
+                <h2 class="section-title">Articoli Ordinati</h2>
+                
+                <div class="order-items-list">
+                    <div class="order-item-detail" th:each="orderLine : ${orderLines}">
+                        <!-- Immagine prodotto -->
+                        <div class="item-detail-image">
+                            <img th:if="${orderLine.watchImagePath}" 
+                                 th:src="@{/images/{filename}(filename=${orderLine.watchImagePath})}" 
+                                 th:alt="${orderLine.watchName}"
+                                 class="product-detail-img">
+                            <div th:unless="${orderLine.watchImagePath}" class="product-detail-placeholder">
+                                <img th:src="@{/images/icons/watch.png}" 
+                                     style="width: 60px; height: 60px;">
+                            </div>
+                        </div>
+
+                        <!-- Info prodotto dettagliate -->
+                        <div class="item-detail-info">
+                            <h3 class="item-detail-name" th:text="${orderLine.watchBrand} + ' - ' + ${orderLine.watchName}">
+                                Brand - Nome Orologio
+                            </h3>
+                            
+                            <div class="item-detail-specs">
+                                <div class="spec-row">
+                                    <span class="spec-label">Marca:</span>
+                                    <span class="spec-value" th:text="${orderLine.watchBrand}">Rolex</span>
+                                </div>
+                                
+                                <div class="spec-row">
+                                    <span class="spec-label">Anno:</span>
+                                    <span class="spec-value" th:text="${orderLine.watchYear}">2023</span>
+                                </div>
+                                
+                                <div class="spec-row">
+                                    <span class="spec-label">Prezzo Unitario:</span>
+                                    <span class="spec-value price">
+                                        €<span th:text="${#numbers.formatDecimal(orderLine.unitPrice, 0, 2)}">999.00</span>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="item-description" th:if="${orderLine.watchDescription}">
+                                <p th:text="${orderLine.watchDescription}">
+                                    Descrizione dettagliata dell'orologio con caratteristiche tecniche e design.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Quantità e prezzo -->
+                        <div class="item-detail-pricing">
+                            <div class="quantity-section">
+                                <span class="quantity-label">Quantità:</span>
+                                <span class="quantity-value" th:text="${orderLine.quantity}">1</span>
+                            </div>
+                            
+                            <div class="line-total-section">
+                                <span class="line-total-label">Totale:</span>
+                                <span class="line-total-value">
+                                    €<span th:text="${#numbers.formatDecimal(orderLine.totalPrice, 0, 2)}">999.00</span>
+                                </span>
+                            </div>
+
+                            <!-- Link al prodotto -->
+                            <div class="product-link" th:if="${orderLine.watch != null}">
+                                <a th:href="@{/watch/{id}(id=${orderLine.watch.id})}" class="btn btn-outline btn-sm">
+                                    Vedi Prodotto
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Riepilogo finale -->
+            <div class="order-total-section">
+                <div class="order-total-card">
+                    <h3>Riepilogo Finale</h3>
+                    
+                    <div class="total-breakdown">
+                        <div class="breakdown-row">
+                            <span>Subtotale articoli:</span>
+                            <span class="amount">€<span th:text="${#numbers.formatDecimal(order.totalPrice, 0, 2)}">2,997.00</span></span>
+                        </div>
+                        
+                        <div class="breakdown-row">
+                            <span>Spedizione:</span>
+                            <span class="free">Gratuita</span>
+                        </div>
+                        
+                        <div class="breakdown-row">
+                            <span>IVA (22%):</span>
+                            <span class="amount">
+                                €<span th:text="${#numbers.formatDecimal(order.totalPrice * 0.22 / 1.22, 0, 2)}">541.84</span>
+                            </span>
+                        </div>
+                        
+                        <div class="breakdown-divider"></div>
+                        
+                        <div class="breakdown-row total-final">
+                            <span>Totale Pagato:</span>
+                            <span class="amount">€<span th:text="${#numbers.formatDecimal(order.totalPrice, 0, 2)}">2,997.00</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            
+
+            <!-- Sezione riordina -->
+            <div class="reorder-section">
+                <div class="reorder-card">
+                    <h3>Ti è piaciuto questo ordine?</h3>
+                    <p>Riordina facilmente gli stessi prodotti o scopri articoli simili nella nostra collezione.</p>
+                    <div class="reorder-actions">
+                        <a th:href="@{/watches}" class="btn btn-outline">
+                            Esplora Collezione
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

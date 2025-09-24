@@ -177,5 +177,16 @@ public class WatchService {
 			return this.getAllAvailableWatchesByBrand(brand);
 		return this.watchRepo.findAllByBrand(brand);
 	}
+	
+	
+	public void delete(Long id) {
+		this.watchRepo.deleteById(id);
+	}
+	
+	
+	public void deleteWatch(Long id) {	
+		this.delete(id);
+		
+	}
 
 }

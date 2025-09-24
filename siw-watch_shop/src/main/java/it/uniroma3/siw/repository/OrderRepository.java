@@ -1,5 +1,6 @@
 package it.uniroma3.siw.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,11 +19,11 @@ public interface OrderRepository extends JpaRepository<Order,Long>{
 	
 	public boolean existsByCode(String code);
 	
-	public Iterable<Order> findByStatus(OrderStatus status);
+	public List<Order> findByStatus(OrderStatus status);
 	
 	@Query("SELECT o FROM Order o WHERE o.user = :user")
-	public Iterable<Order> findByUser(@Param("user") User user);
+	public List<Order> findByUser(@Param("user") User user);
 	
 	@Query("SELECT o FROM Order o WHERE o.user = :user AND o.status = :status")
-	public Iterable<Order> findByUserAndStatus(@Param("user") User user, @Param("status") OrderStatus status);
+	public List<Order> findByUserAndStatus(@Param("user") User user, @Param("status") OrderStatus status);
 }

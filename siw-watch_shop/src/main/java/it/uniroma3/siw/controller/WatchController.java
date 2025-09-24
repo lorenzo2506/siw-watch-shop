@@ -23,9 +23,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import it.uniroma3.siw.model.Order;
+import it.uniroma3.siw.model.OrderLine;
 import it.uniroma3.siw.model.Watch;
 import it.uniroma3.siw.service.AuthenticationService;
 import it.uniroma3.siw.service.ImageStorageService;
+import it.uniroma3.siw.service.OrderService;
 import it.uniroma3.siw.service.ReviewService;
 import it.uniroma3.siw.service.WatchService;
 import it.uniroma3.siw.validator.WatchValidator;
@@ -39,6 +42,7 @@ public class WatchController {
 	@Autowired private ImageStorageService imageStorageService;
 	@Autowired private ReviewService reviewService;	
 	@Autowired private AuthenticationService authenticationService;
+	@Autowired private OrderService orderService;
 	
 	@Value("${app.image.upload.dir:uploads/images}")
 	private String uploadDir;
@@ -99,9 +103,8 @@ public class WatchController {
 	    return "watches.html";
 	}
 
-	// NUOVO METODO per filtrare per brand
 	@GetMapping("/watches/brand/{brand}")
-	public String showAvailableWatchesByBrand(@PathVariable String brand, Model model) {
+	public String showWatchesByBrand(@PathVariable String brand, Model model) {
 	    model.addAttribute("watches", watchService.getAllByBrand(brand));
 	    model.addAttribute("selectedBrand", brand);
 	    model.addAttribute("brands", watchService.getAllBrands());
@@ -210,8 +213,14 @@ public class WatchController {
     public String deactivateWatch(@PathVariable Long id) {
     	if(!this.authenticationService.isAdmin())
     		return "redirect:/";
+    	Watch watch = this.watchService.getWatch(id);
+        if (watch == null) {
+            return "redirect:/watches";
+        }
+        
+    	this.orderService.removeAllWatchOrderLinesToCarts(watch);
         watchService.deactivateWatch(id);
-        return "redirect:/admin"; // Oppure redirect alla pagina corretta
+        return "redirect:/watches"; // Oppure redirect alla pagina corretta
     }
 
     
@@ -220,7 +229,26 @@ public class WatchController {
     	if(!this.authenticationService.isAdmin())
     		return "redirect:/";
         watchService.reactivateWatch(id);
-        return "redirect:/admin";
+        return "redirect:/watches";
+    }
+    
+    
+    
+    @PostMapping("/admin/watch/{id}/delete")
+    public String deleteWatch(@PathVariable Long id) {
+        
+        if(!this.authenticationService.isAdmin())
+            return "redirect:/";
+        
+        Watch watch = this.watchService.getWatch(id);
+        if (watch == null) {
+            return "redirect:/watches";
+        }
+        
+        
+        this.orderService.removeAllWatchOrderLinesToCarts(watch);
+        this.watchService.deleteWatch(id);
+        return "redirect:/watches";
     }
 	
 	
