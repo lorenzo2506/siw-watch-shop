@@ -49,22 +49,20 @@
                                  th:alt="${watch.name}"
                                  class="watch-img">
                             <div th:unless="${watch.imagePath}" class="watch-placeholder">
-                                <span>⌚</span>
+                                <span><img th:src="@{/images/icons/watch.png}" 
+                             style="width: 60px !important; height: 60px !important;"></span>
                             </div>
                             
                             <!-- Badge disponibilità -->
                             <span th:if="${watch.availability}" class="availability-badge">Disponibile</span>
-                            <span th:unless="${watch.availability}" class="availability-badge sold-out">Esaurito</span>
+                            <span th:unless="${watch.availability}" class="availability-badge sold-out">Non disponibile</span>
                         </div>
 
                         <!-- Info orologio -->
                         <div class="watch-info">
-                            <div class="watch-brand" th:text="${watch.brand}">Brand</div>
-                            <h3 class="watch-name" th:text="${watch.name}">Nome Orologio</h3>
+                            <div class="watch-name" th:text="${watch.brand} + ' - ' + ${watch.name}">Nome Orologio</div>
                             
-                            <!-- Anno -->
-                            <div class="watch-year" th:text="${watch.year}">2024</div>
-
+                            
                             <!-- Prezzo -->
                             <div class="watch-price">
                                 <span class="price-amount">€<span th:text="${#numbers.formatDecimal(watch.price, 0, 2)}">999.00</span></span>

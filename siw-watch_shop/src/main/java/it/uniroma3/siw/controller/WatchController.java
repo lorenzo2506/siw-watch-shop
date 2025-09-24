@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import it.uniroma3.siw.model.Watch;
+import it.uniroma3.siw.service.AuthenticationService;
 import it.uniroma3.siw.service.ImageStorageService;
 import it.uniroma3.siw.service.ReviewService;
 import it.uniroma3.siw.service.WatchService;
@@ -37,6 +38,7 @@ public class WatchController {
 	@Autowired private WatchValidator watchValidate;
 	@Autowired private ImageStorageService imageStorageService;
 	@Autowired private ReviewService reviewService;	
+	@Autowired private AuthenticationService authenticationService;
 	
 	@Value("${app.image.upload.dir:uploads/images}")
 	private String uploadDir;
@@ -70,9 +72,9 @@ public class WatchController {
 	
 		
 	@GetMapping("/watch/{id}")
-	public String showAvailableWatch(@PathVariable("id") Long id, Model model) {
+	public String showWatch(@PathVariable("id") Long id, Model model) {
 		
-		Watch watch = watchService.getAvailableWatch(id);
+		Watch watch = watchService.getWatch(id);
 		watchService.calcAndSetAverageRating(watch);
 		watchService.calcAndSetRatingCount(watch);
 		model.addAttribute("watch", watch);
@@ -82,27 +84,27 @@ public class WatchController {
 	
 	
 	@GetMapping("/watches")
-	public String showAvailableWatches(Model model) {
-	    model.addAttribute("watches", watchService.getAllAvailableWatches());
-	    model.addAttribute("brands", watchService.getAllAvailableBrands()); // NUOVO
+	public String showWatches(Model model) {
+	    model.addAttribute("watches", watchService.getAllWatches());
+	    model.addAttribute("brands", watchService.getAllBrands()); // NUOVO
 	    model.addAttribute("selectedBrand", null); // NUOVO
 	    return "watches.html";
 	}
 
 	@GetMapping("/watches/searchBar")
-	public String showAvailableWatchesBySearchBar(@RequestParam("search") String searchQuery, Model model) {
-	    model.addAttribute("watches", this.watchService.getAllAvailableWatchesBySearchBar(searchQuery));
+	public String showWatchesBySearchBar(@RequestParam("search") String searchQuery, Model model) {
+	    model.addAttribute("watches", this.watchService.getAllBySearchBar(searchQuery));
 	    model.addAttribute("searchQuery", searchQuery);
-	    model.addAttribute("brands", watchService.getAllAvailableBrands()); // NUOVO
+	    model.addAttribute("brands", watchService.getAllBrands()); // NUOVO
 	    return "watches.html";
 	}
 
 	// NUOVO METODO per filtrare per brand
 	@GetMapping("/watches/brand/{brand}")
 	public String showAvailableWatchesByBrand(@PathVariable String brand, Model model) {
-	    model.addAttribute("watches", watchService.getAllAvailableWatchesByBrand(brand));
+	    model.addAttribute("watches", watchService.getAllByBrand(brand));
 	    model.addAttribute("selectedBrand", brand);
-	    model.addAttribute("brands", watchService.getAllAvailableBrands());
+	    model.addAttribute("brands", watchService.getAllBrands());
 	    return "watches.html";
 	}
 	
@@ -114,23 +116,8 @@ public class WatchController {
 	}
 	
 	
-	@GetMapping("admin/watch/{id}")
-    public String showWatchForAdmin(@PathVariable Long id, Model model) {
-        // Mostra orologio specifico per admin (anche se non disponibile)
-        model.addAttribute("watch", watchService.getWatch(id));
-		model.addAttribute("reviews", reviewService.getAllWatchReview(id));
-        return "admin/adminWatch";
-    }
 	
-	
-	@GetMapping("admin/watches")
-	public String showWatchesForAdmin(Model model) {
-		model.addAttribute("watches", watchService.getAllWatches());
-		return "admin/adminWatches";
-	}
-	
-	
-	@PostMapping("watch")
+	@PostMapping("/admin/watches/addWatch")
 	public String addWatch(@Valid @ModelAttribute("watch") Watch watch, 
 	                      BindingResult bindingResult,
 	                      @RequestParam("imageFile") MultipartFile file,
@@ -176,7 +163,7 @@ public class WatchController {
 	}
 	
 	
-	@PostMapping("watch/redirect")
+	@PostMapping("/admin/watches/addWatch/redirect")
 	public String addWatchRedirect(@Valid @ModelAttribute("watch") Watch watch, 
 	                              BindingResult bindingResult,
 	                              @RequestParam("imageFile") MultipartFile file) {
@@ -221,6 +208,8 @@ public class WatchController {
 	
     @PostMapping("/admin/watch/{id}/deactivate")
     public String deactivateWatch(@PathVariable Long id) {
+    	if(!this.authenticationService.isAdmin())
+    		return "redirect:/";
         watchService.deactivateWatch(id);
         return "redirect:/admin"; // Oppure redirect alla pagina corretta
     }
@@ -228,6 +217,8 @@ public class WatchController {
     
     @PostMapping("/admin/watch/{id}/reactivate") 
     public String reactivateWatch(@PathVariable Long id) {
+    	if(!this.authenticationService.isAdmin())
+    		return "redirect:/";
         watchService.reactivateWatch(id);
         return "redirect:/admin";
     }

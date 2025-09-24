@@ -48,7 +48,7 @@ public class ReviewService {
 			throw new IllegalArgumentException("review nulla");
 		
 		
-		Watch watch = watchService.getAvailableWatch(watchId);
+		Watch watch = watchService.getWatch(watchId);
 		review.setWatch(watch);
 	    review.setCreatedAt(LocalDateTime.now());
 	    review.setUser(user);

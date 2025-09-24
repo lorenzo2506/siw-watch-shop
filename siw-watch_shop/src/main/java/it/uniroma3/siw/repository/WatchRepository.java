@@ -45,10 +45,17 @@ public interface WatchRepository extends JpaRepository<Watch, Long>{
 	
 	
 	@Query("SELECT w FROM Watch w WHERE w.availability = true and (LOWER(w.name) LIKE LOWER(CONCAT(:value, '%'))) OR (LOWER(w.brand) LIKE LOWER(CONCAT(:value, '%')))")
-	public List<Watch> findBySearchBar(@Param("value") String value);
+	public List<Watch> findAllBySearchBar(@Param("value") String value);
+	
+	@Query("SELECT w FROM Watch w WHERE w.availability = true and (LOWER(w.name) LIKE LOWER(CONCAT(:value, '%'))) OR (LOWER(w.brand) LIKE LOWER(CONCAT(:value, '%'))) and w.availability = true")
+	public List<Watch> findAllAvailableBySearchBar(@Param("value") String value);
+	
 	
 	@Query("SELECT DISTINCT w.brand FROM Watch w WHERE w.availability = true ORDER BY w.brand")
 	public List<String> findAllAvailableBrands();
+	
+	@Query("SELECT DISTINCT w.brand FROM Watch w ORDER BY w.brand")
+	public List<String> findAllBrands();
 
 	@Query("SELECT w FROM Watch w WHERE w.availability = true AND w.brand = :brand")
 	public List<Watch> findAllAvailableByBrand(@Param("brand") String brand);

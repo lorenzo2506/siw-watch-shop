@@ -15,6 +15,7 @@ public class WatchService {
 	
 	@Autowired private WatchRepository watchRepo;
 	@Autowired private ReviewRepository reviewRepo;
+	@Autowired private AuthenticationService authenticationService;
 	
 	public Watch getAvailableWatch(Long id) {
 		return watchRepo.findByIdAndAvailabilityTrue(id).get();
@@ -30,7 +31,11 @@ public class WatchService {
 	}
 	
 	public List<Watch> getAllAvailableWatchesBySearchBar(String value) {
-		return watchRepo.findBySearchBar(value.toUpperCase().trim());
+		return watchRepo.findAllAvailableBySearchBar(value.toUpperCase().trim());
+	}
+	
+	public Iterable<Watch> getAllAvailableWatches() {
+		return watchRepo.findAllAvailable();
 	}
 	
 	public boolean existsByNameAndBrandAndYearAndAvailability(String name, String brand, Integer year) {
@@ -41,39 +46,60 @@ public class WatchService {
 		return watchRepo.existsByNameAndBrandAndAvailabilityTrue(name.toUpperCase().trim(), brand.toUpperCase().trim());
 	}
 	
-	
-	public Iterable<Watch> getAllAvailableWatches() {
-		return watchRepo.findAllAvailable();
+	public List<Watch> getAllAvailableWatchesByBrand(String brand) {
+	    return watchRepo.findAllAvailableByBrand(brand.toUpperCase().trim());
 	}
 	
 	
+	
+	
+	
+	
+	
 	public Watch getWatch(Long id) {
+		if(!this.authenticationService.isAdmin())
+			return this.getAvailableWatch(id);
 		return watchRepo.findById(id).get();
 	}
 	
 	public Watch getWatch(String name, String brand, Integer year) {
+		if(!this.authenticationService.isAdmin())
+			return this.getAvailableWatch(name, brand, year);
 		return watchRepo.findByNameAndBrandAndYear(name.toUpperCase().trim(), brand.toUpperCase().trim(), year).get();
 	}
 	
 	
 	public List<Watch> getWatch(String name, String brand) {
+		if(!this.authenticationService.isAdmin())
+			return this.getAvailableWatch(name, brand);
 		return watchRepo.findByNameAndBrand(name.toUpperCase().trim(), brand.toUpperCase().trim());
 	}
 	
+	
 	public boolean existsByNameAndBrandAndYear(String name, String brand, Integer year) {
+		if(!this.authenticationService.isAdmin())
+			return this.existsByNameAndBrandAndYearAndAvailability(name.toUpperCase().trim(), brand.toUpperCase().trim(), year);
 		return watchRepo.existsByNameAndBrandAndYear(name.toUpperCase().trim(), brand.toUpperCase().trim(), year);
 	}
 	
 	public boolean existsByNameAndBrand(String name, String brand) {
+		if(!this.authenticationService.isAdmin())
+			return this.existsByNameAndBrandAndAvailability(name.toUpperCase().trim(), brand.toUpperCase().trim());
 		return watchRepo.existsByNameAndBrand(name.toUpperCase().trim(), brand.toUpperCase().trim());
 	}
 	
 	
 	public Iterable<Watch> getAllWatches() {
+		
+		if(!this.authenticationService.isAdmin())
+			return this.getAllAvailableWatches();
 		return watchRepo.findAll();
 	}
 	
 	public void deactivateWatch(Long id) {
+		
+		if(!this.authenticationService.isAdmin())
+			throw new IllegalArgumentException("non admin");
         Watch watch = watchRepo.findById(id)
             .orElseThrow(() -> new RuntimeException("Watch not found"));
         watch.setAvailability(false);
@@ -82,6 +108,8 @@ public class WatchService {
     
    
     public void reactivateWatch(Long id) {
+    	if(!this.authenticationService.isAdmin())
+			throw new IllegalArgumentException("non admin");
         Watch watch = watchRepo.findById(id)
             .orElseThrow(() -> new RuntimeException("Watch not found"));
         watch.setAvailability(true);
@@ -132,12 +160,22 @@ public class WatchService {
     	watch.getReviews().remove(review);
 	}
 	
-	public List<String> getAllAvailableBrands() {
-	    return watchRepo.findAllAvailableBrands();
+	
+	
+	public List<String> getAllBrands() {
+		return watchRepo.findAllBrands();
 	}
-
-	public List<Watch> getAllAvailableWatchesByBrand(String brand) {
-	    return watchRepo.findAllAvailableByBrand(brand.toUpperCase().trim());
+	
+	public List<Watch> getAllBySearchBar(String query) {
+		if(!this.authenticationService.isAdmin())
+			return this.getAllAvailableWatchesBySearchBar(query);
+		return watchRepo.findAllBySearchBar(query);
+	}
+	
+	public List<Watch> getAllByBrand(String brand) {
+		if(!this.authenticationService.isAdmin())
+			return this.getAllAvailableWatchesByBrand(brand);
+		return this.watchRepo.findAllByBrand(brand);
 	}
 
 }

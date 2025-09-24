@@ -31,8 +31,7 @@
 
                 <!-- Informazioni -->
                 <div class="watch-detail-info">
-                    <div class="watch-detail-brand" th:text="${watch.brand}">Brand</div>
-                    <h1 class="watch-detail-name" th:text="${watch.name}">Nome Orologio</h1>
+                    <h1 class="watch-detail-name" th:text="${watch.name} + ' - ' + ${watch.brand}">Nome Orologio</h1>
                     
                     <!-- Rating -->
                     <div class="watch-detail-rating" th:if="${watch.averageRating}">
@@ -52,7 +51,7 @@
 
                     <!-- Prezzo -->
                     <div class="watch-detail-price">
-                        €<span th:text="${#numbers.formatDecimal(watch.price, 0, 2)}">999.00</span>
+                        €<span th:text="${#numbers.formatDecimal(watch.price, 0, 2)} + ' $'">999.00</span>
                     </div>
 
                     <!-- Anno -->
@@ -81,8 +80,29 @@
                         </a>
                     </div>
 
+						<div th:if="${isAdmin}" class="watch-detail-actions">
+								<form th:if="${watch.availability}" th:action="@{/admin/watch/{id}/deactivate(id=${watch.id})}" method="post">
+	                            <input type="hidden" name="watchId" th:value="${watch.id}">
+	                            <button type="submit" 
+	                                    class="btn-add-cart" 
+	                                    th:disabled="${!watch.availability}">
+	                                <span th:if="${watch.availability}">disattiva watch</span>
+	                            </button>
+	                        </form>
+							<form th:if="${!watch.availability}" th:action="@{/admin/watch/{id}/reactivate(id=${watch.id})}" method="post">
+	                            <input type="hidden" name="watchId" th:value="${watch.id}">
+	                            <button type="submit" 
+	                                    class="btn-add-cart" 
+	                                    th:disabled="${!watch.availability}">
+	                                <span th:unless="${watch.availability}">riattiva watch</span>
+	                            </button>
+	                        </form>
+	                        
+                    	</div>
+                    	
+                    	
                     <!-- Prompt per login se non autenticato -->
-                    <div class="login-prompt" th:unless="${isUser}">
+                    <div class="login-prompt" th:if="${!isAuthenticated}">
                         <p>Accedi per aggiungere questo orologio al tuo carrello</p>
                         <div class="auth-actions">
                             <a th:href="@{/login}" class="btn-login">Accedi</a>
@@ -134,29 +154,21 @@
                         </a>
                     </div>
                 </div>
+                
+                
+                <div class="reviews-cta">
+                        <a th:href="@{/watch/{id}/reviews(id=${watch.id})}" class="btn-view-reviews">
+                            <span class="reviews-icon">💬</span>
+                            Leggi Recensioni
+                        </a>
+                    </div>
 
-                <!-- Quando non ci sono recensioni -->
-                <div class="no-reviews-link" th:unless="${watch.ratingCount > 0}">
-                    <div class="no-reviews-summary">
-                        <h3>Recensioni</h3>
-                        <p>Questo orologio non ha ancora recensioni.</p>
-                        <p th:if="${isUser}">Sii il primo a lasciare una recensione dopo l'acquisto!</p>
-                    </div>
-                    <div class="first-review-cta" th:if="${isUser}">
-                        <span class="review-icon">⭐</span>
-                        <span>Acquista e lascia la prima recensione</span>
-                    </div>
-                </div>
+
+                
+
             </div>
 
-            <!-- Orologi correlati -->
-            <div class="related-watches" th:if="${watch.brand}">
-                <h3>Altri Orologi <span th:text="${watch.brand}">Brand</span></h3>
-                <div class="related-grid">
-                    <p>Scopri altri orologi dello stesso brand nella nostra collezione esclusiva.</p>
-                    <a th:href="@{/watches}" class="btn-view-all">Esplora Collezione</a>
-                </div>
-            </div>
+            
         </div>
     </main>
 </body>

@@ -6,28 +6,34 @@
         <nav class="nav-container">
             
             <!-- Logo a sinistra -->
-            <a th:href="@{/}" class="logo">⌚ TimeCraft</a>
+            <a th:href="@{/}" class="logo">WatchLux</a>
             
             <!-- Ricerca al centro -->
             <div class="search-container">
                 <form th:action="@{/watches/searchBar}" method="get" class="search-form">
                     <input type="text" name="search" class="search-box" 
                            placeholder="Cerca orologio..." th:value="${searchQuery}" />
-                    <button type="submit" class="search-btn">🔍</button>
+                    <button type="submit" class="search-btn"><img th:src="@{/images/icons/mag.png}" 
+                             style="width: 20px !important; height: 20px !important;"></button>
                 </form>
             </div>
             
             <!-- Menu a destra -->
-            <ul class="nav-menu">
+            <ul th:if="${isUser or !isAuthenticated}" class="nav-menu">
                 <li><a th:if="${isUser or !isAuthenticated}" th:href="@{/}">Home</a></li>
-                <li><a th:if="${isAuthenticated and isAdmin}" th:href="@{/admin}">Home</a></li>
                 <li><a th:href="@{/watches}">Orologi</a></li>
                 <li><a th:href="@{/profile}">Profilo</a></li>
                 
                 <!-- Carrello: solo se autenticato E non admin -->
                 <li th:if="${!isAuthenticated and isUser}">
-                    <a th:href="@{/currentOrder}">🛒 Carrello</a>
-                </li>
+                    <a th:href="@{/currentOrder}">Carrello</a>
+                </li>  
+            </ul>
+            
+            <ul th:if="${isAdmin}" class="nav-menu">
+                <li><a th:if="${isAuthenticated and isAdmin}" th:href="@{/admin}">Home</a></li>
+                <li><a th:href="@{/watches}">Orologi</a></li>
+                <li><a th:href="@{/profile}">Profilo</a></li>
                 
                 
             </ul>

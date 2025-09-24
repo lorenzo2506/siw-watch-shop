@@ -15,7 +15,7 @@
             </div>
 
             <!-- Form principale -->
-            <form th:action="@{/watch}" method="post" enctype="multipart/form-data" th:object="${watch}" class="admin-form">
+            <form th:action="@{/admin/watches/addWatch}" method="post" enctype="multipart/form-data" th:object="${watch}" class="admin-form">
                 
                 <div class="form-grid">
                     
@@ -159,38 +159,17 @@
                         Aggiungi Orologio
                     </button>
                     
-                    <a th:href="@{/admin/watches}" class="btn btn-secondary">
+                    <a th:href="@{/watches}" class="btn btn-secondary">
                         <span class="btn-icon">←</span>
-                        Torna Indietro
+                        Annulla
                     </a>
                     
-                    <button type="reset" class="btn btn-outline">
-                        <span class="btn-icon">⟲</span>
-                        Reset Form
-                    </button>
+                    
                 </div>
 
             </form>
 
-            <!-- Info aggiuntive -->
-            <div class="form-footer">
-                <div class="info-cards">
-                    <div class="info-card">
-                        <h4>📋 Campi Obbligatori</h4>
-                        <p>Nome, Brand, Prezzo, Anno e Immagine sono necessari per pubblicare l'orologio nel catalogo.</p>
-                    </div>
-                    
-                    <div class="info-card">
-                        <h4>🖼️ Immagini di Qualità</h4>
-                        <p>Usa immagini ad alta risoluzione per una presentazione ottimale. Formato consigliato: 800x800px minimo.</p>
-                    </div>
-                    
-                    <div class="info-card">
-                        <h4>📦 Gestione Stock</h4>
-                        <p>Gli orologi con stock = 0 appariranno come "Esaurito" ma rimarranno visibili nel catalogo.</p>
-                    </div>
-                </div>
-            </div>
+            
 
         </div>
     </main>

@@ -44,7 +44,7 @@
                 </div>
                 
                 <!-- I miei ordini -->
-                <div class="profile-section">
+                <div th:if="${isUser}" class="profile-section">
                     <h2 class="section-title">📦 I Miei Ordini</h2>
                     <div class="orders-action">
                         <p>Visualizza lo storico completo di tutti i tuoi acquisti e monitora lo stato delle spedizioni</p>
