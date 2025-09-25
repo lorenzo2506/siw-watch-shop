@@ -1,4 +1,4 @@
-name: Deploy Simple
+name: Deploy to EC2 with RDS
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 10  # Timeout totale di 10 minuti
+    timeout-minutes: 15
     
     steps:
     - name: Checkout code
@@ -24,53 +24,59 @@ jobs:
         cd siw-watch_shop
         mvn clean package -DskipTests
         
-    - name: Deploy via SSH
-      uses: appleboy/ssh-action@v0.1.7
-      with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ubuntu
-        key: ${{ secrets.EC2_SSH_KEY }}
-        timeout: 300s
-        script: |
-          # Test connessione
-          echo "Connesso a EC2!"
-          
-          # Stop processo esistente
-          sudo pkill -f "siw-watch_shop" || echo "Nessun processo da fermare"
-          sleep 3
-          
-          # Pulisci file vecchi
-          rm -f siw-watch_shop-*.jar
-        
-    - name: Copy JAR only
+    - name: Copy JAR to EC2
       uses: appleboy/scp-action@v0.1.4
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ubuntu
         key: ${{ secrets.EC2_SSH_KEY }}
-        timeout: 120s
+        timeout: 180s
         source: "siw-watch_shop/target/siw-watch_shop-1.0.jar"
         target: "/home/ubuntu/"
         
-    - name: Start Application
+    - name: Deploy application
       uses: appleboy/ssh-action@v0.1.7
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ubuntu
         key: ${{ secrets.EC2_SSH_KEY }}
-        timeout: 60s
+        timeout: 180s
         script: |
-          # Avvia app
           cd /home/ubuntu
-          nohup java -jar siw-watch_shop/target/siw-watch_shop-1.0.jar > app.log 2>&1 &
           
-          # Attendi 5 secondi
+          # Stop current application
+          echo "Stopping current application..."
+          pkill -f "siw-watch_shop" || echo "No process to stop"
           sleep 5
           
-          # Verifica se è partita
+          # Clean old files
+          rm -f siw-watch_shop-*.jar.old
+          if [ -f "siw-watch_shop/target/siw-watch_shop-1.0.jar" ]; then
+            mv siw-watch_shop/target/siw-watch_shop-1.0.jar siw-watch_shop/target/siw-watch_shop-1.0.jar.old 2>/dev/null || true
+          fi
+          
+          # Start new application
+          echo "Starting application with RDS database..."
+          nohup java -jar siw-watch_shop/target/siw-watch_shop-1.0.jar --spring.config.location=./application-prod.properties > app.log 2>&1 &
+          
+          # Wait for startup
+          sleep 15
+          
+          # Verify startup
           if pgrep -f "siw-watch_shop" > /dev/null; then
-            echo "App avviata con successo"
+            echo "Application started successfully"
+            echo "PID: $(pgrep -f siw-watch_shop)"
+            
+            # Test if app is responding
+            sleep 5
+            if curl -f -s http://localhost:8080 > /dev/null; then
+              echo "Application is responding to requests"
+            else
+              echo "Warning: Application may not be fully ready yet"
+            fi
           else
-            echo "Errore nell'avvio"
-            tail -10 app.log
+            echo "Application failed to start"
+            echo "Last 20 lines of log:"
+            tail -20 app.log
+            exit 1
           fi
