@@ -22,16 +22,7 @@ jobs:
       run: |
         cd siw-watch_shop
         mvn clean package -DskipTests
-      
-    - name: Stop application on EC2
-      uses: appleboy/ssh-action@v0.1.7
-      with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ubuntu
-        key: ${{ secrets.EC2_SSH_KEY }}
-        script: |
-          pkill -f siw-watch_shop; echo "Process kill attempted"
-          
+        
     - name: Copy JAR to EC2
       uses: appleboy/scp-action@v0.1.4
       with:
@@ -50,7 +41,7 @@ jobs:
         source: "siw-watch_shop/siw_watch_shop_data.sql"
         target: "/home/ubuntu/"
         
-    - name: Update database and start application
+    - name: Deploy and start application
       uses: appleboy/ssh-action@v0.1.7
       with:
         host: ${{ secrets.EC2_HOST }}
@@ -58,16 +49,5 @@ jobs:
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
           cd /home/ubuntu
-          # Import database dump (ignore errors if tables exist)
-          sudo -u postgres psql -d watch_shop < siw-watch_shop/siw_watch_shop_data.sql || true
-          # Start application in background
+          sudo -u postgres psql -d watch_shop < siw-watch_shop/siw_watch_shop_data.sql
           nohup java -jar siw-watch_shop/target/siw-watch_shop-1.0.jar --spring.config.location=./application-prod.properties > app.log 2>&1 &
-          # Wait a moment and check if it started
-          sleep 5
-          if pgrep -f siw-watch_shop > /dev/null; then
-            echo "Application started successfully"
-          else
-            echo "Application failed to start, checking logs:"
-            tail -20 app.log
-            exit 1
-          fi
