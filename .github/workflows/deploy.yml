@@ -1,4 +1,4 @@
-name: Deploy Spring Boot to EC2
+name: Deploy Simple
 
 on:
   push:
@@ -7,6 +7,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 10  # Timeout totale di 10 minuti
     
     steps:
     - name: Checkout code
@@ -23,82 +24,53 @@ jobs:
         cd siw-watch_shop
         mvn clean package -DskipTests
         
-    - name: Copy JAR to EC2
-      uses: appleboy/scp-action@v0.1.4
-      with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ubuntu
-        key: ${{ secrets.EC2_SSH_KEY }}
-        source: "siw-watch_shop/target/siw-watch_shop-1.0.jar"
-        target: "/home/ubuntu/"
-        
-    - name: Copy database dump to EC2
-      uses: appleboy/scp-action@v0.1.4
-      with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ubuntu
-        key: ${{ secrets.EC2_SSH_KEY }}
-        source: "siw-watch_shop/siw_watch_shop_data.sql"
-        target: "/home/ubuntu/"
-        
-    - name: Deploy and start application
+    - name: Deploy via SSH
       uses: appleboy/ssh-action@v0.1.7
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ubuntu
         key: ${{ secrets.EC2_SSH_KEY }}
+        timeout: 300s
         script: |
+          # Test connessione
+          echo "Connesso a EC2!"
+          
+          # Stop processo esistente
+          sudo pkill -f "siw-watch_shop" || echo "Nessun processo da fermare"
+          sleep 3
+          
+          # Pulisci file vecchi
+          rm -f siw-watch_shop-*.jar
+        
+    - name: Copy JAR only
+      uses: appleboy/scp-action@v0.1.4
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ubuntu
+        key: ${{ secrets.EC2_SSH_KEY }}
+        timeout: 120s
+        source: "siw-watch_shop/target/siw-watch_shop-1.0.jar"
+        target: "/home/ubuntu/"
+        
+    - name: Start Application
+      uses: appleboy/ssh-action@v0.1.7
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ubuntu
+        key: ${{ secrets.EC2_SSH_KEY }}
+        timeout: 60s
+        script: |
+          # Avvia app
           cd /home/ubuntu
+          nohup java -jar siw-watch_shop/target/siw-watch_shop-1.0.jar > app.log 2>&1 &
           
-          # Trova e ferma il processo specifico con PID
-          APP_PID=$(pgrep -f "siw-watch_shop-1.0.jar" || echo "")
-          if [ ! -z "$APP_PID" ]; then
-            echo "Stopping application with PID: $APP_PID"
-            kill -TERM $APP_PID
-            sleep 10
-            # Se ancora attivo, forza la terminazione
-            if kill -0 $APP_PID 2>/dev/null; then
-              echo "Force killing application"
-              kill -KILL $APP_PID
-            fi
-            sleep 5
-          fi
+          # Attendi 5 secondi
+          sleep 5
           
-          # Sincronizza database PostgreSQL
-          echo "Synchronizing database..."
-          
-          # Backup del database esistente (opzionale)
-          sudo -u postgres pg_dump watch_shop > backup_$(date +%Y%m%d_%H%M%S).sql || true
-          
-          # Droppa e ricrea il database per sync completa
-          sudo -u postgres psql -c "DROP DATABASE IF EXISTS watch_shop;"
-          sudo -u postgres psql -c "CREATE DATABASE watch_shop;"
-          
-          # Importa i dati dal file SQL se esiste e non è vuoto
-          if [ -f "siw-watch_shop/siw_watch_shop_data.sql" ] && [ -s "siw-watch_shop/siw_watch_shop_data.sql" ]; then
-            echo "Importing database from SQL file..."
-            sudo -u postgres psql -d watch_shop < siw-watch_shop/siw_watch_shop_data.sql
+          # Verifica se è partita
+          if pgrep -f "siw-watch_shop" > /dev/null; then
+            echo "App avviata con successo"
           else
-            echo "SQL file is empty or missing, database will be created by Hibernate"
-          fi
-          
-          # Avvia la nuova applicazione
-          echo "Starting new application instance..."
-          nohup java -jar siw-watch_shop/target/siw-watch_shop-1.0.jar --spring.config.location=./application-prod.properties > app.log 2>&1 &
-          
-          # Salva il PID per riferimento futuro
-          echo $! > app.pid
-          
-          # Attendi che l'applicazione si avvii
-          sleep 15
-          
-          # Verifica che l'applicazione sia attiva
-          if pgrep -f "siw-watch_shop-1.0.jar" > /dev/null; then
-            echo "Application started successfully"
-            echo "PID: $(pgrep -f siw-watch_shop-1.0.jar)"
-          else
-            echo "Application failed to start"
-            echo "Last 20 lines of log:"
-            tail -20 app.log
-            exit 1
+            echo "Errore nell'avvio"
+            tail -10 app.log
           fi
