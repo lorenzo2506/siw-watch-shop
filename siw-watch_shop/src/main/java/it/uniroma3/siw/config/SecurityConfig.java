@@ -1,6 +1,7 @@
 package it.uniroma3.siw.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -10,6 +11,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 
 import it.uniroma3.siw.oauth2.CustomOAuth2UserService;
 import it.uniroma3.siw.oauth2.OAuth2AuthenticationSuccessHandler;
@@ -21,14 +23,17 @@ public class SecurityConfig {
     @Autowired
     private CredentialsService credentialsService;
 
-    @Autowired
+    @Autowired(required = false)  // IMPORTANTE: required = false
     private CustomOAuth2UserService oAuth2UserService;
 
-    @Autowired
+    @Autowired(required = false)  // IMPORTANTE: required = false
     private OAuth2AuthenticationSuccessHandler oAuth2SuccessHandler;
     
     @Autowired
     private CustomAuthenticationSuccessHandler customAuthSuccessHandler;
+
+    @Autowired(required = false)  // IMPORTANTE: required = false
+    private ClientRegistrationRepository clientRegistrationRepository;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -49,14 +54,6 @@ public class SecurityConfig {
                 .successHandler(customAuthSuccessHandler)
                 .permitAll()
             )
-            .oauth2Login(oauth -> oauth
-                .loginPage("/login")
-                .userInfoEndpoint(userInfo -> userInfo
-                    .userService(oAuth2UserService)
-                    // NOTA: NON oidcUserService - solo OAuth2 standard
-                )
-                .successHandler(oAuth2SuccessHandler)
-            )
             .logout(logout -> logout
                 .logoutSuccessUrl("/").permitAll()
             )
@@ -67,6 +64,17 @@ public class SecurityConfig {
                         "/admin/**", "/register/**"
                     )
                 );
+        
+        // Configura OAuth2 solo se disponibile
+        if (clientRegistrationRepository != null && oAuth2UserService != null && oAuth2SuccessHandler != null) {
+            http.oauth2Login(oauth -> oauth
+                .loginPage("/login")
+                .userInfoEndpoint(userInfo -> userInfo
+                    .userService(oAuth2UserService)
+                )
+                .successHandler(oAuth2SuccessHandler)
+            );
+        }
         
         return http.build();
     }
