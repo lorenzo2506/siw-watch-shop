@@ -58,7 +58,16 @@ jobs:
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
           cd /home/ubuntu
-          # Import database dump
+          # Import database dump (ignore errors if tables exist)
           sudo -u postgres psql -d watch_shop < siw-watch_shop/siw_watch_shop_data.sql || true
-          # Start application
+          # Start application in background
           nohup java -jar siw-watch_shop/target/siw-watch_shop-1.0.jar --spring.config.location=./application-prod.properties > app.log 2>&1 &
+          # Wait a moment and check if it started
+          sleep 5
+          if pgrep -f siw-watch_shop > /dev/null; then
+            echo "Application started successfully"
+          else
+            echo "Application failed to start, checking logs:"
+            tail -20 app.log
+            exit 1
+          fi
