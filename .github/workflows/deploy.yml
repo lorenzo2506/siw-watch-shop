@@ -19,7 +19,9 @@ jobs:
         distribution: 'temurin'
         
     - name: Build with Maven
-      run: mvn clean package -DskipTests
+      run: |
+        cd siw-watch_shop
+        mvn clean package -DskipTests
       
     - name: Stop application on EC2
       uses: appleboy/ssh-action@v0.1.7
@@ -36,7 +38,7 @@ jobs:
         host: ${{ secrets.EC2_HOST }}
         username: ubuntu
         key: ${{ secrets.EC2_SSH_KEY }}
-        source: "target/siw-watch_shop-1.0.jar"
+        source: "siw-watch_shop/target/siw-watch_shop-1.0.jar"
         target: "/home/ubuntu/"
         
     - name: Copy database dump to EC2
@@ -45,7 +47,7 @@ jobs:
         host: ${{ secrets.EC2_HOST }}
         username: ubuntu
         key: ${{ secrets.EC2_SSH_KEY }}
-        source: "siw_watch_shop_data.sql"
+        source: "siw-watch_shop/siw_watch_shop_data.sql"
         target: "/home/ubuntu/"
         
     - name: Update database and start application
@@ -56,5 +58,7 @@ jobs:
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
           cd /home/ubuntu
-          sudo -u postgres psql -d watch_shop < siw_watch_shop_data.sql || true
-          nohup java -jar target/siw-watch_shop-1.0.jar --spring.config.location=./application-prod.properties > app.log 2>&1 &
+          # Import database dump
+          sudo -u postgres psql -d watch_shop < siw-watch_shop/siw_watch_shop_data.sql || true
+          # Start application
+          nohup java -jar siw-watch_shop/target/siw-watch_shop-1.0.jar --spring.config.location=./application-prod.properties > app.log 2>&1 &
