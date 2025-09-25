@@ -49,5 +49,56 @@ jobs:
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
           cd /home/ubuntu
-          sudo -u postgres psql -d watch_shop < siw-watch_shop/siw_watch_shop_data.sql
+          
+          # Trova e ferma il processo specifico con PID
+          APP_PID=$(pgrep -f "siw-watch_shop-1.0.jar" || echo "")
+          if [ ! -z "$APP_PID" ]; then
+            echo "Stopping application with PID: $APP_PID"
+            kill -TERM $APP_PID
+            sleep 10
+            # Se ancora attivo, forza la terminazione
+            if kill -0 $APP_PID 2>/dev/null; then
+              echo "Force killing application"
+              kill -KILL $APP_PID
+            fi
+            sleep 5
+          fi
+          
+          # Sincronizza database PostgreSQL
+          echo "Synchronizing database..."
+          
+          # Backup del database esistente (opzionale)
+          sudo -u postgres pg_dump watch_shop > backup_$(date +%Y%m%d_%H%M%S).sql || true
+          
+          # Droppa e ricrea il database per sync completa
+          sudo -u postgres psql -c "DROP DATABASE IF EXISTS watch_shop;"
+          sudo -u postgres psql -c "CREATE DATABASE watch_shop;"
+          
+          # Importa i dati dal file SQL se esiste e non è vuoto
+          if [ -f "siw-watch_shop/siw_watch_shop_data.sql" ] && [ -s "siw-watch_shop/siw_watch_shop_data.sql" ]; then
+            echo "Importing database from SQL file..."
+            sudo -u postgres psql -d watch_shop < siw-watch_shop/siw_watch_shop_data.sql
+          else
+            echo "SQL file is empty or missing, database will be created by Hibernate"
+          fi
+          
+          # Avvia la nuova applicazione
+          echo "Starting new application instance..."
           nohup java -jar siw-watch_shop/target/siw-watch_shop-1.0.jar --spring.config.location=./application-prod.properties > app.log 2>&1 &
+          
+          # Salva il PID per riferimento futuro
+          echo $! > app.pid
+          
+          # Attendi che l'applicazione si avvii
+          sleep 15
+          
+          # Verifica che l'applicazione sia attiva
+          if pgrep -f "siw-watch_shop-1.0.jar" > /dev/null; then
+            echo "Application started successfully"
+            echo "PID: $(pgrep -f siw-watch_shop-1.0.jar)"
+          else
+            echo "Application failed to start"
+            echo "Last 20 lines of log:"
+            tail -20 app.log
+            exit 1
+          fi
