@@ -32,7 +32,7 @@ import jakarta.validation.Valid;
 @Controller
 public class AdminController {
 
-	
+	//PRO
 	@GetMapping("/admin")
 	public String adminIndex() {
 	    return "homePage";
