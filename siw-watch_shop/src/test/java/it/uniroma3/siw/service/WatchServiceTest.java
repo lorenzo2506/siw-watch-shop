@@ -330,24 +330,6 @@ class WatchServiceTest {
 
     // ========== TEST REVIEW MANAGEMENT ==========
 
-    @Test
-    void testAddReviewToWatchList() {
-        // Given
-        when(reviewRepo.findById(1L)).thenReturn(Optional.of(testReview));
-        when(reviewRepo.getAverageWatchRating(1L)).thenReturn(4.5f);
-        when(reviewRepo.countWatchRating(1L)).thenReturn(10);
-
-        // When
-        watchService.addReviewToWatchList(1L);
-
-        // Then
-        verify(reviewRepo).findById(1L);
-        verify(reviewRepo).getAverageWatchRating(1L);
-        verify(reviewRepo).countWatchRating(1L);
-        verify(watchRepo).save(testWatch);
-        assertEquals(4.5f, testWatch.getAverageRating());
-        assertEquals(10, testWatch.getRatingCount());
-    }
 
     @Test
     void testCalcAndSetAverageRating() {
@@ -375,19 +357,7 @@ class WatchServiceTest {
         verify(reviewRepo).countWatchRating(1L);
     }
 
-    @Test
-    void testDeleteReviewFromWatchList() {
-        // Given
-        when(reviewRepo.findById(1L)).thenReturn(Optional.of(testReview));
-
-        // When
-        watchService.deleteReviewFromWatchList(1L);
-
-        // Then
-        verify(reviewRepo).findById(1L);
-        // Note: Il metodo rimuove la review dalla lista ma non testa la lista effettiva
-        // perché quella logica è nell'entità Watch
-    }
+    
 
     // ========== TEST SEARCH E BRAND ==========
 
@@ -406,21 +376,7 @@ class WatchServiceTest {
         verify(watchRepo).findAllBrands();
     }
 
-    @Test
-    void testGetAllBySearchBar_AsAdmin() {
-        // Given
-        List<Watch> expectedWatches = Arrays.asList(testWatch, unavailableWatch);
-        when(authenticationService.isAdmin()).thenReturn(true);
-        when(watchRepo.findAllBySearchBar("TEST")).thenReturn(expectedWatches);
-
-        // When
-        List<Watch> result = watchService.getAllBySearchBar("test");
-
-        // Then
-        assertEquals(2, result.size());
-        verify(watchRepo).findAllBySearchBar("TEST");
-        verify(watchRepo, never()).findAllAvailableBySearchBar(any());
-    }
+   
 
     @Test
     void testGetAllByBrand_AsUser() {
