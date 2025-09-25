@@ -30,7 +30,7 @@ jobs:
         username: ubuntu
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
-          pkill -f siw-watch_shop || true
+          pkill -f siw-watch_shop; echo "Process kill attempted"
           
     - name: Copy JAR to EC2
       uses: appleboy/scp-action@v0.1.4
