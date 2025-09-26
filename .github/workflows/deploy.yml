@@ -41,7 +41,7 @@ jobs:
         username: ubuntu
         key: ${{ secrets.EC2_SSH_KEY }}
         timeout: 120s
-        source: "siw-watch_shop/uploads/images"
+        source: "siw-watch_shop/uploads"
         target: "/home/ubuntu/"
 
     - name: Deploy application
