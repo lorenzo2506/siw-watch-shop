@@ -55,23 +55,32 @@ jobs:
         source: "siw-watch_shop/uploads/"
         target: "/home/ubuntu/siw-watch_shop/"
 
-    - name: Deploy application
+    - name: Stop current application
       uses: appleboy/ssh-action@v0.1.7
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ubuntu
         key: ${{ secrets.EC2_SSH_KEY }}
-        timeout: 180s
+        timeout: 60s
         script: |
           cd /home/ubuntu
-          
-          # Create uploads directory if it doesn't exist (nel posto giusto)
-          mkdir -p siw-watch_shop/uploads/images
-          
-          # Stop current application
           echo "Stopping current application..."
           pkill -f "siw-watch_shop" || echo "No process to stop"
           sleep 5
+          echo "Application stopped successfully"
+
+    - name: Prepare directories and check files
+      uses: appleboy/ssh-action@v0.1.7
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ubuntu
+        key: ${{ secrets.EC2_SSH_KEY }}
+        timeout: 60s
+        script: |
+          cd /home/ubuntu
+          
+          # Create uploads directory
+          mkdir -p siw-watch_shop/uploads/images
           
           # Debug: Check what files we have
           echo "=== DEBUG: Checking files ==="
@@ -91,6 +100,18 @@ jobs:
             ls -la siw-watch_shop/target/
             exit 1
           fi
+          
+          echo "Files prepared successfully"
+
+    - name: Start application
+      uses: appleboy/ssh-action@v0.1.7
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ubuntu
+        key: ${{ secrets.EC2_SSH_KEY }}
+        timeout: 120s
+        script: |
+          cd /home/ubuntu
           
           # Start new application
           echo "Starting application with RDS database..."
