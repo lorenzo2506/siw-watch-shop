@@ -34,6 +34,17 @@ jobs:
         source: "siw-watch_shop/target/siw-watch_shop-1.0.jar"
         target: "/home/ubuntu/"
     
+    - name: Copy config file to EC2
+      uses: appleboy/scp-action@v0.1.4
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ubuntu
+        key: ${{ secrets.EC2_SSH_KEY }}
+        timeout: 60s
+        source: "siw-watch_shop/src/main/resources/application-prod.properties"
+        target: "/home/ubuntu/"
+        strip_components: 4
+
     - name: Copy images to EC2
       uses: appleboy/scp-action@v0.1.4
       with:
@@ -62,18 +73,37 @@ jobs:
           pkill -f "siw-watch_shop" || echo "No process to stop"
           sleep 5
           
+          # Debug: Check what files we have
+          echo "=== DEBUG: Checking files ==="
+          ls -la siw-watch_shop/target/ || echo "Target directory doesn't exist"
+          ls -la application-prod.properties || echo "No external application-prod.properties"
+          ls -la siw-watch_shop/uploads/ || echo "No uploads directory yet"
+          
           # Clean old files
           rm -f siw-watch_shop-*.jar.old
           if [ -f "siw-watch_shop/target/siw-watch_shop-1.0.jar" ]; then
             mv siw-watch_shop/target/siw-watch_shop-1.0.jar siw-watch_shop/target/siw-watch_shop-1.0.jar.old 2>/dev/null || true
           fi
           
+          # Check if JAR exists
+          if [ ! -f "siw-watch_shop/target/siw-watch_shop-1.0.jar" ]; then
+            echo "ERROR: JAR file not found at siw-watch_shop/target/siw-watch_shop-1.0.jar"
+            ls -la siw-watch_shop/target/
+            exit 1
+          fi
+          
           # Start new application
           echo "Starting application with RDS database..."
-          nohup java -jar siw-watch_shop/target/siw-watch_shop-1.0.jar --spring.profiles.active=prod > app.log 2>&1 &
+          echo "Using command: java -jar siw-watch_shop/target/siw-watch_shop-1.0.jar --spring.config.location=./application-prod.properties"
+          nohup java -jar siw-watch_shop/target/siw-watch_shop-1.0.jar --spring.config.location=./application-prod.properties > app.log 2>&1 &
           
           # Wait for startup
+          echo "Waiting 15 seconds for startup..."
           sleep 15
+          
+          # Check if process started
+          echo "=== DEBUG: Checking process ==="
+          ps aux | grep siw-watch_shop | grep -v grep || echo "Process not found"
           
           # Verify startup
           if pgrep -f "siw-watch_shop" > /dev/null; then
@@ -93,5 +123,7 @@ jobs:
             echo "Application failed to start"
             echo "Last 20 lines of log:"
             tail -20 app.log
+            echo "=== Full log ==="
+            cat app.log
             exit 1
           fi
