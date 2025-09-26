@@ -41,8 +41,8 @@ jobs:
         username: ubuntu
         key: ${{ secrets.EC2_SSH_KEY }}
         timeout: 120s
-        source: "siw-watch_shop/uploads"
-        target: "/home/ubuntu/"
+        source: "siw-watch_shop/uploads/"
+        target: "/home/ubuntu/siw-watch_shop/"
 
     - name: Deploy application
       uses: appleboy/ssh-action@v0.1.7
@@ -53,6 +53,9 @@ jobs:
         timeout: 180s
         script: |
           cd /home/ubuntu
+          
+          # Create uploads directory if it doesn't exist (nel posto giusto)
+          mkdir -p siw-watch_shop/uploads/images
           
           # Stop current application
           echo "Stopping current application..."
@@ -67,7 +70,7 @@ jobs:
           
           # Start new application
           echo "Starting application with RDS database..."
-          nohup java -jar siw-watch_shop/target/siw-watch_shop-1.0.jar --spring.config.location=./application-prod.properties > app.log 2>&1 &
+          nohup java -jar siw-watch_shop/target/siw-watch_shop-1.0.jar --spring.profiles.active=prod > app.log 2>&1 &
           
           # Wait for startup
           sleep 15
@@ -83,6 +86,8 @@ jobs:
               echo "Application is responding to requests"
             else
               echo "Warning: Application may not be fully ready yet"
+              echo "Checking logs..."
+              tail -10 app.log
             fi
           else
             echo "Application failed to start"
