@@ -7,7 +7,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     
     steps:
     - name: Checkout code
@@ -33,7 +33,17 @@ jobs:
         timeout: 180s
         source: "siw-watch_shop/target/siw-watch_shop-1.0.jar"
         target: "/home/ubuntu/"
-        
+    
+    - name: Copy images to EC2
+      uses: appleboy/scp-action@v0.1.4
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ubuntu
+        key: ${{ secrets.EC2_SSH_KEY }}
+        timeout: 120s
+        source: "uploads/"
+        target: "/home/ubuntu/"
+
     - name: Deploy application
       uses: appleboy/ssh-action@v0.1.7
       with:
