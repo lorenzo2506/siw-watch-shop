@@ -55,20 +55,6 @@ jobs:
         source: "siw-watch_shop/uploads/"
         target: "/home/ubuntu/siw-watch_shop/"
 
-    - name: Stop current application
-      uses: appleboy/ssh-action@v0.1.7
-      with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ubuntu
-        key: ${{ secrets.EC2_SSH_KEY }}
-        timeout: 60s
-        script: |
-          cd /home/ubuntu
-          echo "Stopping current application..."
-          pkill -f "siw-watch_shop" || echo "No process to stop"
-          sleep 5
-          echo "Application stopped successfully"
-
     - name: Prepare directories and check files
       uses: appleboy/ssh-action@v0.1.7
       with:
